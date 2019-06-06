@@ -20,6 +20,7 @@
 <li class="list-group-item">Name: {{.Name}}</li>
 <li class="list-group-item">Creator: {{.Gid}}</li>
 <li class="list-group-item">Team: {{.TeamID}}</li>
+<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}/stock">Stock Intel Link</a></li>
 </ul>
 </div>
 
@@ -32,8 +33,27 @@
 	{{end}}
   </ul>
 </div>
+
+<div class="card mb-2">
+<div class="card-header">Links</div>
+<div class="card-body"></div>
+  <ul class="list-group list-group-flush">
+	{{range .Links}}
+		<li class="list-group-item">{{.From}} {{.To}}</li>
+	{{end}}
+  </ul>
+</div>
+
+<div class="card mb-2">
+<div class="card-header">Markers</div>
+<div class="card-body"></div>
+  <ul class="list-group list-group-flush">
+	{{range .Markers}}
+		<li class="list-group-item">{{.ID}}</li>
+	{{end}}
+  </ul>
+</div>
 		<!-- content ends here -->				
-						
 					</div>
 				</div>
 			</div>

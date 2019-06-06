@@ -141,10 +141,18 @@
 </div>
   <ul class="list-group list-group-flush">
 	{{range .Ops}}
-		<li class="list-group-item"><a href="/api/v1/draw/{{.ID}}">{{.Name}}</a> ({{.TeamName}})</li>
+		<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}">{{.Name}}</a> ({{.TeamName}})</li>
 	{{end}}
+  </ul>
+</div>
+
+<div class="card mb-2">
+<div class="card-header">My Operations</div>
+<div class="card-body">
+</div>
+  <ul class="list-group list-group-flush">
 	{{range .OwnedOps}}
-		<li class="list-group-item"><a href="/api/v1/draw/{{.ID}}">{{.Name}}</a> ({{.TeamName}}) (owner)</li>
+		<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}">{{.Name}}</a> ({{.TeamName}})</li>
 	{{end}}
   </ul>
 </div>

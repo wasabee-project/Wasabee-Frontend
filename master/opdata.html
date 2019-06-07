@@ -1,4 +1,6 @@
 {{define "opdata"}}
+{{$drawID := .ID}}
+{{$teamID := .TeamID}}
 <html lang="en">
 <head>
 <title>{{.Name}} Op data</title>
@@ -16,42 +18,89 @@
 <div class="card-header">Op data</div>
 <div class="card-body"></div>
 <ul class="list-group list-group-flush">
-<li class="list-group-item">ID: {{.ID}}</li>
-<li class="list-group-item">Name: {{.Name}}</li>
-<li class="list-group-item">Creator: {{.Gid}}</li>
-<li class="list-group-item">Team: {{.TeamID}}</li>
+<li class="list-group-item">Name: {{.Name}} (id: {{.ID}})</li>
+<li class="list-group-item">Team: {{.Team}}</li>
 <li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}/stock">Stock Intel Link</a></li>
 </ul>
 </div>
 
 <div class="card mb-2">
-<div class="card-header">Portals</div>
-<div class="card-body"></div>
-  <ul class="list-group list-group-flush">
-	{{range .OpPortals}}
-		<li class="list-group-item">{{.Name}} <a href="https://intel.ingress.com/intel?ll={{.Lat}},{{.Lon}}&z=13&pll={{.Lat}},{{.Lon}}">Intel</a></li>
-	{{end}}
-  </ul>
-</div>
-
-<div class="card mb-2">
 <div class="card-header">Links</div>
-<div class="card-body"></div>
-  <ul class="list-group list-group-flush">
+<div class="card-body">
+  <table class="table">
+   <thead>
+    <tr>
+     <th scope="col">Throw Order</th>
+     <th scope="col">From</th>
+     <th scope="col">To</th>
+     <th scope="col">Distance</th>
+     <th scope="col">Assigned To</th>
+     <th scope="col">Description</th>
+    </tr>
+   </thead>
+   <tbody>
 	{{range .Links}}
-		<li class="list-group-item">{{.From}} {{.To}}</li>
+		<tr>
+		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/order"><input type="text" name="pos" value="{{.ThrowOrder}}" size="3"></form></td>
+		<td>{{.From}}</td>
+		<td>{{.To}}</td>
+		<td>{{.Distance}} KM</td>
+		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/assign">{{OpUserMenu .AssignedToID $teamID}}</form></td>
+		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/desc"><input type="text" name="desc" value="{{.Desc}}"></form></td>
+		</tr>
 	{{end}}
-  </ul>
+   </tbody>
+  </table>
+</div>
 </div>
 
 <div class="card mb-2">
 <div class="card-header">Markers</div>
-<div class="card-body"></div>
-  <ul class="list-group list-group-flush">
+<div class="card-body">
+  <table class="table">
+   <thead>
+    <tr>
+     <th scope="col">Portal</th>
+     <th scope="col">Type</th>
+     <th scope="col">Assigned To</th>
+     <th scope="col">Comment</th>
+    </tr>
+   </thead>
+   <tbody>
 	{{range .Markers}}
-		<li class="list-group-item">{{.ID}}</li>
+		<tr>
+		<td>{{.Portal}}</td>
+		<td>{{.Type}}</td>
+		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/assign">{{OpUserMenu .AssignedToID $teamID}}</form></td>
+		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/desc"><input type="text" name="comment" value="{{.Comment}}"></form></td>
+		</tr>
 	{{end}}
-  </ul>
+   </tbody>
+  </table>
+</div>
+
+<div class="card mb-2">
+<div class="card-header">Keys Needed</div>
+<div class="card-body">
+  <table class="table">
+   <thead>
+    <tr>
+     <th scope="col">Portal</th>
+     <th scope="col">Keys Required</th>
+     <th scope="col">On Hand</th>
+    </tr>
+   </thead>
+   <tbody>
+	{{range .Keys}}
+		<tr>
+		<td>{{.Portal}}</td>
+		<td>{{.Required}}</td>
+		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ID}}/onhand"><input type="text" name="onhand" value="" size="3"></form></td>
+		</tr>
+	{{end}}
+   </tbody>
+  </table>
+</div>
 </div>
 		<!-- content ends here -->				
 					</div>

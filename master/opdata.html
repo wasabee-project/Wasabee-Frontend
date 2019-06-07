@@ -41,12 +41,12 @@
    <tbody>
 	{{range .Links}}
 		<tr>
-		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/order"><input type="text" name="pos" value="{{.ThrowOrder}}" size="3"></form></td>
+		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/order"><input type="text" name="pos" value="{{.ThrowOrder}}" size="3" disabled></form></td>
 		<td>{{.From}}</td>
 		<td>{{.To}}</td>
 		<td>{{.Distance}} KM</td>
 		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/assign">{{OpUserMenu .AssignedToID $teamID}}</form></td>
-		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/desc"><input type="text" name="desc" value="{{.Desc}}"></form></td>
+		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/desc"><input type="text" name="desc" value="{{.Desc}}" disabled></form></td>
 		</tr>
 	{{end}}
    </tbody>
@@ -72,7 +72,7 @@
 		<td>{{.Portal}}</td>
 		<td>{{.Type}}</td>
 		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/assign">{{OpUserMenu .AssignedToID $teamID}}</form></td>
-		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/desc"><input type="text" name="comment" value="{{.Comment}}"></form></td>
+		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/desc"><input type="text" name="comment" value="{{.Comment}}" disabled></form></td>
 		</tr>
 	{{end}}
    </tbody>
@@ -95,9 +95,41 @@
 		<tr>
 		<td>{{.Portal}}</td>
 		<td>{{.Required}}</td>
-		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ID}}/onhand"><input type="text" name="onhand" value="" size="3"></form></td>
+		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ID}}/onhand"><input type="text" name="onhand" value="" size="3" disabled></form></td>
 		</tr>
 	{{end}}
+   </tbody>
+  </table>
+</div>
+</div>
+
+<div class="card mb-2">
+<div class="card-header">Capsule Build List</div>
+<div class="card-body">
+  <table class="table">
+   <thead>
+    <tr>
+     <th scope="col">Agent</th>
+     <th scope="col">Portal</th>
+     <th scope="col">Keys Required</th>
+    </tr>
+   </thead>
+   <tbody>
+     <td>TBD</td>
+     <td>TBD</td>
+     <td>TBD</td>
+   </tbody>
+  </table>
+</div>
+</div>
+
+<div class="card mb-2">
+<div class="card-header">Misc. Functions</div>
+<div class="card-body">
+  <table class="table">
+   <tbody>
+     <tr><td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/chown"><input type="text" name="to" value=""> <input type="submit" name="Change Owner" value="Change Owner"></form></td></tr>
+     <tr><td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/chgrp">{{TeamMenu .Gid $teamID}} <input type="submit" name="Change Team" value="Change Team"></form></td></tr>
    </tbody>
   </table>
 </div>

@@ -18,8 +18,9 @@
 <div class="card-body"></div>
 <ul class="list-group list-group-flush">
 <li class="list-group-item">Name: {{.Name}}</li>
-<li class="list-group-item">Team: {{.Team}}</li>
+<li class="list-group-item">Team: <a href="{{WebAPIPath}}/team/{{.TeamID}}">{{.Team}}</a></li>
 <li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}/stock">Stock Intel Link</a></li>
+<li class="list-group-item">Comments: </a></li>
 </ul>
 </div>
 

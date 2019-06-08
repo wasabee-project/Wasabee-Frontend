@@ -53,6 +53,13 @@ New Ownership: <input type="text" name="to" />
 <input type="submit" name="chown" value="Change Ownership" />
 </form>
 </li>
+<li class="list-group-item">
+<form action="{{WebAPIPath}}/team/{{.ID}}/announce" method="POST">
+<textarea name="m">
+</textarea>
+<input type="submit" name="send announcement" value="send announcement">
+</form>
+</li>
 </div>
 <!-- content ends here -->				
 					</div>

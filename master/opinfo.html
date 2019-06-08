@@ -1,4 +1,5 @@
 {{define "opinfo"}}
+{{$drawID := .ID}}
 <html lang="en">
 <head>
 <title>{{.Name}} Op data</title>
@@ -38,10 +39,10 @@
    <tbody>
 	{{range .Links}}
 		<tr>
-		<td>{{.From}}</td>
-		<td>{{.To}}</td>
-		<td>{{.Distance}} KM</td>
-		<td>{{.AssignedTo}}</form></td>
+		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.FromID}}">{{.From}}</a></td>
+		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></td>
+		<td>{{.Distance}} KM (min level req...)</td>
+		<td><a href="{{WebAPIPath}}/agent/{{.AssignedToID}}">{{.AssignedTo}}</a></form></td>
 		<td>{{.Desc}}</form></td>
 		</tr>
 	{{end}}
@@ -65,9 +66,9 @@
    <tbody>
 	{{range .Markers}}
 		<tr>
-		<td>{{.Portal}}</td>
+		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.PortalID}}">{{.Portal}}</a></td>
 		<td>{{.Type}}</td>
-		<td>{{.AssignedToID}}</td>
+		<td><a href="{{WebAPIPath}}/agent/{{.AssignedToID}}">{{.AssignedTo}}</a></td>
 		<td>{{.Comment}}</form></td>
 		</tr>
 	{{end}}

@@ -1,0 +1,47 @@
+{{define "operations"}}
+<html lang="en">
+<head>
+<title>My Operations</title>
+{{template "styles"}}
+</head>
+<body>
+{{template "nav"}}
+		<div class="content-sction-a">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="content-section-a">
+<!-- content starts here -->
+<div class="card mb-2">
+<div class="card-header">My Operations</div>
+<div class="card-body"><p>Operation creation should take place in the IITC plug-in. If you own any operations, they will (eventually) display here.</p>
+  <ul class="list-group list-group-flush">
+	{{range .OwnedOps}}
+		<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}">{{.Name}}</a> ({{.TeamName}})</li>
+	{{end}}
+  </ul>
+
+</div>
+</div>
+
+<!-- content ends here -->				
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<!-- /.container -->
+
+	</div>
+	<!-- /.intro-header -->
+
+{{template "footer"}}
+
+	<!-- jQuery -->
+	<script src="https://wasabee.rocks/js/jquery.js"></script>
+
+	<!-- Bootstrap Core JavaScript -->
+	<script src="https://wasabee.rocks/js/bootstrap.min.js"></script>
+</body>
+</html>
+{{end}}

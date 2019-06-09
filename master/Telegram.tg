@@ -1,12 +1,12 @@
 {{define "default"}}
-Please see {{ Webroot }}/me for details
+Please see {{ Webroot }}{{WebAPIPath}}me/settings for details
 {{end}}
 
 {{define "help"}}
 If everything is working correctly, you should see helpful buttons near the message input area.
 If not, try saying "/start"
 
-Please see {{ Webroot }}/me for details (help)
+Please see {{ Webroot }}{{WebAPIPath}}/me/settings for details (help)
 {{end}}
 
 {{define "InitOneFail"}}
@@ -16,7 +16,7 @@ See {{ Webroot }}/me for details
 
 {{define "InitOneSuccess"}}
 *You have sent your Location Share Key correctly*
-Now, you need to send your verification code from {{ Webroot }}/me
+Now, you need to send your verification code from {{ Webroot }}{{WebAPIPath}}me/settings
 
 *You might need to reload the page to see the verifcation code, it will be listed in the same place as before.*
 
@@ -26,7 +26,7 @@ See {{ Webroot }}/me for details
 {{define "InitTwoFail"}}
 *Verification FAILED*
 Please send your verification code without any additional content
-See {{ Webroot }}/me for details
+See {{ Webroot }}{{WebAPIPath}}/me/settings for details
 {{end}}
 
 {{define "InitTwoSuccess"}}

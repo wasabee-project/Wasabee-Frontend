@@ -92,36 +92,7 @@
 	<!-- /.intro-header -->
 
 {{template "footer"}}
-
-	<script>
-function geoFindMe() {
-  const lat = document.querySelector('#lat');
-  const lon = document.querySelector('#lon');
-
-  function success(position) {
-	lat.value = position.coords.latitude;
-	lon.value = position.coords.longitude;
-  }
-
-  function error() {
-	lat.value = '-0';
-	lon.value = '-0';
-  }
-
-  if (navigator.geolocation) {
-	navigator.geolocation.getCurrentPosition(success, error);
-  }
-
-}
-document.querySelector('#lat').addEventListener('click', geoFindMe);
-document.querySelector('#lon').addEventListener('click', geoFindMe);
-	</script>
-
-	<!-- jQuery -->
-	<script src="https://wasabee.rocks/js/jquery.js"></script>
-
-	<!-- Bootstrap Core JavaScript -->
-	<script src="https://wasabee.rocks/js/bootstrap.min.js"></script>
+{{template "bootstrapjs"}}
 </body>
 </html>
 {{end}}

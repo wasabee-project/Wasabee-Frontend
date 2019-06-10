@@ -39,8 +39,8 @@
 {{range .Links}}
   <div class="list-group-item row">
      <span class="col-sm-1"><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/order"><input type="text" name="pos" value="{{.ThrowOrder}}" size="3" disabled></form></span>
-     <span class="col-sm-2">{{.From}}</span>
-     <span class="col-sm-2">{{.To}}</span>
+     <span class="col-sm-2"><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.FromID}}">{{.From}}</a></span>
+     <span class="col-sm-2"><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></span>
      <span class="col-sm-1">{{.Distance}} KM</span>
      <span class="col-sm-3"><form action="#">{{OpUserMenu .AssignedToID $teamID .ID "agentAssignLink"}}</form></span>
      <span class="col-sm-3"><form action="#"><input type="text" name="desc" value="{{.Desc}}" onchange="assignLinkDesc({{.ID}}, this)"></form></span>
@@ -66,7 +66,7 @@
    <tbody>
 	{{range .Markers}}
 		<tr>
-		<td>{{.Portal}}</td>
+		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.PortalID}}">{{.Portal}}</a></td>
 		<td>{{.Type}}</td>
 		<td><form action="#">{{OpUserMenu .AssignedToID $teamID .ID "agentAssignMarker"}}</form></td>
 		<td><form action="#"><input type="text" name="comment" value="{{.Comment}}" onchange="assignMarkerComment({{.ID}}, this)"></form></td>
@@ -90,7 +90,7 @@
    <tbody>
 	{{range .Keys}}
 		<tr>
-		<td>{{.Portal}}</td>
+		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ID}}">{{.Portal}}</a></td>
 		<td>{{.Required}}</td>
 		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ID}}/onhand"><input type="text" name="onhand" value="" size="3" disabled></form></td>
 		</tr>

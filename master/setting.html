@@ -12,6 +12,34 @@
 				<div class="col-lg-12">
 					<div class="content-section-a">
 <!-- content starts here -->
+{{if (TGRunning)}}
+<div class="card mb-2">
+<div class="card-header">Telegram</div>
+<div class="card-body">
+</div>
+  <ul class="list-group list-group-flush">
+{{if (.Telegram.ID) }}
+		<li class="list-group-item">ID: {{.Telegram.UserName}} ({{.Telegram.ID}})</li>
+{{end}}
+{{if (.Telegram.Verified) }}
+		<li class="list-group-item">Status: Verified.</li>
+{{else}}
+		<li class="list-group-item">Status: Not Verified.</li>
+		<li class="list-group-item">Instructions:
+    {{if (.Telegram.Authtoken) }}
+    <div class="alert alert-suggess" role="alert">
+        Tell the bot (<a href="tg://resolve?domain={{ TGGetBotName }}">@{{ TGGetBotName }}</a>) <a href="https://telegram.me/{{ TGGetBotName }}?start={{.Telegram.Authtoken}}">{{.Telegram.Authtoken}}</a> to get verified.
+    </div>
+    {{else}}
+    <div class="alert alert-primary" role="alert">
+        Tell the bot (<a href="tg://resolve?domain={{ TGGetBotName }}">@{{ TGGetBotName }}</a>) <a href="https://telegram.me/{{ TGGetBotName }}?start={{.LocationKey}}">{{.LocationKey}}</a> to start the verification process.
+    </div>
+    {{end}}
+{{end}}
+		</li>
+  </ul>
+</div>
+
 <div class="card mb-2">
 <div class="card-header">Agent Info</div>
 <div class="card-body"></div>
@@ -79,30 +107,6 @@
 <small>Use this URL in the <a href="https://owntracks.org">OneTracks app</a>. Device ID can be anything. Tracker ID can be any two-letter code. Ask you operator if she has any preference.</small>
 </li>
 </ul>
-</div>
-
-{{if (TGRunning)}}
-<div class="card mb-2">
-<div class="card-header">Telegram</div>
-<div class="card-body">
-</div>
-  <ul class="list-group list-group-flush">
-{{if (.Telegram.ID) }}
-		<li class="list-group-item">ID: {{.Telegram.UserName}} ({{.Telegram.ID}})</li>
-{{end}}
-{{if (.Telegram.Verified) }}
-		<li class="list-group-item">Status: Verified.</li>
-{{else}}
-		<li class="list-group-item">Status: Not Verified.</li>
-		<li class="list-group-item">Instructions:
-    {{if (.Telegram.Authtoken) }}
-        Tell the bot (<a href="tg://resolve?domain={{ TGGetBotName }}">@{{ TGGetBotName }}</a>) <a href="https://telegram.me/{{ TGGetBotName }}?start={{.Telegram.Authtoken}}">{{.Telegram.Authtoken}}</a> to get verified.
-    {{else}}
-        Tell the bot (<a href="tg://resolve?domain={{ TGGetBotName }}">@{{ TGGetBotName }}</a>) <a href="https://telegram.me/{{ TGGetBotName }}?start={{.LocationKey}}">{{.LocationKey}}</a> to start the verification process.
-    {{end}}
-{{end}}
-		</li>
-  </ul>
 </div>
 {{end}}
 

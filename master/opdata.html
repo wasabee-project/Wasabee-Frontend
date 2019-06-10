@@ -28,7 +28,7 @@
 <div class="card-header">Links</div>
 <div class="card-body">
  <div class="list-group container-fluid" id="linklist">
-  <div class="list-group-item row">
+  <div class="list-group-item row" id="linklist-header" data-id="000">
      <span class="col-sm-1">Throw Order</span>
      <span class="col-sm-2">From</span>
      <span class="col-sm-2">To</span>
@@ -37,7 +37,7 @@
      <span class="col-sm-3">Description</span>
   </div>
 {{range .Links}}
-  <div class="list-group-item row">
+  <div class="list-group-item row" id="{{.ID}}" data-id="{{.ID}}">
      <span class="col-sm-1"><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/order"><input type="text" name="pos" value="{{.ThrowOrder}}" size="3" disabled></form></span>
      <span class="col-sm-2"><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.FromID}}">{{.From}}</a></span>
      <span class="col-sm-2"><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></span>
@@ -147,7 +147,16 @@
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.js"></script>
 <script>
 var sortable = Sortable.create(linklist, {
-  /* options */
+  store: {
+    set: function (sortable) {
+      var order = sortable.toArray();
+      console.log(order, "order")
+      xhr = new XMLHttpRequest();
+      xhr.open('POST', "/api/v1/draw/{{.ID}}/order");
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.send(encodeURI('order=' + order));
+    }
+  }
 });
 
 function agentAssignLink(id, sel)
@@ -156,8 +165,11 @@ function agentAssignLink(id, sel)
     xhr.open('POST', "/api/v1/draw/{{.ID}}/link/" + id + "/assign");
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
+        var res = JSON.parse(xhr.responseText);
         if (xhr.status === 200) {
             /* xxx */
+	} else {
+	    alert(res.Error)
 	}
     }
     xhr.send(encodeURI('agent=' + sel.value));
@@ -169,8 +181,11 @@ function agentAssignMarker(id, sel)
     xhr.open('POST', "/api/v1/draw/{{.ID}}/marker/" + id + "/assign");
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
+        var res = JSON.parse(xhr.responseText);
         if (xhr.status === 200) {
             /* xxx */
+	} else {
+	    alert(res.Error)
 	}
     }
     xhr.send(encodeURI('agent=' + sel.value));
@@ -182,8 +197,11 @@ function assignLinkDesc(id, sel)
     xhr.open('POST', "/api/v1/draw/{{.ID}}/link/" + id + "/desc");
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
+        var res = JSON.parse(xhr.responseText);
         if (xhr.status === 200) {
             /* xxx */
+	} else {
+	    alert(res.Error)
 	}
     }
     xhr.send(encodeURI('desc=' + sel.value));
@@ -195,8 +213,11 @@ function assignMarkerComment(id, sel)
     xhr.open('POST', "/api/v1/draw/{{.ID}}/marker/" + id + "/comment");
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
+        var res = JSON.parse(xhr.responseText);
         if (xhr.status === 200) {
             /* xxx */
+	} else {
+	    alert(res.Error)
 	}
     }
     xhr.send(encodeURI('comment=' + sel.value));

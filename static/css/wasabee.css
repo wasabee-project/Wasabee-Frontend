@@ -1,0 +1,71 @@
+@charset "UTF-8";
+/* CSS Document */
+body {
+	background-color:#f8f8f8;
+	font-weight:normal;
+}
+h1	{
+	font-size:200%;
+	font-weight:800;
+}
+.navbar {
+	background-image:url(/static/img/topnav-bee.png)!important;
+	background-position:right top;
+	background-repeat:no-repeat;
+	background-color:#fff;
+	padding-right:60px;
+}
+.navbar a	{
+	font-weight:700;
+}
+.navbar a:hover	{
+	border-bottom: 1px solid #33cc99;
+}
+.content-area	{
+	background-color:#fff;
+	padding:0 16px 16px 16px; 
+	border:1px solid #ddd;
+}
+.card	{
+	margin-top:20px;
+}
+.card-header	{
+	font-size: 150%;
+	font-weight:700;
+	color:#333;
+}
+.state	{
+	color:#c3c;
+}
+a.delete	{
+	color:c03!important;
+}
+a.delete:hover	{
+	color:#f36!important;
+}
+.add-left-space	{
+	padding-left: 24px;
+}
+li.list-group-item	{
+	font-weight:normal;
+	border-color:#fff;
+}
+li.list-group-item a:hover{
+	color:#096;
+	text-decoration:underline;
+}
+li.list-group-item small	{
+	font-weight:normal;
+}
+
+footer	{
+	background-image:url(/static/img/bee-glasses.png)!important;
+	background-position:left;
+	background-repeat:no-repeat;
+}
+.copyright	{
+	font-weight: 700!important;
+}
+.text-muted	{
+	font-weight:normal;
+}

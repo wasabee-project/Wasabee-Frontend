@@ -24,33 +24,30 @@
 </ul>
 </div>
 
-<div class="card mb-2">
+<div class="card">
 <div class="card-header">Links</div>
 <div class="card-body">
-  <table class="table">
-   <thead>
-    <tr>
-     <th scope="col">Throw Order</th>
-     <th scope="col">From</th>
-     <th scope="col">To</th>
-     <th scope="col">Distance</th>
-     <th scope="col">Assigned To</th>
-     <th scope="col">Description</th>
-    </tr>
-   </thead>
-   <tbody>
-	{{range .Links}}
-		<tr>
-		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/order"><input type="text" name="pos" value="{{.ThrowOrder}}" size="3" disabled></form></td>
-		<td>{{.From}}</td>
-		<td>{{.To}}</td>
-		<td>{{.Distance}} KM</td>
-		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/assign" method="POST">{{OpUserMenu .AssignedToID $teamID}}<input type="submit"></form></td>
-		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/desc" method="POST"><input type="text" name="desc" value="{{.Desc}}"></form></td>
-		</tr>
-	{{end}}
-   </tbody>
-  </table>
+ <div class="list-group container-fluid" id="linklist">
+  <div class="list-group-item row">
+     <span class="col-sm-1">Throw Order</span>
+     <span class="col-sm-2">From</span>
+     <span class="col-sm-2">To</span>
+     <span class="col-sm-1">Distance</span>
+     <span class="col-sm-3">Assigned To</span>
+     <span class="col-sm-3">Description</span>
+  </div>
+{{range .Links}}
+  <div class="list-group-item row">
+     <span class="col-sm-1"><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/order"><input type="text" name="pos" value="{{.ThrowOrder}}" size="3" disabled></form></span>
+     <span class="col-sm-2">{{.From}}</span>
+     <span class="col-sm-2">{{.To}}</span>
+     <span class="col-sm-1">{{.Distance}} KM</span>
+     <span class="col-sm-3"><form action="#">{{OpUserMenu .AssignedToID $teamID .ID "agentAssignLink"}}</form></span>
+     <span class="col-sm-3"><form action="#"><input type="text" name="desc" value="{{.Desc}}" onchange="assignLinkDesc({{.ID}}, this)"></form></span>
+  </div>
+{{end}}
+ </div>
+</div>
 </div>
 </div>
 
@@ -71,8 +68,8 @@
 		<tr>
 		<td>{{.Portal}}</td>
 		<td>{{.Type}}</td>
-		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/marker/{{.ID}}/assign" method="POST">{{OpUserMenu .AssignedToID $teamID}}<input type="submit"></form></td>
-		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/marker/{{.ID}}/comment" method="POST"><input type="text" name="comment" value="{{.Comment}}"></form></td>
+		<td><form action="#">{{OpUserMenu .AssignedToID $teamID .ID "agentAssignMarker"}}</form></td>
+		<td><form action="#"><input type="text" name="comment" value="{{.Comment}}" onchange="assignMarkerComment({{.ID}}, this)"></form></td>
 		</tr>
 	{{end}}
    </tbody>
@@ -147,6 +144,65 @@
 
 {{template "footer"}}
 {{template "bootstrapjs"}}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.js"></script>
+<script>
+var sortable = Sortable.create(linklist, {
+  /* options */
+});
+
+function agentAssignLink(id, sel)
+{
+    xhr = new XMLHttpRequest();
+    xhr.open('POST', "/api/v1/draw/{{.ID}}/link/" + id + "/assign");
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            /* xxx */
+	}
+    }
+    xhr.send(encodeURI('agent=' + sel.value));
+}
+
+function agentAssignMarker(id, sel)
+{
+    xhr = new XMLHttpRequest();
+    xhr.open('POST', "/api/v1/draw/{{.ID}}/marker/" + id + "/assign");
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            /* xxx */
+	}
+    }
+    xhr.send(encodeURI('agent=' + sel.value));
+}
+
+function assignLinkDesc(id, sel)
+{
+    xhr = new XMLHttpRequest();
+    xhr.open('POST', "/api/v1/draw/{{.ID}}/link/" + id + "/desc");
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            /* xxx */
+	}
+    }
+    xhr.send(encodeURI('desc=' + sel.value));
+}
+
+function assignMarkerComment(id, sel)
+{
+    xhr = new XMLHttpRequest();
+    xhr.open('POST', "/api/v1/draw/{{.ID}}/marker/" + id + "/comment");
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            /* xxx */
+	}
+    }
+    xhr.send(encodeURI('comment=' + sel.value));
+}
+
+</script>
 </body>
 </html>
 {{end}}

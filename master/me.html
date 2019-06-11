@@ -17,9 +17,12 @@
 <div class="card mb-2">
 <div class="card-header">My Assignments</div>
 <div class="card-body">
-<small>A list of operations with tasks assigned to me will go here.</small>
+<small>You have assignments in the following operations.</small>
 </div>
   <ul class="list-group list-group-flush">
+	{{range .Assignments}}
+		<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.OpID}}"><strong>{{.OperationName}}</strong> ({{.Type}})</a></li>
+	{{end}}
   </ul>
 </div>
 

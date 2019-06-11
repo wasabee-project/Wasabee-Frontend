@@ -42,7 +42,7 @@
 		<tr>
 		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.FromID}}">{{.From}}</a></td>
 		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></td>
-		<td>{{.Distance}} KM (min level req...)</td>
+		<td>{{.Distance}}km (level #)</td>
 		<td><a href="{{WebAPIPath}}/agent/{{.AssignedToID}}">{{.AssignedTo}}</a></form></td>
 		<td>{{.Desc}}</form></td>
 		</tr>
@@ -86,6 +86,7 @@
      <th scope="col">Portal</th>
      <th scope="col">Keys Required</th>
      <th scope="col">On Hand</th>
+     <th scope="col">My Count</th>
     </tr>
    </thead>
    <tbody>
@@ -93,7 +94,8 @@
 		<tr>
 		<td>{{.Portal}}</td>
 		<td>{{.Required}}</td>
-		<td></td>
+		<td>{{.Onhand}}</td>
+		<td><input type="text" size="3" name="onhand" id="{{.ID}}" onchange="keyOnHand({{.ID}}, this)" value="{{.IHave}}"/></td>
 		</tr>
 	{{end}}
    </tbody>
@@ -113,6 +115,23 @@
 
 {{template "footer"}}
 {{template "bootstrapjs"}}
+<script>
+function keyOnHand(id, sel)
+{
+    xhr = new XMLHttpRequest();
+    xhr.open('POST', "/api/v1/draw/{{.ID}}/portal/" + id + "/keyonhand");
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        var res = JSON.parse(xhr.responseText);
+        if (xhr.status === 200) {
+            /* xxx */
+        } else {
+            alert(xhr.status + ": " + xhr.responseText)
+        }
+    }
+    xhr.send(encodeURI('onhand=' + sel.value));
+}
+</script>
 </body>
 </html>
 {{end}}

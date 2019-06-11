@@ -15,10 +15,9 @@
 <div class="card mb-2">
 <div class="card-header">Portal: {{.Name}}</div>
 <div class="card-body">
-{{.Name}}
-Link to intel {{.Lat}} {{.Lon}}
-Comment: {{.Comment}}
-Hardness: {{.Hardness}}
+<div><a href="https://intel.ingress.com/intel?pll={{.Lat}},{{.Lon}}">intel</a></div>
+<div>Comment: <input type="text" name="comment" value="{{.Comment}}" onchange="assignPortalComment(this)"></div>
+<div>Hardness: <input type="text" name="hardness" value="{{.Hardness}}" onchange="assignPortalHardness(this)"></div>
 </div>
 <!-- content ends here -->				
 					</div>
@@ -33,6 +32,39 @@ Hardness: {{.Hardness}}
 
 {{template "footer"}}
 {{template "bootstrapjs"}}
+<script>
+function assignPortalComment(sel)
+{
+    xhr = new XMLHttpRequest();
+    xhr.open('POST', "/api/v1/draw/{{.ID}}/portal/{{.ID}}/comment");
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        var res = JSON.parse(xhr.responseText);
+        if (xhr.status === 200) {
+            /* xxx */
+	} else {
+	    alert(res.Error)
+	}
+    }
+    xhr.send(encodeURI('comment=' + sel.value));
+}
+
+function assignPortalHardness(sel)
+{
+    xhr = new XMLHttpRequest();
+    xhr.open('POST', "/api/v1/draw/{{.ID}}/portal/{{.ID}}/hardness");
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        var res = JSON.parse(xhr.responseText);
+        if (xhr.status === 200) {
+            /* xxx */
+	} else {
+	    alert(res.Error)
+	}
+    }
+    xhr.send(encodeURI('comment=' + sel.value));
+}
+</script>
 </body>
 </html>
 {{end}}

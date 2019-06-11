@@ -38,7 +38,7 @@
   </div>
 {{range .Links}}
   <div class="list-group-item row" id="{{.ID}}" data-id="{{.ID}}">
-     <span class="col-sm-1"><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/order"><input type="text" name="pos" value="{{.ThrowOrder}}" size="3" disabled></form></span>
+     <span class="col-sm-1"><span id="throworder-{{$.ID}}">{{.ThrowOrder}}</span></form></span>
      <span class="col-sm-2"><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.FromID}}">{{.From}}</a></span>
      <span class="col-sm-2"><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></span>
      <span class="col-sm-1">{{.Distance}} KM</span>
@@ -92,8 +92,15 @@
 		<tr>
 		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ID}}">{{.Portal}}</a></td>
 		<td>{{.Required}}</td>
-		<td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ID}}/onhand"><input type="text" name="onhand" value="" size="3" disabled></form></td>
+		<td>{{.Onhand}}</form></td>
 		</tr>
+		{{range .OnhandList}}
+		<tr>
+		<td></td>
+		<td>{{.Gid}}</td>
+		<td>{{.Onhand}}</form></td>
+		</tr>
+		{{end}}
 	{{end}}
    </tbody>
   </table>

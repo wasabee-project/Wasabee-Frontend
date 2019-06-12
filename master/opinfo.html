@@ -13,15 +13,18 @@
 				<div class="col-lg-12">
 					<div class="content-section-a">
 <!-- content starts here -->
+<h1>Op Data</h1>
+<div class="content-area">
 <div class="card mb-2">
-<div class="card-header">Op data</div>
-<div class="card-body"></div>
+<div class="card-header">Details</div>
+<div class="card-body">
 <ul class="list-group list-group-flush">
-<li class="list-group-item">Name: {{.Name}}</li>
-<li class="list-group-item">Team: <a href="{{WebAPIPath}}/team/{{.TeamID}}">{{.Team}}</a></li>
+<li class="list-group-item"><strong>Name:</strong> {{.Name}}</li>
+<li class="list-group-item"><strong>Team:</strong> <a href="{{WebAPIPath}}/team/{{.TeamID}}">{{.Team}}</a></li>
 <li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}/stock">Stock Intel Link</a></li>
-<li class="list-group-item">Comments: </a></li>
+<li class="list-group-item"><strong>Comments:</strong></li>
 </ul>
+</div>
 </div>
 
 <div class="card mb-2">
@@ -68,7 +71,7 @@
 	{{range .Markers}}
 		<tr>
 		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.PortalID}}">{{.Portal}}</a></td>
-		<td>{{.Type}}</td>
+		<td><div class="{{.Type}}">{{.Type}}</div></td>
 		<td><a href="{{WebAPIPath}}/agent/{{.AssignedToID}}">{{.AssignedTo}}</a></td>
 		<td>{{.Comment}}</form></td>
 		</tr>
@@ -94,12 +97,13 @@
 		<tr>
 		<td>{{.Portal}}</td>
 		<td>{{.Required}}</td>
-		<td>{{.Onhand}}</td>
-		<td><input type="text" size="3" name="onhand" id="{{.ID}}" onchange="keyOnHand({{.ID}}, this)" value="{{.IHave}}"/></td>
+		<td><div id="oh_{{.ID}}" oh="{{.Onhand}}" ih="{{.IHave}}">{{.Onhand}}</div></td>
+		<td><input type="text" size="3" name="onhand" id="{{.ID}}" onChange="keyOnHand({{.ID}}, this)" value="{{.IHave}}"/></td>
 		</tr>
 	{{end}}
    </tbody>
   </table>
+</div>
 </div>
 </div>
 		<!-- content ends here -->				
@@ -114,22 +118,38 @@
 	<!-- /.intro-header -->
 
 {{template "footer"}}
-{{template "bootstrapjs"}}
+{{template "bootstrapjs"}} 
 <script>
 function keyOnHand(id, sel)
 {
+    sel.style.backgroundColor = "yellow";
+    sel.setAttribute("disabled","true");
     xhr = new XMLHttpRequest();
     xhr.open('POST', "/api/v1/draw/{{.ID}}/portal/" + id + "/keyonhand");
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
+    	sel.setAttribute("disabled","true");
         var res = JSON.parse(xhr.responseText);
         if (xhr.status === 200) {
-            /* xxx */
+            sleep(100).then(function() {
+                sel.style.backgroundColor = "green";
+                sleep(500).then(function() {
+                    sel.style.backgroundColor = "white";
+                    sel.removeAttribute("disabled");
+                });
+            });
+	    var ohid = document.getElementById("oh_" + id);
+	    ohid.innerHTML = (parseInt(ohid.getAttribute("oh"),10) - parseInt(ohid.getAttribute("ih"),10) + parseInt(sel.value, 10));
         } else {
+	    sel.style.backgroundColor="#999"
             alert(xhr.status + ": " + xhr.responseText)
         }
     }
     xhr.send(encodeURI('onhand=' + sel.value));
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 </script>
 </body>

@@ -14,14 +14,18 @@
 				<div class="col-lg-12">
 					<div class="content-section-a">
 <!-- content starts here -->
+<h1>Op Data</h1>
+<div class="content-area">
 <div class="card mb-2">
-<div class="card-header">Op data</div>
-<div class="card-body"></div>
+<div class="card-header">Details</div>
+<div class="card-body">
 <ul class="list-group list-group-flush">
-<li class="list-group-item">Name: {{.Name}} (id: {{.ID}})</li>
-<li class="list-group-item">Team: <a href="{{WebAPIPath}}/team/{{.TeamID}}/edit">{{.Team}}</a></li>
+<li class="list-group-item"><strong>Name:</strong> {{.Name}} (id: {{.ID}})</li>
+<li class="list-group-item"><strong>Team:</strong> <a href="{{WebAPIPath}}/team/{{.TeamID}}/edit">{{.Team}}</a></li>
 <li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}/stock">Stock Intel Link</a></li>
+<li class="list-group-item"><textarea onChange="setopinfo({{.ID}}, this)">Op info will go here</textarea></a></li>
 </ul>
+</div>
 </div>
 
 <div class="card">
@@ -43,13 +47,13 @@
      <span class="col-sm-2"><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></span>
      <span class="col-sm-1">{{.Distance}} KM</span>
      <span class="col-sm-3"><form action="#">{{OpUserMenu .AssignedToID $teamID .ID "agentAssignLink"}}</form></span>
-     <span class="col-sm-3"><form action="#"><input type="text" name="desc" value="{{.Desc}}" onchange="assignLinkDesc({{.ID}}, this)"></form></span>
+     <span class="col-sm-3"><form action="#"><input type="text" name="desc" value="{{.Desc}}" onChange="assignLinkDesc({{.ID}}, this)"></form></span>
   </div>
 {{end}}
  </div>
 </div>
 </div>
-</div>
+
 
 <div class="card mb-2">
 <div class="card-header">Markers</div>
@@ -67,9 +71,9 @@
 	{{range .Markers}}
 		<tr>
 		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.PortalID}}">{{.Portal}}</a></td>
-		<td>{{.Type}}</td>
+		<td><div class="{{.Type}}">{{.Type}}</div></td>
 		<td><form action="#">{{OpUserMenu .AssignedToID $teamID .ID "agentAssignMarker"}}</form></td>
-		<td><form action="#"><input type="text" name="comment" value="{{.Comment}}" onchange="assignMarkerComment({{.ID}}, this)"></form></td>
+		<td><form action="#"><input type="text" name="comment" value="{{.Comment}}" onChange="assignMarkerComment({{.ID}}, this)"></form></td>
 		</tr>
 	{{end}}
    </tbody>
@@ -97,7 +101,7 @@
 		{{range .OnhandList}}
 		<tr>
 		<td></td>
-		<td>{{.Gid}}</td>
+		<td>{{.Agent}}</td>
 		<td>{{.Onhand}}</form></td>
 		</tr>
 		{{end}}
@@ -119,9 +123,11 @@
     </tr>
    </thead>
    <tbody>
+   <tr>
      <td>TBD</td>
      <td>TBD</td>
      <td>TBD</td>
+   </tr>
    </tbody>
   </table>
 </div>
@@ -136,6 +142,7 @@
      <tr><td><form action="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/chgrp">{{TeamMenu .Gid $teamID}} <input type="submit" name="Change Team" value="Change Team"></form></td></tr>
    </tbody>
   </table>
+</div>
 </div>
 </div>
 		<!-- content ends here -->				
@@ -176,7 +183,7 @@ function agentAssignLink(id, sel)
         if (xhr.status === 200) {
             /* xxx */
 	} else {
-	    alert(res.Error)
+	    alert(xhr.responseText)
 	}
     }
     xhr.send(encodeURI('agent=' + sel.value));
@@ -192,7 +199,7 @@ function agentAssignMarker(id, sel)
         if (xhr.status === 200) {
             /* xxx */
 	} else {
-	    alert(res.Error)
+	    alert(xhr.responseText)
 	}
     }
     xhr.send(encodeURI('agent=' + sel.value));
@@ -208,7 +215,7 @@ function assignLinkDesc(id, sel)
         if (xhr.status === 200) {
             /* xxx */
 	} else {
-	    alert(res.Error)
+	    alert(xhr.responseText)
 	}
     }
     xhr.send(encodeURI('desc=' + sel.value));
@@ -224,10 +231,26 @@ function assignMarkerComment(id, sel)
         if (xhr.status === 200) {
             /* xxx */
 	} else {
-	    alert(res.Error)
+	    alert(xhr.responseText)
 	}
     }
     xhr.send(encodeURI('comment=' + sel.value));
+}
+
+function setopinfo(id, sel)
+{
+    xhr = new XMLHttpRequest();
+    xhr.open('POST', "/api/v1/draw/{{.ID}}/info");
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        var res = JSON.parse(xhr.responseText);
+        if (xhr.status === 200) {
+            /* xxx */
+	} else {
+	    alert(xhr.responseText)
+	}
+    }
+    xhr.send(encodeURI('info=' + sel.value));
 }
 
 </script>

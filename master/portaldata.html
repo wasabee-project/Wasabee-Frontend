@@ -16,8 +16,13 @@
 <div class="card-header">Portal: {{.Name}}</div>
 <div class="card-body">
 <div><a href="https://intel.ingress.com/intel?pll={{.Lat}},{{.Lon}}">intel</a></div>
+{{if .OpOwner}}
 <div>Comment: <input type="text" name="comment" value="{{.Comment}}" onchange="assignPortalComment(this)"></div>
 <div>Hardness: <input type="text" name="hardness" value="{{.Hardness}}" onchange="assignPortalHardness(this)"></div>
+{{else}}
+<div>Comment: {{.Comment}}</div>
+<div>Hardness: {{.Hardness}}</div>
+{{end}}
 </div>
 <!-- content ends here -->				
 					</div>
@@ -32,18 +37,27 @@
 
 {{template "footer"}}
 {{template "bootstrapjs"}}
+{{if .OpOwner}}
 <script>
 function assignPortalComment(sel)
 {
     xhr = new XMLHttpRequest();
-    xhr.open('POST', "/api/v1/draw/{{.ID}}/portal/{{.ID}}/comment");
+    xhr.open('POST', "/api/v1/draw/{{.OpID}}/portal/{{.ID}}/comment");
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
+    	sel.setAttribute("disabled","true");
         var res = JSON.parse(xhr.responseText);
         if (xhr.status === 200) {
-            /* xxx */
+	    sleep(100).then(function() {
+	        sel.style.backgroundColor = "green"
+	        sleep(500).then(function() {
+	            sel.style.backgroundColor = "white"
+	            sel.removeAttribute("disabled");
+	        });
+	    });
 	} else {
-	    alert(res.Error)
+	    sel.style.backgroundColor = "#999"
+	    alert(xhr.responseText)
 	}
     }
     xhr.send(encodeURI('comment=' + sel.value));
@@ -51,20 +65,34 @@ function assignPortalComment(sel)
 
 function assignPortalHardness(sel)
 {
+    sel.style.backgroundColor = "red";
+    sel.setAttribute("disabled","true");
     xhr = new XMLHttpRequest();
-    xhr.open('POST', "/api/v1/draw/{{.ID}}/portal/{{.ID}}/hardness");
+    xhr.open('POST', "/api/v1/draw/{{.OpID}}/portal/{{.ID}}/hardness");
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
         var res = JSON.parse(xhr.responseText);
         if (xhr.status === 200) {
-            /* xxx */
+	    sleep(100).then(function() {
+	        sel.style.backgroundColor = "green"
+	        sleep(500).then(function() {
+	            sel.style.backgroundColor = "white"
+	            sel.removeAttribute("disabled");
+	        });
+	    });
 	} else {
-	    alert(res.Error)
+	    sel.style.backgroundColor = "#999"
+	    alert(xhr.responseText)
 	}
     }
-    xhr.send(encodeURI('comment=' + sel.value));
+    xhr.send(encodeURI('hardness=' + sel.value));
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 </script>
+{{end}}
 </body>
 </html>
 {{end}}

@@ -17,32 +17,30 @@
 <div class="card mb-2">
 <div class="card-header">My Assignments</div>
 <div class="card-body">
-<small>You have assignments in the following operations.</small>
-</div>
+<em>You have assignments in the following operations.</em>
   <ul class="list-group list-group-flush">
 	{{range .Assignments}}
 		<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.OpID}}"><strong>{{.OperationName}}</strong> ({{.Type}})</a></li>
 	{{end}}
   </ul>
 </div>
-
 <div class="card mb-2">
 <div class="card-header">Operations</div>
 <div class="card-body">
-<small>Disable inactive teams to hide operations.</small>
-</div>
+<em>Disable inactive teams to hide operations.</em>
   <ul class="list-group list-group-flush">
 	{{range .Ops}}
 		<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}"><strong>{{.Name}}</strong></a> ({{.TeamName}})</li>
 	{{end}}
   </ul>
 </div>
+</div>
+</div>
 
 <div class="card mb-2">
 <div class="card-header">Teams</div>
 <div class="card-body">
-<small>Disable inactive teams. It is good opsec and reduces data transfer. If you use OneTracks and want to submit waypoints, you must set a primary team.</small>
-</div>
+<em>Disable inactive teams. It is good opsec and reduces data transfer. If you use OneTracks and want to submit waypoints, you must set a primary team.</em>
   <ul class="list-group list-group-flush">
 	{{range .Teams}}
 		<li class="list-group-item"><strong>{{.Name}}</strong> <span class="state">({{.State}})</span>
@@ -65,11 +63,11 @@
 	{{end}}
   </ul>
 </div>
+</div>
 
 <div class="card mb-2">
   <div class="card-header">My Teams</div>
   <div class="card-body">
-  </div>
   <ul class="list-group list-group-flush">
 {{range .OwnedTeams}}
     <li class="list-group-item">
@@ -83,6 +81,7 @@
     </form>
   </li>
   </ul>
+  </div>
 </div>
 </div>
 		<!-- content ends here -->				

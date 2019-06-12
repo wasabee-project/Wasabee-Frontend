@@ -16,7 +16,7 @@
 <div class="content-area">
 <div class="card mb-2">
 <div class="card-header">Current Operations I Own</div>
-<div class="card-body"><p>Operation creation should take place in the IITC plug-in. If you own any operations, they will (eventually) display here.</p>
+<div class="card-body"><p><em>Operation creation should take place in the IITC plug-in. If you own any operations, they will (eventually) display here.</em></p>
   <ul class="list-group list-group-flush">
 	{{range .OwnedOps}}
 		<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}"><strong>{{.Name}}</strong></a> ({{.TeamName}})</li>

@@ -12,20 +12,23 @@
 				<div class="col-lg-12">
 					<div class="content-section-a">
 <!-- content starts here -->
+<h1>Settings</h1>
+<div class="content-area">
 {{if (TGRunning)}}
 <div class="card mb-2">
 <div class="card-header">Telegram</div>
 <div class="card-body">
 </div>
   <ul class="list-group list-group-flush">
+  	<li class="list-group-item">
 {{if (.Telegram.ID) }}
-		<li class="list-group-item">ID: {{.Telegram.UserName}} ({{.Telegram.ID}})</li>
+		<strong>ID:</strong> <span class="agent-name">{{.Telegram.UserName}}</span> ({{.Telegram.ID}})
 {{end}}
 {{if (.Telegram.Verified) }}
-		<li class="list-group-item">Status: Verified.</li>
+		<p><strong>Status:</strong> Verified.</p>
 {{else}}
-		<li class="list-group-item">Status: Not Verified.</li>
-		<li class="list-group-item">Instructions:
+		<p><strong>Status:</strong> Not Verified.</p>
+		<p><strong>Instructions:</strong> </p>
     {{if (.Telegram.Authtoken) }}
     <div class="alert alert-suggess" role="alert">
         Tell the bot (<a href="tg://resolve?domain={{ TGGetBotName }}">@{{ TGGetBotName }}</a>) <a href="https://telegram.me/{{ TGGetBotName }}?start={{.Telegram.Authtoken}}">{{.Telegram.Authtoken}}</a> to get verified.
@@ -42,22 +45,20 @@
 
 <div class="card mb-2">
 <div class="card-header">Agent Info</div>
-<div class="card-body"></div>
+<div class="card-body">
 <ul class="list-group list-group-flush">
-<li class="list-group-item">Location Share Key: {{.LocationKey}}
-<br/>
-<small>This is the information you will need to give to your operator to be invited on to the op team. Once you are invited onto the team, you will need to enable the team (below). You can disable a team at any time.</small>
-<small><a href="{{WebAPIPath}}/me?newlockey=y">Request a new LocKey</a> (because Frank didn't like his)
+<li class="list-group-item"><strong>Location Share Key:</strong> <span class="agent-name">{{.LocationKey}}</span>
+<p><em>This is the information you will need to give to your operator to be invited on to the op team. Once you are invited onto the team, you will need to enable the team (below). You can disable a team at any time.</em></p>
+<p><a href="{{WebAPIPath}}/me?newlockey=y">Request a new LocKey</a></p>
 </li>
-<li class="list-group-item">Display Name: {{.IngressName}}
-<br/>
-<small>This is how you are shown on the maps. This information should only be trusted for agents who are verified at <a href="https://v.enl.one/">V</a> or <a href="https://enlightened.rocks">.rocks</a></small>
+<li class="list-group-item"><strong>Display Name:</strong> <span class="agent-name">{{.IngressName}}</span>
+<p><em>This is how you are shown on the maps. This information should only be trusted for agents who are verified at <a href="https://v.enl.one/">V</a> or <a href="https://enlightened.rocks">.rocks</a></em></p>
 </li>
 {{if VEnlOne}}
 {{if .VVerified}}
-<li class="list-group-item"><a href="https://v.enl.one/">V Status:</a> <a href="https://v.enl.one/profile/{{.Vid}}">Verified</a></li>
-<li class="list-group-item"><a href="https://raid.enl.one/">Checking RAID for location data:</a> {{.RAID}}<br />
-<small>RAID is an ENL Android/iPhone app which can share location data. We are still researching the exact configuration to make this work. If you are a RAID user and do not want to use OwnTracks, we can get RAID data. OwnTracks will give more up-to-date information to the operator since there is a lag in our polling the RAID servers. If a single polling cycle returns an error for you, this value will revert to disabled. <a href="/api/v1/me/statuslocation?sl=On">Enable</a></small>
+<li class="list-group-item"><strong><a href="https://v.enl.one/">V Status:</a></strong> <a href="https://v.enl.one/profile/{{.Vid}}">Verified</a></li>
+<li class="list-group-item"><strong><a href="https://raid.enl.one/">Checking RAID for location data:</a></strong> {{.RAID}}
+<p><em>RAID is an ENL Android/iPhone app which can share location data. We are still researching the exact configuration to make this work. If you are a RAID user and do not want to use OwnTracks, we can get RAID data. OwnTracks will give more up-to-date information to the operator since there is a lag in our polling the RAID servers. If a single polling cycle returns an error for you, this value will revert to disabled. <a href="/api/v1/me/statuslocation?sl=On">Enable</a></em></p>
 </li>
 {{else}}
 <li class="list-group-item"><a href="https://v.enl.one/">V Status:</a> Not Verified</li>
@@ -70,27 +71,27 @@
 {{end}}
 {{end}}
 {{if EnlRocks}}
-<li class="list-group-item"><a href="https://enlightened.rocks/">.Rocks Verified:</a> <a href="http://enlightened.rocks/me">{{.RocksVerified}}</a><br />
-<small>.Rocks verification typically only takes place in relationship to anomolies. Lack of verification does not mean you don't have a .rocks account, it just means you've not been verified at an anomoly event</small>
+<li class="list-group-item"><strong><a href="https://enlightened.rocks/">.Rocks Verified:</a></strong> <a href="http://enlightened.rocks/me">{{.RocksVerified}}</a>
+<p><em>.Rocks verification typically only takes place in relationship to anomolies. Lack of verification does not mean you don't have a .rocks account, it just means you've not been verified at an anomaly event</em></p>
 </li>
 {{end}}
+</ul>
+</div>
 </div>
 
 <div class="card mb-2">
 <div class="card-header"><a href="https://owntracks.org">OwnTracks</a> Info</div>
-<div class="card-body"></div>
+<div class="card-body">
   <ul class="list-group list-group-flush">
-<li class="list-group-item">OwnTracks Mode: Private HTTP
-<br/>
-<small>MQTT is not currently supported.</small>
+<li class="list-group-item"><strong>OwnTracks Mode:</strong> Pri
+<p><em>MQTT is not currently supported.</em></p>
 </li>
-<li class="list-group-item">OwnTracks Username: {{.LocationKey}}
-<br/>
-<small>Use this value in the OwnTracks app.</small>
+<li class="list-group-item"><strong>OwnTracks Username:</strong> <span class="agent-name">{{.LocationKey}}</span>
+<p><em>Use this value in the OwnTracks app.</em></p>
 </li>
-<li class="list-group-item">OwnTracks Password:
+<li class="list-group-item"><strong>OwnTracks Password:</strong>
 {{if eq .OwnTracksPW "" }}
-  <h4>Not yet configured</h4> : You will need to configure a password in order to use OwnTracks
+  <strong>Not yet configured:</strong> <em>You will need to configure a password in order to use OwnTracks.</em>
 {{else}}
   Configured
 {{end}}
@@ -101,11 +102,11 @@
 <input type="submit" name="update" value="update OT Password" />
 </form>
 </li>
-<li class="list-group-item">OwnTracks URL: {{ Webroot }}/OwnTracks
-<br />
-<small>Use this URL in the <a href="https://owntracks.org">OneTracks app</a>. Device ID can be anything. Tracker ID can be any two-letter code. Ask you operator if she has any preference.</small>
+<li class="list-group-item"><strong>OwnTracks URL:</strong> {{ Webroot }}/OwnTracks
+<p><em>Use this URL in the <a href="https://owntracks.org">OneTracks app</a>. Device ID can be anything. Tracker ID can be any two-letter code. Ask you operator if she has any preference.</em></p>
 </li>
 </ul>
+</div>
 </div>
 {{end}}
 
@@ -121,7 +122,7 @@ Lon: <input type="text" name="lon" value="0" id="lon" />
         </li>
   </ul>
 </div>
-	
+</div>	
 		<!-- content ends here -->				
 						
 					</div>

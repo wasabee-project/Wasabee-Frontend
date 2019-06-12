@@ -37,6 +37,9 @@ h1	{
 .state	{
 	color:#c3c;
 }
+.alert	{
+	color:#c03!important;
+}
 a.delete	{
 	color:c03!important;
 }
@@ -48,16 +51,19 @@ a.delete:hover	{
 }
 li.list-group-item	{
 	font-weight:normal;
-	border-color:#fff;
+	border:none;
+	padding-bottom:4px;
 }
 li.list-group-item a:hover{
-	color:#096;
-	text-decoration:underline;
+	border-bottom:1px solid #3c9;
+	text-decoration:none;
 }
 li.list-group-item small	{
 	font-weight:normal;
 }
-
+li.list-group-item p	{
+	margin-bottom:0;
+}
 footer	{
 	background-image:url(/static/img/bee-glasses.png)!important;
 	background-position:left;
@@ -68,4 +74,29 @@ footer	{
 }
 .text-muted	{
 	font-weight:normal;
+}
+.agent-name	{
+	color:#096;
+	padding:0 4px 0 4px;
+}
+
+.DestroyPortalAlert	{
+	color:#903;
+	background-image:url(/static/img/exclamation.png)!important;
+	background-position:left;
+	background-repeat:no-repeat;
+	padding-left:22px;
+}
+.LetDecayPortalAlert	{
+	color:#333;
+	background-image:url(/static/img/no-go.png)!important;
+	background-position:left;
+	background-repeat:no-repeat;
+	padding-left:22px;
+}
+.UseVirusAlert	{
+	background-image:url(/static/img/virus.png)!important;
+	background-position:left;
+	background-repeat:no-repeat;
+	padding-left:22px;
 }

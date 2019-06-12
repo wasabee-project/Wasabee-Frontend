@@ -46,7 +46,7 @@
 		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.FromID}}">{{.From}}</a></td>
 		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></td>
 		<td>{{.Distance}}km (level #)</td>
-		<td><a href="{{WebAPIPath}}/agent/{{.AssignedToID}}">{{.AssignedTo}}</a></form></td>
+		<td><a href="{{WebAPIPath}}/agent/{{.AssignedToID}}" class="agent-name">{{.AssignedTo}}</a></form></td>
 		<td>{{.Desc}}</form></td>
 		</tr>
 	{{end}}
@@ -72,7 +72,7 @@
 		<tr>
 		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.PortalID}}">{{.Portal}}</a></td>
 		<td><div class="{{.Type}}">{{.Type}}</div></td>
-		<td><a href="{{WebAPIPath}}/agent/{{.AssignedToID}}">{{.AssignedTo}}</a></td>
+		<td><a href="{{WebAPIPath}}/agent/{{.AssignedToID}}" class="agent-name">{{.AssignedTo}}</a></td>
 		<td>{{.Comment}}</form></td>
 		</tr>
 	{{end}}
@@ -139,7 +139,10 @@ function keyOnHand(id, sel)
                 });
             });
 	    var ohid = document.getElementById("oh_" + id);
-	    ohid.innerHTML = (parseInt(ohid.getAttribute("oh"),10) - parseInt(ohid.getAttribute("ih"),10) + parseInt(sel.value, 10));
+	    newval = parseInt(sel.value, 10);
+	    if (isNaN(newval)) newval = 0; // @robely42 ... sigh
+	    if (newval < 0) newval = 0;
+	    ohid.innerHTML = (parseInt(ohid.getAttribute("oh"),10) - parseInt(ohid.getAttribute("ih"),10) + newval);
         } else {
 	    sel.style.backgroundColor="#999"
             alert(xhr.status + ": " + xhr.responseText)

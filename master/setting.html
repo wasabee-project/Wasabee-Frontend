@@ -48,11 +48,11 @@
 <div class="card-body">
 <ul class="list-group list-group-flush">
 <li class="list-group-item"><strong>Location Share Key:</strong> <span class="agent-name">{{.LocationKey}}</span>
-<p><em>This is the information you will need to give to your operator to be invited on to the op team. Once you are invited onto the team, you will need to enable the team (below). You can disable a team at any time.</em></p>
+<p><em>(legacy, only used for OwnTracks now).</em></p>
 <p><a href="{{WebAPIPath}}/me?newlockey=y">Request a new LocKey</a></p>
 </li>
 <li class="list-group-item"><strong>Display Name:</strong> <span class="agent-name">{{.IngressName}}</span>
-<p><em>This is how you are shown on the maps. This information should only be trusted for agents who are verified at <a href="https://v.enl.one/">V</a> or <a href="https://enlightened.rocks">.rocks</a></em></p>
+<p><em>This information comes from <a href="https://v.enl.one/">V</a> or <a href="https://enlightened.rocks">.rocks</a>. If you have an UnverifiedAgent_ name, please ensure your .Rocks or V information is correct.</em></p>
 </li>
 {{if VEnlOne}}
 {{if .VVerified}}
@@ -83,7 +83,7 @@
 <div class="card-header"><a href="https://owntracks.org">OwnTracks</a> Info</div>
 <div class="card-body">
   <ul class="list-group list-group-flush">
-<li class="list-group-item"><strong>OwnTracks Mode:</strong> Pri
+<li class="list-group-item"><strong>OwnTracks Mode:</strong> Private HTTPS
 <p><em>MQTT is not currently supported.</em></p>
 </li>
 <li class="list-group-item"><strong>OwnTracks Username:</strong> <span class="agent-name">{{.LocationKey}}</span>
@@ -114,6 +114,7 @@
   <div class="card-header">Manual Location Set</div>
   <div class="card-body">
 		<li class="list-group-item">
+<p><em>Use this to set your location if you are not using any of the other options (e.g. OwnTracks, Telegram)</em></p>
 <form action="{{WebAPIPath}}/me" method="get">
 Lat: <input type="text" name="lat" value="0" id="lat" />
 Lon: <input type="text" name="lon" value="0" id="lon" />

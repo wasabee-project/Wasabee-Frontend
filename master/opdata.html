@@ -101,7 +101,7 @@
 		{{range .OnhandList}}
 		<tr>
 		<td></td>
-		<td>{{.Agent}}</td>
+		<td><a href="{{WebAPIPath}}/agent/{{.Gid}}" class="agent-name">{{.Agent}}</a></td>
 		<td>{{.Onhand}}</form></td>
 		</tr>
 		{{end}}
@@ -168,6 +168,14 @@ var sortable = Sortable.create(linklist, {
       xhr = new XMLHttpRequest();
       xhr.open('POST', "/api/v1/draw/{{.ID}}/order");
       xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.onload = function() {
+        var res = JSON.parse(xhr.responseText);
+        if (xhr.status === 200) {
+	    /* update numbers */
+        } else {
+	    alert(xhr.responseText)
+	}
+      }
       xhr.send(encodeURI('order=' + order));
     }
   }
@@ -175,14 +183,22 @@ var sortable = Sortable.create(linklist, {
 
 function agentAssignLink(id, sel)
 {
+    sel.style.backgroundColor = "yellow";
+    sel.setAttribute("disabled","true");
     xhr = new XMLHttpRequest();
     xhr.open('POST', "/api/v1/draw/{{.ID}}/link/" + id + "/assign");
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
         var res = JSON.parse(xhr.responseText);
         if (xhr.status === 200) {
-            /* xxx */
-	} else {
+		sleep(100).then(function() {
+	        sel.style.backgroundColor = "green"
+	        sleep(500).then(function() {
+	            sel.style.backgroundColor = "white"
+	            sel.removeAttribute("disabled");
+	        });
+	    });
+        } else {
 	    alert(xhr.responseText)
 	}
     }
@@ -191,13 +207,21 @@ function agentAssignLink(id, sel)
 
 function agentAssignMarker(id, sel)
 {
+    sel.style.backgroundColor = "yellow";
+    sel.setAttribute("disabled","true");
     xhr = new XMLHttpRequest();
     xhr.open('POST', "/api/v1/draw/{{.ID}}/marker/" + id + "/assign");
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
         var res = JSON.parse(xhr.responseText);
         if (xhr.status === 200) {
-            /* xxx */
+		sleep(100).then(function() {
+	        sel.style.backgroundColor = "green"
+	        sleep(500).then(function() {
+	            sel.style.backgroundColor = "white"
+	            sel.removeAttribute("disabled");
+	        });
+	    });
 	} else {
 	    alert(xhr.responseText)
 	}
@@ -207,13 +231,21 @@ function agentAssignMarker(id, sel)
 
 function assignLinkDesc(id, sel)
 {
+    sel.style.backgroundColor = "yellow";
+    sel.setAttribute("disabled","true");
     xhr = new XMLHttpRequest();
     xhr.open('POST', "/api/v1/draw/{{.ID}}/link/" + id + "/desc");
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
         var res = JSON.parse(xhr.responseText);
         if (xhr.status === 200) {
-            /* xxx */
+		sleep(100).then(function() {
+	        sel.style.backgroundColor = "green"
+	        sleep(500).then(function() {
+	            sel.style.backgroundColor = "white"
+	            sel.removeAttribute("disabled");
+	        });
+	    });
 	} else {
 	    alert(xhr.responseText)
 	}
@@ -223,13 +255,21 @@ function assignLinkDesc(id, sel)
 
 function assignMarkerComment(id, sel)
 {
+    sel.style.backgroundColor = "yellow";
+    sel.setAttribute("disabled","true");
     xhr = new XMLHttpRequest();
     xhr.open('POST', "/api/v1/draw/{{.ID}}/marker/" + id + "/comment");
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
         var res = JSON.parse(xhr.responseText);
         if (xhr.status === 200) {
-            /* xxx */
+		sleep(100).then(function() {
+	        sel.style.backgroundColor = "green"
+	        sleep(500).then(function() {
+	            sel.style.backgroundColor = "white"
+	            sel.removeAttribute("disabled");
+	        });
+	    });
 	} else {
 	    alert(xhr.responseText)
 	}
@@ -239,13 +279,21 @@ function assignMarkerComment(id, sel)
 
 function setopinfo(id, sel)
 {
+    sel.style.backgroundColor = "yellow";
+    sel.setAttribute("disabled","true");
     xhr = new XMLHttpRequest();
     xhr.open('POST', "/api/v1/draw/{{.ID}}/info");
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
         var res = JSON.parse(xhr.responseText);
         if (xhr.status === 200) {
-            /* xxx */
+		sleep(100).then(function() {
+	        sel.style.backgroundColor = "green"
+	        sleep(500).then(function() {
+	            sel.style.backgroundColor = "white"
+	            sel.removeAttribute("disabled");
+	        });
+	    });
 	} else {
 	    alert(xhr.responseText)
 	}
@@ -253,6 +301,9 @@ function setopinfo(id, sel)
     xhr.send(encodeURI('info=' + sel.value));
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 </script>
 </body>
 </html>

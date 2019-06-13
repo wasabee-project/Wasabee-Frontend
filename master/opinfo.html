@@ -22,7 +22,7 @@
 <li class="list-group-item"><strong>Name:</strong> {{.Name}}</li>
 <li class="list-group-item"><strong>Team:</strong> <a href="{{WebAPIPath}}/team/{{.TeamID}}">{{.Team}}</a></li>
 <li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}/stock">Stock Intel Link</a></li>
-<li class="list-group-item"><strong>Comments:</strong></li>
+<li class="list-group-item"><strong>Op Info: {{.Comment}}</strong></li>
 </ul>
 </div>
 </div>
@@ -33,6 +33,7 @@
   <table class="table">
    <thead>
     <tr>
+     <th scope="col">Order</th>
      <th scope="col">From</th>
      <th scope="col">To</th>
      <th scope="col">Distance</th>
@@ -43,6 +44,7 @@
    <tbody>
 	{{range .Links}}
 		<tr>
+		<td>{{.ThrowOrder}}</td>
 		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.FromID}}">{{.From}}</a></td>
 		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></td>
 		<td>{{.Distance}}km (level #)</td>

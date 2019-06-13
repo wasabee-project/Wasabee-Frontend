@@ -23,7 +23,7 @@
 <li class="list-group-item"><strong>Name:</strong> {{.Name}} (id: {{.ID}})</li>
 <li class="list-group-item"><strong>Team:</strong> <a href="{{WebAPIPath}}/team/{{.TeamID}}/edit">{{.Team}}</a></li>
 <li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}/stock">Stock Intel Link</a></li>
-<li class="list-group-item"><textarea onChange="setopinfo({{.ID}}, this)">Op info will go here</textarea></a></li>
+<li class="list-group-item"><textarea onChange="setopinfo({{.ID}}, this)">{{.Comment}}</textarea></a></li>
 </ul>
 </div>
 </div>

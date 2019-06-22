@@ -21,14 +21,14 @@
 	{{ $rc := .RocksComm }}
 	{{range .Agent}}
         <li class="list-group-item"><a href="{{WebAPIPath}}/agent/{{.Gid}}">{{.Name}}</a> ({{.State}})
-		{{if not $rc}}<a href="{{WebAPIPath}}/team/{{printf "%s" $x}}/{{.LocKey}}/delete">Remove from team</a>{{end}}
+		{{if not $rc}}<a href="{{WebAPIPath}}/team/{{printf "%s" $x}}/{{.Gid}}/delete">Remove from team</a>{{end}}
 	</li>
 	{{end}}
 <li class="list-group-item">
 <form action="{{WebAPIPath}}/team/{{.ID}}" method="get">
 <input type="text" name="key" />
 <input type="submit" name="add" value="Add agent to team" />
-<small>You can use an Agent name, a GoogleID, a lockey, or an EnlID</small>
+<small>You can use an Agent name, a GoogleID, or an EnlID</small>
 </form>
 </li>
 </ul>

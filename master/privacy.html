@@ -29,11 +29,12 @@
 <p>When you log in via the Google login, you provide your consent that we may pull personal data from the Google API. We fetch the following fields for persistent storage in your account:</p>
 <ul>
 <li>Google-ID (a number unique to each Google user)</li>
+<li>The URL of your Google profile picture</li>
 <li>... that's it. No email, no name, nothing else</li>
 </ul>
 <p>When you log in via the Google login, you, provide consent that we may pull personal data from the <a href="https://v.enl.one/">V</a> and <a href="https://enlightened.rocks/">enlightened.rocks</a> websites. We fetch the following fields for persistent storage in your profile:</p>
 <ul>
-<li>Your Ingress agent name (V and .rocks)</li>
+<li>Your Ingress agent name (V and .rocks, enl.io only if neither V nor .rocks has it)</li>
 <li>Your Ingress agent level (V)</li>
 <li>Your status, such as being banned, flagged for cheating, a known member of the Resistance, etc. (V and .rocks)</li>
 <li>Your Telegram user ID (.rocks)</li>
@@ -51,7 +52,8 @@
 <div class="card mb-2">
 <div class="card-header">Hosting</div>
 <div class="card-body">
-<p>Your data is stored on servers in Atlanta, Georgia, USA, in datacenters with a high level of security. Database access is only possible for the website owner and not by the hosting company.</p>
+<p>Your data is stored on servers in Dallas, Texas, USA, in datacenters with a high level of security. Database access is only possible for the website owner and not by the hosting company.</p>
+<p>Location data is considered stale and purged after 4 hours. Location history is not saved, only the most recent datapoint is stored.</p>
 </div>
 </div>
 
@@ -61,7 +63,7 @@
 <p>Other agents <strong>on your teams</strong> may access your operation and location data. There is no "admin mode" to allow specific users access beyond what you explicitly permit through your team settings. The system administrators can access the database directly for maintainance purposes, but do so only when required for system operation. Location information is stored in different database tables from agent identification information; extra steps are required to associate location information with a particular agent.</p>
 <p>Other websites and third-party applications can access your information with the same level of protection as other users: they must be on your teams.</p>
 
-<p>WASABEE does not feature personal profile pages beyond Agent name, level and links to V and .rocks profiles.</p>
+<p>WASABEE does not feature personal profile pages beyond Agent name, Google profile picture, Ingress level and links to V and .rocks profiles.</p>
 </div>
 </div>
 

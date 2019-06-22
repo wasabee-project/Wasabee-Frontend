@@ -43,7 +43,7 @@
 <em>Disable inactive teams. It is good opsec and reduces data transfer. If you use OneTracks and want to submit waypoints, you must set a primary team.</em>
   <ul class="list-group list-group-flush">
 	{{range .Teams}}
-		<li class="list-group-item"><strong>{{.Name}}</strong> <span class="state">({{.State}})</span>
+		<li class="list-group-item"><a href="{{WebAPIPath}}/team/{{.ID}}"><strong>{{.Name}}</strong></a> <span class="state">({{.State}})</span>
 {{if eq .State "Off"}}
 			[ <a href="{{WebAPIPath}}/me/{{.ID}}?state=On">On</a> ]
 {{else}}

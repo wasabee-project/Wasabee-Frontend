@@ -23,6 +23,7 @@
 <li class="list-group-item"><strong>Name:</strong> {{.Name}} (id: {{.ID}})</li>
 <li class="list-group-item"><strong>Team:</strong> <a href="{{WebAPIPath}}/team/{{.TeamID}}/edit">{{.Team}}</a></li>
 <li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}/stock">Stock Intel Link</a></li>
+<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}?lite=y">User View</a></li>
 <li class="list-group-item"><textarea onChange="setopinfo({{.ID}}, this)">{{.Comment}}</textarea></a></li>
 </ul>
 </div>
@@ -31,26 +32,32 @@
 <div class="card">
 <div class="card-header">Links</div>
 <div class="card-body">
- <div class="list-group container-fluid" id="linklist">
-  <div class="list-group-item row" id="linklist-header" data-id="000">
-     <span class="col-sm-1">Throw Order</span>
-     <span class="col-sm-2">From</span>
-     <span class="col-sm-2">To</span>
-     <span class="col-sm-1">Distance</span>
-     <span class="col-sm-3">Assigned To</span>
-     <span class="col-sm-3">Description</span>
-  </div>
+ <table>
+  <thead>
+    <tr>
+     <td>&nbsp;</td>
+     <td>Throw Order</td>
+     <td>From</td>
+     <td>To</td>
+     <td>Distance</td>
+     <td>Assigned To</td>
+     <td>Description</td>
+   </tr>
+  </thead>
+  <tbody id="linklist">
 {{range .Links}}
-  <div class="list-group-item row" id="{{.ID}}" data-id="{{.ID}}">
-     <span class="col-sm-1"><span id="throworder-{{$.ID}}">{{.ThrowOrder}}</span></form></span>
-     <span class="col-sm-2"><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.FromID}}">{{.From}}</a></span>
-     <span class="col-sm-2"><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></span>
-     <span class="col-sm-1">{{.Distance}} KM</span>
-     <span class="col-sm-3"><form action="#">{{OpUserMenu .AssignedToID $teamID .ID "agentAssignLink"}}</form></span>
-     <span class="col-sm-3"><form action="#"><input type="text" name="desc" value="{{.Desc}}" onChange="assignLinkDesc({{.ID}}, this)"></form></span>
-  </div>
+  <tr id="{{.ID}}" data-id="{{.ID}}">
+     <td><span class="handle"><img src="/static/img/reorder.svg" alt="reorder" style="width=:20px;height:20px;text-align:center;"></span></form></td>
+     <td><span id="throworder-{{$.ID}}">{{.ThrowOrder}}</span></form></td>
+     <td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.FromID}}">{{.From}}</a></td>
+     <td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></td>
+     <td>{{.Distance}} KM</td>
+     <td><form action="#">{{OpUserMenu .AssignedToID $teamID .ID "agentAssignLink"}}</form></td>
+     <td><form action="#"><input type="text" name="desc" value="{{.Desc}}" onChange="assignLinkDesc({{.ID}}, this)"></form></td>
+  </tr>
 {{end}}
- </div>
+ </tbody>
+ </table>
 </div>
 </div>
 
@@ -123,11 +130,13 @@
     </tr>
    </thead>
    <tbody>
+   {{range .Capsules}}
    <tr>
-     <td>TBD</td>
-     <td>TBD</td>
-     <td>TBD</td>
+     <td><a href="{{WebAPIPath}}/agent/{{.Gid}}" class="agent-name">{{.Agent}}</a></td>
+     <td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ID}}">{{.Portal}}</a></td>
+     <td>{{.Required}}</td>
    </tr>
+   {{end}}
    </tbody>
   </table>
 </div>
@@ -161,6 +170,10 @@
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.js"></script>
 <script>
 var sortable = Sortable.create(linklist, {
+  multiDrag: true,
+  selectedClass: 'selected',
+  handle: ".handle",
+  animation: 150,
   store: {
     set: function (sortable) {
       var order = sortable.toArray();

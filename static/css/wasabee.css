@@ -100,3 +100,25 @@ footer	{
 	background-repeat:no-repeat;
 	padding-left:22px;
 }
+
+.selected {
+	border-bottom: 1px solid #0f0;
+	background-color:#3f3;
+}
+
+.handle {
+	background-image:url(/static/img/reorder.svg)!important;
+	background-position:left;
+	background-repeat:no-repeat;
+	padding-left:10px;
+	padding-right:10px;
+}
+
+a.tooltip-display	{
+	color:#666;
+	border-bottom: 1px dotted #666;
+}
+a.tooltip-display:hover	{
+	color:#666;
+	border-bottom: 1px dotted #3C9!important;
+}

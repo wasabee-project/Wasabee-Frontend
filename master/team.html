@@ -17,7 +17,9 @@
 <div class="card-body"></div>
 <ul class="list-group list-group-flush">
 	{{range .Agent}}
-        <li class="list-group-item"><a href="{{WebAPIPath}}/agent/{{.Gid}}">{{.Name}}</a> ({{.State}})</li>
+        <li class="list-group-item"><a href="{{WebAPIPath}}/agent/{{.Gid}}">{{.Name}}</a> 
+        {{if .State}} <img src="/static/img/checkmark.png" alt="has team enabled"> {{end}}
+        </li>
 	{{end}}
 </div>
 <!-- content ends here -->				

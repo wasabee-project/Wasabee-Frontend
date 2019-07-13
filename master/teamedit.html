@@ -20,7 +20,8 @@
 	{{ $x := .ID }}
 	{{ $rc := .RocksComm }}
 	{{range .Agent}}
-        <li class="list-group-item"><a href="{{WebAPIPath}}/agent/{{.Gid}}">{{.Name}}</a> ({{.State}})
+        <li class="list-group-item"><a href="{{WebAPIPath}}/agent/{{.Gid}}">{{.Name}}</a>
+                {{if .State}} <img src="/static/img/checkmark.png" alt="has team enabled"> {{end}}
 		{{if not $rc}}<a href="{{WebAPIPath}}/team/{{printf "%s" $x}}/{{.Gid}}/delete">Remove from team</a>{{end}}
 	</li>
 	{{end}}

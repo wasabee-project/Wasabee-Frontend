@@ -40,19 +40,14 @@
 <div class="card mb-2">
 <div class="card-header">Teams</div>
 <div class="card-body">
-<em>Disable inactive teams. It is good opsec and reduces data transfer. If you use OneTracks and want to submit waypoints, you must set a primary team.</em>
+<em>Disable inactive teams. It is good opsec and reduces data transfer.</em>
   <ul class="list-group list-group-flush">
 	{{range .Teams}}
 		<li class="list-group-item"><a href="{{WebAPIPath}}/team/{{.ID}}"><strong>{{.Name}}</strong></a> <span class="state">({{.State}})</span>
 {{if eq .State "Off"}}
 			[ <a href="{{WebAPIPath}}/me/{{.ID}}?state=On">On</a> ]
 {{else}}
-    {{if eq .State "Primary"}}
 			[ <a href="{{WebAPIPath}}/me/{{.ID}}?state=Off">Off</a> ]
-    {{else}}
-			[ <a href="{{WebAPIPath}}/me/{{.ID}}?state=Off">Off</a> |
-			<a href="{{WebAPIPath}}/me/{{.ID}}?state=Primary">Primary</a> ]
-    {{end}}
 {{end}}
 {{if .RocksComm}}
 			<span class="add-left-space"><em><a href="https://enlightened.rocks/comm/{{.RocksComm}}">This team is managed at enlightened.rocks</a></em></span>

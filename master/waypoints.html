@@ -18,7 +18,7 @@
 <div class="card-header">By Distance</div>
 <div class="card-body"></div>
 <ul class="list-group list-group-flush">
-	{{range .Waypoints}}
+	{{range .Markers}}
         <li class="list-group-item">{{.Desc}} {{.Distance}}km (Type : {{.MarkerType}} ) <br />
 		[ <a href="https://maps.google.com/?ll={{.Lat}},{{.Lon}}">Google Maps</a> | <a href="https://intel.ingress.com/intel?ll={{.Lat}},{{.Lon}}">Intel</a> ]
 		</li>

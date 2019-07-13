@@ -1,5 +1,5 @@
 {{define "default"}}
-Please see {{ Webroot }}{{WebAPIPath}}me/settings for details
+Please see {{ Webroot }}{{WebAPIPath}}/me/settings for details
 {{end}}
 
 {{define "help"}}
@@ -11,16 +11,16 @@ Please see {{ Webroot }}{{WebAPIPath}}/me/settings for details (help)
 
 {{define "InitOneFail"}}
 *Please send your Location Share Key to begin verification*
-See {{ Webroot }}/me for details
+See {{ Webroot }}{{WebAPIPath}}/me/settings for details
 {{end}}
 
 {{define "InitOneSuccess"}}
 *You have sent your Location Share Key correctly*
-Now, you need to send your verification code from {{ Webroot }}{{WebAPIPath}}me/settings
+Now, you need to send your verification code from {{ Webroot }}{{WebAPIPath}}/me/settings
 
 *You might need to reload the page to see the verifcation code, it will be listed in the same place as before.*
 
-See {{ Webroot }}/me for details
+See {{ Webroot }}{{WebAPIPath}}/me/settings for details
 {{end}}
 
 {{define "InitTwoFail"}}
@@ -60,7 +60,7 @@ Nearest Farms
 Nearest Targets
 {{- range .Waypoints}}
 {{- if ne .MarkerType "OTWaypointFarmAlert"}}
-{{.Desc}}: {{.Distance}}km [Google Maps](http://maps.google.com/?q={{.Lat}},{{.Lon}}) | [Apple Maps](http://maps.apple.com/?q={{.Lat}},{{.Lon}}) | [Intel](https://intel.ingress.com/intel?ll={{.Lat}},{{.Lon}}&z=12&pll={{.Lat}},{{.Lon}}) {{.MarkerType}}{{end -}}
+{{.Desc}}: {{.Distance}}km [Google Maps](http://maps.google.com/?q={{.Lat}},{{.Lon}}) | [Apple Maps](http://maps.apple.com/?q={{.Lat}},{{.Lon}}) | [Intel](https://intel.ingress.com/intel?ll={{.Lat}},{{.Lon}}&z=12&pll={{.Lat}},{{.Lon}}) {{.MarkerType}}{{end}}
 {{end}}
 {{end}}
 

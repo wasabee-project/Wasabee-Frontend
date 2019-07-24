@@ -51,7 +51,7 @@
      <td><span id="throworder-{{$.ID}}">{{.ThrowOrder}}</span></form></td>
      <td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.FromID}}">{{.From}}</a></td>
      <td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></td>
-     <td>{{.Distance}} KM</td>
+     <td>{{.Distance}}km (level: {{printf "%.1f" .MinPortalLevel}}) </td>
      <td><form action="#">{{OpUserMenu .AssignedToID $teamID .ID "agentAssignLink"}}</form></td>
      <td><form action="#"><input type="text" name="desc" value="{{.Desc}}" onChange="assignLinkDesc({{.ID}}, this)"></form></td>
   </tr>

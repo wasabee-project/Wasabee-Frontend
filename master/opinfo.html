@@ -48,7 +48,7 @@
 		<td>{{.ThrowOrder}}</td>
 		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.FromID}}">{{.From}}</a></td>
 		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></td>
-		<td>{{.Distance}}km (level #)</td>
+		<td>{{.Distance}}km (level: {{$mpl := .MinPortalLevel}}{{printf "%.1f" $mpl}})</td>
 		<td><a href="{{WebAPIPath}}/agent/{{.AssignedToID}}" class="agent-name">{{.AssignedTo}}</a></form></td>
 		<td>{{.Desc}}</form></td>
 		</tr>
@@ -67,6 +67,7 @@
      <th scope="col">Portal</th>
      <th scope="col">Type</th>
      <th scope="col">Assigned To</th>
+     <th scope="col">Status</th>
      <th scope="col">Comment</th>
     </tr>
    </thead>
@@ -76,6 +77,7 @@
 		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.PortalID}}">{{.Portal}}</a></td>
 		<td><div class="{{.Type}}">{{.Type}}</div></td>
 		<td><a href="{{WebAPIPath}}/agent/{{.AssignedToID}}" class="agent-name">{{.AssignedTo}}</a></td>
+		<td>{{.State}}</form></td>
 		<td>{{.Comment}}</form></td>
 		</tr>
 	{{end}}

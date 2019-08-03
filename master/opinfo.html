@@ -40,6 +40,7 @@
      <th scope="col">Distance</th>
      <th scope="col">Assigned To</th>
      <th scope="col">Description</th>
+     <th scope="col">Completed</th>
     </tr>
    </thead>
    <tbody>
@@ -50,7 +51,8 @@
 		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></td>
 		<td>{{.Distance}}km (level: {{$mpl := .MinPortalLevel}}{{printf "%.1f" $mpl}})</td>
 		<td><a href="{{WebAPIPath}}/agent/{{.AssignedToID}}" class="agent-name">{{.AssignedTo}}</a></form></td>
-		<td>{{.Desc}}</form></td>
+		<td>{{.Desc}}</td>
+		<td>{{if .Completed}} <img src="/static/img/checkmark.png" alt="completed">{{end}}</td>
 		</tr>
 	{{end}}
    </tbody>

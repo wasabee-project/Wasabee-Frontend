@@ -50,7 +50,7 @@
 <div class="card-body">
 <ul class="list-group list-group-flush">
 <li class="list-group-item"><strong>Location Share Key:</strong> <span class="agent-name">{{.LocationKey}}</span>
-<p><em>(legacy, only used for OwnTracks now).</em></p>
+<p><em>(legacy, Only used in telegram initialization now).</em></p>
 <p><a href="{{WebAPIPath}}/me?newlockey=y">Request a new LocKey</a></p>
 </li>
 <li class="list-group-item"><strong>Display Name:</strong> <span class="agent-name">{{.IngressName}}</span>
@@ -60,7 +60,7 @@
 {{if .VVerified}}
 <li class="list-group-item"><strong><a href="https://v.enl.one/">V Status:</a></strong> <a href="https://v.enl.one/profile/{{.Vid}}">Verified</a></li>
 <li class="list-group-item"><strong><a href="https://raid.enl.one/">Checking RAID for location data:</a></strong> {{.RAID}}
-<p><em><a href="#" class="tooltip-display" data-toggle="tooltip" data-placement="top" title="RAID is an ENL Android/iPhone app which can share location data. We are still researching the exact configuration to make this work. If you are a RAID user and do not want to use OwnTracks, we can get RAID data. OwnTracks will give more up-to-date information to the operator since there is a lag in our polling the RAID servers. If a single polling cycle returns an error for you, this value will revert to disabled.">What is RAID?</a></em> <a href="/api/v1/me/statuslocation?sl=On">Enable</a></em></p>
+<p><em><a href="#" class="tooltip-display" data-toggle="tooltip" data-placement="top" title="RAID is an ENL Android/iPhone app which can share location data. We are still researching the exact configuration to make this work. If you are a RAID user and do not want to use the Wasabee-Mobile app, we can get RAID data. Wasabee-Mobile will give more up-to-date information to the operator since there is a lag in our polling the RAID servers. If a single polling cycle returns an error for you, this value will revert to disabled.">What is RAID?</a></em> <a href="/api/v1/me/statuslocation?sl=On">Enable</a></em></p>
 </li>
 {{else}}
 <li class="list-group-item"><a href="https://v.enl.one/">V Status:</a> Not Verified</li>
@@ -81,35 +81,21 @@
 </div>
 </div>
 
+
 <div class="card mb-2">
-<div class="card-header"><a href="https://owntracks.org">OwnTracks</a> Info</div>
-<div class="card-body">
-  <ul class="list-group list-group-flush">
-<li class="list-group-item"><strong>OwnTracks Mode:</strong> Private HTTPS
-<p><em>MQTT is not currently supported.</em></p>
-</li>
-<li class="list-group-item"><strong>OwnTracks Username:</strong> <span class="agent-name">{{.LocationKey}}</span>
-<p><em>Use this value in the OwnTracks app.</em></p>
-</li>
-<li class="list-group-item"><strong>OwnTracks Password:</strong>
-{{if eq .OwnTracksPW "" }}
-  <strong>Not yet configured:</strong> <em>You will need to configure a password in order to use OwnTracks.</em>
-{{else}}
-  Configured
-{{end}}
-</li>
-<li class="list-group-item">
+  <div class="card-header">Manual Location Set</div>
+  <div class="card-body">
+		<li class="list-group-item">
+<p><em>Use this to set your location if you are not using any of the other options (e.g. Wasabee-Mobile, Telegram)</em></p>
 <form action="{{WebAPIPath}}/me" method="get">
-<input type="text" name="otpw" />
-<input type="submit" name="update" value="update OT Password" />
+Lat: <input type="text" name="lat" value="0" id="lat" />
+Lon: <input type="text" name="lon" value="0" id="lon" />
+<input type="submit" name="location" value="set location" />
 </form>
-</li>
-<li class="list-group-item"><strong>OwnTracks URL:</strong> {{ Webroot }}/OwnTracks
-<p><em>Use this URL in the <a href="https://owntracks.org">OneTracks app</a>. Device ID can be anything. Tracker ID can be any two-letter code. Ask you operator if she has any preference.</em></p>
-</li>
-</ul>
+        </li>
+  </ul>
 </div>
-</div>
+</div>	
 {{end}}
 		<!-- content ends here -->				
 						
@@ -124,6 +110,29 @@
 	<!-- /.intro-header -->
 
 {{template "footer"}}
+<script>
+function geoFindMe() {
+  const lat = document.querySelector('#lat');
+  const lon = document.querySelector('#lon');
+
+  function success(position) {
+	lat.value = position.coords.latitude;
+	lon.value = position.coords.longitude;
+  }
+
+  function error() {
+	lat.value = 'Unknown';
+	lon.value = 'Unknown';
+  }
+
+  if (navigator.geolocation) {
+	navigator.geolocation.getCurrentPosition(success, error);
+  }
+
+}
+document.querySelector('#lat').addEventListener('click', geoFindMe);
+document.querySelector('#lon').addEventListener('click', geoFindMe);
+</script>
 <script>
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()

@@ -42,6 +42,7 @@
      <td>Distance</td>
      <td>Assigned To</td>
      <td>Description</td>
+     <td>Completed</td>
    </tr>
   </thead>
   <tbody id="linklist">
@@ -54,6 +55,7 @@
      <td>{{.Distance}}km (level: {{printf "%.1f" .MinPortalLevel}}) </td>
      <td><form action="#">{{OpUserMenu .AssignedToID $teamID .ID "agentAssignLink"}}</form></td>
      <td><form action="#"><input type="text" name="desc" value="{{.Desc}}" onChange="assignLinkDesc({{.ID}}, this)"></form></td>
+     <td>{{if .Completed}} <img src="/static/img/checkmark.png" alt="completed"> {{end}}</td>
   </tr>
 {{end}}
  </tbody>
@@ -72,6 +74,7 @@
      <th scope="col">Type</th>
      <th scope="col">Assigned To</th>
      <th scope="col">Comment</th>
+     <th scope="col">Status</th>
     </tr>
    </thead>
    <tbody>
@@ -81,6 +84,7 @@
 		<td><div class="{{.Type}}">{{.Type}}</div></td>
 		<td><form action="#">{{OpUserMenu .AssignedToID $teamID .ID "agentAssignMarker"}}</form></td>
 		<td><form action="#"><input type="text" name="comment" value="{{.Comment}}" onChange="assignMarkerComment({{.ID}}, this)"></form></td>
+		<td> {{.State}} </td>
 		</tr>
 	{{end}}
    </tbody>

@@ -42,8 +42,9 @@ const firebaseConfig = {
   });
 
   messaging.onMessage((payload) => {
-    console.log('Message received. ', payload);
-    window.parent.postMessage(payload);
+    console.log('Firebase message received: ', payload);
+    // post the message to the IITC-hosted iframe.
+    window.parent.postMessage(payload, "https://intel.ingress.com");
   });
 
   function runit() {

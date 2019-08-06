@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset=utf-8 />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>fcmtesting</title>
+  <link rel="manifest" href="/static/firebase/manifest.json">
+</head>
+<body>
+<div>
+  <div<p>this screen intended to be loaded in an iframe</p></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-messaging.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDAjLWwHfSoIbCuwDuKI34qlbj2NW1KVJA",
+  authDomain: "phdevbin.firebaseapp.com",
+  databaseURL: "https://phdevbin.firebaseio.com",
+  projectId: "phdevbin",
+  storageBucket: "",
+  messagingSenderId: "269534461245",
+  appId: "1:269534461245:web:75ff60f80205d6da"
+};
+
+  firebase.initializeApp(firebaseConfig);
+  const messaging = firebase.messaging();
+  messaging.usePublicVapidKey('BEB7mMFzF4way3Scjrwt62mWvpQcPnSm2_8iJaxokgzt9DqZqqidQ1phjuqHciVvcVVK5uJtJw3Bg1Kt8Nw2-hk');
+  // requestPermission();
+  runit();
+
+  messaging.onTokenRefresh(() => {
+    messaging.getToken().then((refreshedToken) => {
+      console.log('Token refreshed.');
+      setTokenSentToServer(false);
+      sendTokenToServer(refreshedToken);
+    }).catch((err) => {
+      console.log('Unable to retrieve refreshed token ', err);
+    });
+  });
+
+  messaging.onMessage((payload) => {
+    console.log('Message received. ', payload);
+    window.parent.postMessage(payload);
+  });
+
+  function runit() {
+    messaging.getToken().then((currentToken) => {
+      if (currentToken) {
+        sendTokenToServer(currentToken);
+      } else {
+        console.log('No Instance ID token available. Requesting permission to generate one.');
+        setTokenSentToServer(false);
+	requestPermission();
+      }
+    }).catch((err) => {
+      console.log('An error occurred while retrieving token. ', err);
+      setTokenSentToServer(false);
+    });
+  }
+
+  function sendTokenToServer(currentToken) {
+    if (!isTokenSentToServer()) {
+      console.log('Sending token to server...');
+      sendTokenToWasabee(currentToken);
+      setTokenSentToServer(true);
+    } else {
+      console.log('Token already sent to server so won\'t send it again ' +
+          'unless it changes');
+    }
+  }
+
+  function isTokenSentToServer() {
+    return window.localStorage.getItem('sentToServer') === '1';
+  }
+
+  function setTokenSentToServer(sent) {
+    window.localStorage.setItem('sentToServer', sent ? '1' : '0');
+  }
+
+  function requestPermission() {
+    console.log('Requesting permission...');
+    Notification.requestPermission().then((permission) => {
+      if (permission === 'granted') {
+        console.log('Notification permission granted.');
+	runit(); // yes, recurse
+      } else {
+        console.log('Unable to get permission to notify.');
+      }
+    });
+  }
+
+  function sendTokenToWasabee(token) {
+    return new Promise(function(resolve, reject) {
+      var url = "https://server.wasabee.rocks/api/v1/me/firebase";
+      var req = new XMLHttpRequest();
+      req.open("POST", url, true);
+      req.withCredentials = true;
+      req.crossDomain = true;
+
+      req.onload = function() {
+        if (req.status === 200) {
+          console.log("token sent OK");
+          resolve();
+        } else {
+          reject(Error(req.statusText));
+        }
+      };
+      req.onerror = function() {
+        reject(Error("Network Error"));
+      };
+      req.send(token);
+    });
+  }
+</script>
+</body>
+</html>

@@ -15,15 +15,15 @@
 <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-messaging.js"></script>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDAjLWwHfSoIbCuwDuKI34qlbj2NW1KVJA",
-  authDomain: "phdevbin.firebaseapp.com",
-  databaseURL: "https://phdevbin.firebaseio.com",
-  projectId: "phdevbin",
-  storageBucket: "",
-  messagingSenderId: "269534461245",
-  appId: "1:269534461245:web:75ff60f80205d6da"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyDAjLWwHfSoIbCuwDuKI34qlbj2NW1KVJA",
+    authDomain: "phdevbin.firebaseapp.com",
+    databaseURL: "https://phdevbin.firebaseio.com",
+    projectId: "phdevbin",
+    storageBucket: "",
+    messagingSenderId: "269534461245",
+    appId: "1:269534461245:web:75ff60f80205d6da"
+  };
 
   firebase.initializeApp(firebaseConfig);
   const messaging = firebase.messaging();
@@ -39,6 +39,11 @@ const firebaseConfig = {
     }).catch((err) => {
       console.log('Unable to retrieve refreshed token ', err);
     });
+  });
+
+  window.addEventListener("message", (event) => {
+    // This represents a message coming from the Service Worker. Forward it along to IITC.
+    window.parent.postMessage(event.data, "https://intel.ingress.com");
   });
 
   messaging.onMessage((payload) => {

@@ -70,8 +70,11 @@
   function sendTokenToServer(currentToken) {
     if (!isTokenSentToServer()) {
       console.log('Sending token to server...');
-      sendTokenToWasabee(currentToken);
-      setTokenSentToServer(true);
+      sendTokenToWasabee(currentToken).then(() => {
+        setTokenSentToServer(true);
+      }).catch((error) => {
+        console.warn("Unable to send Firebase token to the server. (User not logged in?)", error);
+      });
     } else {
       console.log('Token already sent to server so won\'t send it again ' +
           'unless it changes');
@@ -91,7 +94,7 @@
     Notification.requestPermission().then((permission) => {
       if (permission === 'granted') {
         console.log('Notification permission granted.');
-	runit(); // yes, recurse
+        runit(); // yes, recurse
       } else {
         console.log('Unable to get permission to notify.');
       }

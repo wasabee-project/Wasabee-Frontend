@@ -14,24 +14,27 @@
  // messages.
  const messaging = firebase.messaging();
 
-messaging.setBackgroundMessageHandler(function(payload) {
+messaging.setBackgroundMessageHandler(async function(payload) {
   console.log('[firebase-messaging-sw.js] Received background message ', payload);
-  // Customize notification here
-  var notificationTitle = 'Wasabee Update';
-  var notificationOptions = {
-    body: payload,
-    icon: '/static/android-chrome-192x192.png'
-  };
+  // If we actually want to show a notification, Customize it here
+  // var notificationTitle = 'Wasabee Update';
+  // var notificationOptions = {
+  //   body: payload,
+  //   icon: '/static/android-chrome-192x192.png'
+  // };
 
-  const allClients = clients.MatchAll({
+  const allClients = await clients.MatchAll({
     includeUncontrolled: true
   });
-  for (const client of allClients) {
-    // const url = new URL(client.url);
-    // if (url.pathname == '/intel/' ....
-    client.postMessage(payload);
+  if(allClients.length === 0) {
+    self.registration.unregister();
+  } else {
+    for (const client of allClients) {
+      client.postMessage(payload);
+    }
   }
 
-  return self.registration.showNotification(notificationTitle,
-    notificationOptions);
+  // If we actually want to show a notification that the user could interact with...
+  // return await self.registration.showNotification(notificationTitle,
+  //   notificationOptions);
 });

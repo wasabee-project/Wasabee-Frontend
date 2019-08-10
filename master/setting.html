@@ -24,7 +24,7 @@
   <ul class="list-group list-group-flush">
   	<li class="list-group-item">
 {{if (.Telegram.ID) }}
-		<strong>ID:</strong> <span class="agent-name">{{.Telegram.UserName}}</span> ({{.Telegram.ID}})
+		<strong>ID:</strong> <span class="agent-name">({{.Telegram.ID}})</span>
 {{end}}
 {{if (.Telegram.Verified) }}
 		<p><strong>Status:</strong> Verified.</p>

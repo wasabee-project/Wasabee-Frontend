@@ -1,0 +1,3 @@
+Contact: scot@indievisible.org
+Encryption: https://keybase.io/deviousness/pgp_keys.asc?fingerprint=6df2e4e1f4ef72754c852034338078b436a6944b
+Preferred-Languages: en, de, la

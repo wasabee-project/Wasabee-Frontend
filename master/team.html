@@ -15,12 +15,26 @@
 <div class="card mb-2">
 <div class="card-header">Team: {{.Name}}</div>
 <div class="card-body"></div>
-<ul class="list-group list-group-flush">
+<table class="table">
+<thead>
+<tr>
+<th scope="col">&nbsp;</th>
+<th scope="col">Agent</th>
+<th scope="col">Enabled</th>
+<th scope="col">Squad</th>
+</tr>
+</thead>
+<tbody>
 	{{range .Agent}}
-        <li class="list-group-item"><a href="{{WebAPIPath}}/agent/{{.Gid}}">{{.Name}}</a> 
-        {{if .State}} <img src="/static/img/checkmark.png" alt="has team enabled"> {{end}}
-        </li>
+<tr>
+	<td>{{if .PictureURL}}<img src="{{.PictureURL}}" height="50" width="50">{{end}}</td>
+	<td><a href="{{WebAPIPath}}/agent/{{.Gid}}"> {{.Name}}</a></td>
+        <td>{{if .State}} <img src="/static/img/checkmark.png" alt="has team enabled"> {{end}}</td>
+        <td>{{if .Squad}}{{.Squad}} {{end}}</td>
+</tr>
 	{{end}}
+</tbody>
+</table>
 </div>
 <!-- content ends here -->				
 					</div>

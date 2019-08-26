@@ -50,7 +50,7 @@
 <div class="card-body">
 <ul class="list-group list-group-flush">
 <li class="list-group-item"><strong>Display Name:</strong> <span class="agent-name">{{.IngressName}}</span>
-<p><em>This information comes from <a href="https://v.enl.one/">V</a> or <a href="https://enlightened.rocks">.rocks</a>. If you have an UnverifiedAgent_ name, please ensure your .Rocks or V information is correct.</em></p>
+<p><em>This information comes from <a href="https://v.enl.one/">V</a> and/or <a href="https://enlightened.rocks">.rocks</a>. If you have an UnverifiedAgent_ name, please ensure your .Rocks and V information is correct.</em></p>
 </li>
 {{if VEnlOne}}
 {{if .VVerified}}
@@ -60,12 +60,6 @@
 </li>
 {{else}}
 <li class="list-group-item"><a href="https://v.enl.one/">V Status:</a> Not Verified</li>
-<li class="list-group-item">
-<form action="{{WebAPIPath}}/me" method="get">
-<input type="text" name="name" />
-<input type="submit" name="update" value="update display name" />
-</form>
-</li>
 {{end}}
 {{end}}
 {{if EnlRocks}}

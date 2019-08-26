@@ -16,15 +16,34 @@
 <div class="card-header">Team: {{.Name}}</div>
 <div class="card-body"></div>
 <ul class="list-group list-group-flush">
-</li>
+<li>
+<table class="table">
+<thead>
+ <tr>
+   <td>Image</td>
+   <td>Name</td>
+   <td>Enabled</td>
+   <td>Squad</td>
+   <td>Display Name</td>
+   <td>&nbsp;</td>
+ </tr>
+</thead>
+<tbody>
 	{{ $x := .ID }}
 	{{ $rc := .RocksComm }}
 	{{range .Agent}}
-        <li class="list-group-item"><a href="{{WebAPIPath}}/agent/{{.Gid}}">{{.Name}}</a>
-                {{if .State}} <img src="/static/img/checkmark.png" alt="has team enabled"> {{end}}
-		{{if not $rc}}<a href="{{WebAPIPath}}/team/{{printf "%s" $x}}/{{.Gid}}/delete">Remove from team</a>{{end}}
-	</li>
+  	<tr>
+        <td><a href="{{WebAPIPath}}/agent/{{.Gid}}">{{if .PictureURL}}<img src="{{.PictureURL}}" height="50" width="50">{{end}}</a></td>
+        <td><a href="{{WebAPIPath}}/agent/{{.Gid}}">{{.Name}}</a></td>
+        <td>{{if .State}} <img src="/static/img/checkmark.png" alt="has team enabled"> {{end}}</td>
+        <td><form action="#"><input type="text" name="squad" value="{{.Squad}}" onChange="assignSquad({{.Gid}}, this)"></form></td>
+        <td><form action="#"><input type="text" name="displayname" value="{{.DisplayName}}" onChange="displayName({{.Gid}}, this)"></form></td>
+	<td>{{if not $rc}}<a href="{{WebAPIPath}}/team/{{printf "%s" $x}}/{{.Gid}}/delete">Remove from team</a>{{end}}</td>
+	</tr>
 	{{end}}
+</tbody>
+</table>
+</li>
 <li class="list-group-item">
 <form action="{{WebAPIPath}}/team/{{.ID}}" method="get">
 <input type="text" name="key" />
@@ -75,6 +94,55 @@ New Ownership: <input type="text" name="to" />
 
 {{template "footer"}}
 {{template "bootstrapjs"}}
+<script>
+function assignSquad(id, sel)
+{
+    sel.style.backgroundColor = "yellow";
+    sel.setAttribute("disabled","true");
+    xhr = new XMLHttpRequest();
+    xhr.open('POST', "/api/v1/team/{{.ID}}/" + id + "/squad");
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        var res = JSON.parse(xhr.responseText);
+        if (xhr.status == 200) {
+		sleep(100).then(function() {
+	        sel.style.backgroundColor = "green"
+	        sleep(500).then(function() {
+	            sel.style.backgroundColor = "white"
+	            sel.removeAttribute("disabled");
+	        });
+	    });
+	} else {
+	    alert(xhr.responseText)
+	}
+    }
+    xhr.send(encodeURI('squad=' + sel.value));
+}
+
+function displayName(id, sel)
+{
+    sel.style.backgroundColor = "yellow";
+    sel.setAttribute("disabled","true");
+    xhr = new XMLHttpRequest();
+    xhr.open('POST', "/api/v1/team/{{.ID}}/" + id + "/displayname");
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        var res = JSON.parse(xhr.responseText);
+        if (xhr.status == 200) {
+		sleep(100).then(function() {
+	        sel.style.backgroundColor = "green"
+	        sleep(500).then(function() {
+	            sel.style.backgroundColor = "white"
+	            sel.removeAttribute("disabled");
+	        });
+	    });
+	} else {
+	    alert(xhr.responseText)
+	}
+    }
+    xhr.send(encodeURI('displayname=' + sel.value));
+}
+</script>
 </body>
 </html>
 {{end}}

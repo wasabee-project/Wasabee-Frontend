@@ -16,12 +16,14 @@
 <!-- content starts here -->
 <h1>Op Data</h1>
 <div class="content-area">
+
 <div class="card mb-2">
 <div class="card-header">Details</div>
 <div class="card-body">
 <ul class="list-group list-group-flush">
 <li class="list-group-item"><strong>Name:</strong> {{.Name}} (id: {{.ID}})</li>
 <li class="list-group-item"><strong>Team:</strong> <a href="{{WebAPIPath}}/team/{{.TeamID}}/edit">{{.Team}}</a></li>
+<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}/perms">Permissions</a></li>
 <li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}/stock">Stock Intel Link</a></li>
 <li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}?lite=y">User View</a></li>
 <li class="list-group-item"><textarea onChange="setopinfo({{.ID}}, this)">{{.Comment}}</textarea></a></li>
@@ -90,6 +92,7 @@
    </tbody>
   </table>
 </div>
+</div>
 
 <div class="card mb-2">
 <div class="card-header">Keys Needed</div>
@@ -157,15 +160,14 @@
   </table>
 </div>
 </div>
+
 </div>
 		<!-- content ends here -->				
 					</div>
 				</div>
 			</div>
-
 		</div>
 		<!-- /.container -->
-
 	</div>
 	<!-- /.intro-header -->
 

@@ -15,16 +15,17 @@
 <!-- content starts here -->
 <h1>Op Data</h1>
 <div class="content-area">
+
 <div class="card mb-2">
 <div class="card-header">Details</div>
 <div class="card-body">
-<ul class="list-group list-group-flush">
-<li class="list-group-item"><strong>Name:</strong> {{.Name}}</li>
-<li class="list-group-item"><strong>Team:</strong> <a href="{{WebAPIPath}}/team/{{.TeamID}}">{{.Team}}</a></li>
-<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}/stock">Stock Intel Link</a></li>
-<li class="list-group-item"><strong>Op Info: {{.Comment}}</strong></li>
-<li class="list-group-item"><strong><a href="{{WebAPIPath}}/draw/{{.ID}}/myroute">My Route</a> (Google Maps)</strong></li>
-</ul>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item"><strong>Name:</strong> {{.Name}}</li>
+    <li class="list-group-item"><strong>Team:</strong> <a href="{{WebAPIPath}}/team/{{.TeamID}}">{{.Team}}</a></li>
+    <li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}/stock">Stock Intel Link</a></li>
+    <li class="list-group-item"><strong>Op Info: {{.Comment}}</strong></li>
+    <li class="list-group-item"><strong><a href="{{WebAPIPath}}/draw/{{.ID}}/myroute">My Route</a> (Google Maps)</strong></li>
+  </ul>
 </div>
 </div>
 
@@ -86,6 +87,7 @@
    </tbody>
   </table>
 </div>
+</div>
 
 <div class="card mb-2">
 <div class="card-header">Keys Needed</div>
@@ -112,15 +114,14 @@
   </table>
 </div>
 </div>
+
 </div>
 		<!-- content ends here -->				
 					</div>
 				</div>
 			</div>
-
 		</div>
 		<!-- /.container -->
-
 	</div>
 	<!-- /.intro-header -->
 

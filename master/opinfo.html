@@ -67,6 +67,7 @@
   <table class="table">
    <thead>
     <tr>
+     <th scope="col">Order</th>
      <th scope="col">Portal</th>
      <th scope="col">Type</th>
      <th scope="col">Assigned To</th>
@@ -77,6 +78,7 @@
    <tbody>
 	{{range .Markers}}
 		<tr>
+		<td>{{.Order}}</td>
 		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.PortalID}}">{{.Portal}}</a></td>
 		<td><div class="{{.Type}}">{{.Type}}</div></td>
 		<td><a href="{{WebAPIPath}}/agent/{{.AssignedToID}}" class="agent-name">{{.AssignedTo}}</a></td>

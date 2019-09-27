@@ -38,11 +38,12 @@
   <thead>
     <tr>
      <td>&nbsp;</td>
-     <td>Throw Order</td>
+     <td>Order</td>
      <td>From</td>
      <td>To</td>
      <td>Distance</td>
      <td>Assigned To</td>
+     <td>Color</td>
      <td>Description</td>
      <td>Completed</td>
    </tr>
@@ -56,6 +57,7 @@
      <td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></td>
      <td>{{.Distance}}km (level: {{printf "%.1f" .MinPortalLevel}}) </td>
      <td><form action="#">{{OpUserMenu .AssignedToID $teamID .ID "agentAssignLink"}}</form></td>
+     <td><form action="#">COLOR MENU</form></td>
      <td><form action="#"><input type="text" name="desc" value="{{.Desc}}" onChange="assignLinkDesc({{.ID}}, this)"></form></td>
      <td>{{if .Completed}} <img src="/static/img/checkmark.png" alt="completed"> {{end}}</td>
   </tr>
@@ -72,6 +74,8 @@
   <table class="table">
    <thead>
     <tr>
+     <th scope="col">&nbsp;</th>
+     <th scope="col">Order</th>
      <th scope="col">Portal</th>
      <th scope="col">Type</th>
      <th scope="col">Assigned To</th>
@@ -79,9 +83,11 @@
      <th scope="col">Status</th>
     </tr>
    </thead>
-   <tbody>
+   <tbody id="markerlist">
 	{{range .Markers}}
-		<tr>
+		<tr id="{{.ID}}" data-id="{{.ID}}">
+                <td><span class="handle"><img src="/static/img/reorder.svg" alt="reorder" style="width=:20px;height:20px;text-align:center;"></span></form></td>
+		<td>{{.Order}}</td>
 		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.PortalID}}">{{.Portal}}</a></td>
 		<td><div class="{{.Type}}">{{.Type}}</div></td>
 		<td><form action="#">{{OpUserMenu .AssignedToID $teamID .ID "agentAssignMarker"}}</form></td>
@@ -186,6 +192,31 @@ var sortable = Sortable.create(linklist, {
       console.log(order, "order")
       xhr = new XMLHttpRequest();
       xhr.open('POST', "/api/v1/draw/{{.ID}}/order");
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.onload = function() {
+        var res = JSON.parse(xhr.responseText);
+        if (xhr.status === 200) {
+	    /* update numbers */
+        } else {
+	    alert(xhr.responseText)
+	}
+      }
+      xhr.send(encodeURI('order=' + order));
+    }
+  }
+});
+
+var sortable = Sortable.create(markerlist, {
+  multiDrag: true,
+  selectedClass: 'selected',
+  handle: ".handle",
+  animation: 150,
+  store: {
+    set: function (sortable) {
+      var order = sortable.toArray();
+      console.log(order, "order")
+      xhr = new XMLHttpRequest();
+      xhr.open('POST', "/api/v1/draw/{{.ID}}/markerorder");
       xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
       xhr.onload = function() {
         var res = JSON.parse(xhr.responseText);

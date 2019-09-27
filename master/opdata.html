@@ -57,7 +57,7 @@
      <td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></td>
      <td>{{.Distance}}km (level: {{printf "%.1f" .MinPortalLevel}}) </td>
      <td><form action="#">{{OpUserMenu .AssignedToID $teamID .ID "agentAssignLink"}}</form></td>
-     <td><form action="#">COLOR MENU</form></td>
+     <td><form action="#">{{OpColorMenu .Color .ID "colorAssignLink"}}</form></td>
      <td><form action="#"><input type="text" name="desc" value="{{.Desc}}" onChange="assignLinkDesc({{.ID}}, this)"></form></td>
      <td>{{if .Completed}} <img src="/static/img/checkmark.png" alt="completed"> {{end}}</td>
   </tr>
@@ -253,6 +253,30 @@ function agentAssignLink(id, sel)
 	}
     }
     xhr.send(encodeURI('agent=' + sel.value));
+}
+
+function colorAssignLink(id, sel)
+{
+    sel.style.backgroundColor = "yellow";
+    sel.setAttribute("disabled","true");
+    xhr = new XMLHttpRequest();
+    xhr.open('POST', "/api/v1/draw/{{.ID}}/link/" + id + "/color");
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        var res = JSON.parse(xhr.responseText);
+        if (xhr.status === 200) {
+		sleep(100).then(function() {
+	        sel.style.backgroundColor = "green"
+	        sleep(500).then(function() {
+	            sel.style.backgroundColor = "white"
+	            sel.removeAttribute("disabled");
+	        });
+	    });
+        } else {
+	    alert(xhr.responseText)
+	}
+    }
+    xhr.send(encodeURI('color=' + sel.value));
 }
 
 function agentAssignMarker(id, sel)

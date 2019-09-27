@@ -40,6 +40,7 @@
      <td>&nbsp;</td>
      <td>Order</td>
      <td>From</td>
+     <td></td>
      <td>To</td>
      <td>Distance</td>
      <td>Assigned To</td>
@@ -54,6 +55,7 @@
      <td><span class="handle"><img src="/static/img/reorder.svg" alt="reorder" style="width=:20px;height:20px;text-align:center;"></span></form></td>
      <td><span id="throworder-{{$.ID}}">{{.ThrowOrder}}</span></form></td>
      <td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.FromID}}">{{.From}}</a></td>
+     <td>&nbsp;<a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/swap"><img src="/static/img/swap.svg" alt="reverse direction" style="width=:20px;height:20px;text-align:center;"></a>&nbsp;</td>
      <td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></td>
      <td>{{.Distance}}km (level: {{printf "%.1f" .MinPortalLevel}}) </td>
      <td><form action="#">{{OpUserMenu .AssignedToID $teamID .ID "agentAssignLink"}}</form></td>

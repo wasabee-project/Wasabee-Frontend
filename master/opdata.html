@@ -55,7 +55,7 @@
      <td><span class="handle"><img src="/static/img/reorder.svg" alt="reorder" style="width=:20px;height:20px;text-align:center;"></span></form></td>
      <td><span id="throworder-{{.ID}}">{{.ThrowOrder}}</span></form></td>
      <td><span id="rev-{{.ID}}-fm"><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.FromID}}">{{.From}}</a></span></td>
-     <td>&nbsp;<a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/link/{{.ID}}/swap"><img src="/static/img/swap.svg" alt="reverse direction" style="width=:20px;height:20px;text-align:center;"></a>&nbsp;</td>
+     <td>&nbsp;<a href="#"><img src="/static/img/swap.svg" alt="reverse direction" style="width=:20px;height:20px;text-align:center;" onClick="changeLinkDirection({{.ID}}, this)"></a>&nbsp;</td>
      <td><span id="rev-{{.ID}}-to"><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></span></td>
      <td>{{.Distance}}km (level: {{printf "%.1f" .MinPortalLevel}}) </td>
      <td><form action="#">{{OpUserMenu .AssignedToID $teamID .ID "agentAssignLink"}}</form></td>
@@ -103,7 +103,7 @@
 </div>
 
 <div class="card mb-2">
-<div class="card-header">Keys Needed</div>
+<div class="card-header" id="keysneeded">Keys Needed</div>
 <div class="card-body">
   <table class="table">
    <thead>
@@ -134,7 +134,7 @@
 </div>
 
 <div class="card mb-2">
-<div class="card-header">Capsule Build List</div>
+<div class="card-header" id="capsulebuildlist">Capsule Build List</div>
 <div class="card-body">
   <table class="table">
    <thead>
@@ -331,6 +331,39 @@ function assignLinkDesc(id, sel)
 	            sel.removeAttribute("disabled");
 	        });
 	    });
+	} else {
+	    alert(xhr.responseText)
+	}
+    }
+    xhr.send(encodeURI('desc=' + sel.value));
+}
+
+function changeLinkDirection(id, sel) {
+    sel.style.backgroundColor = "yellow";
+    sel.setAttribute("disabled","true");
+    xhr = new XMLHttpRequest();
+    xhr.open('GET', "/api/v1/draw/{{.ID}}/link/" + id + "/swap");
+    // xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        var res = JSON.parse(xhr.responseText);
+        if (xhr.status === 200) {
+		sleep(100).then(function() {
+	        sel.style.backgroundColor = "green"
+	        sleep(500).then(function() {
+	            sel.style.backgroundColor = "white"
+	            sel.removeAttribute("disabled");
+	        });
+	    });
+            const oldFm = document.getElementById("rev-" + id + "-fm").cloneNode(true);
+            const oldTo = document.getElementById("rev-" + id + "-to").cloneNode(true);
+            const fm = document.getElementById("rev-" + id + "-fm");
+            const to = document.getElementById("rev-" + id + "-to");
+	    fm.replaceChild(oldTo.firstChild, fm.firstChild);
+	    to.replaceChild(oldFm.firstChild, to.firstChild);
+            kn = document.getElementById("keysneeded");
+	    kn.innerHTML = "Keys Needed <em>(refresh the page to update)</em>";
+            cbl = document.getElementById("capsulebuildlist");
+	    cbl.innerHTML = "Capsule Build List <em>(refresh the page to update)</em>";
 	} else {
 	    alert(xhr.responseText)
 	}

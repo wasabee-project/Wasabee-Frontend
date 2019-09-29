@@ -80,22 +80,90 @@ footer	{
 	padding:0 4px 0 4px;
 }
 
-.DestroyPortalAlert	{
-	color:#903;
-	background-image:url(/static/img/exclamation.png)!important;
-	background-position:left;
-	background-repeat:no-repeat;
-	padding-left:22px;
-}
 .LetDecayPortalAlert	{
-	color:#333;
-	background-image:url(/static/img/no-go.png)!important;
+        color:#7D7D7D;
+	background-image:url(/static/img/wasabee_markers_decay_pending.png)!important;
+	background-size: 14px 24px;
 	background-position:left;
 	background-repeat:no-repeat;
 	padding-left:22px;
 }
-.UseVirusAlert	{
-	background-image:url(/static/img/virus.png)!important;
+.DestroyPortalAlert	{
+        color:#CE3B37;
+	background-image:url(/static/img/wasabee_markers_destroy_pending.png)!important;
+	background-size: 14px 24px;
+	background-position:left;
+	background-repeat:no-repeat;
+	padding-left:22px;
+}
+.FarmPortalMarker	{
+        color:#CE3B37;
+	background-image:url(/static/img/wasabee_markers_farm_pending.png)!important;
+	background-size: 14px 24px;
+	background-position:left;
+	background-repeat:no-repeat;
+	padding-left:22px;
+}
+.GotoPortalMarker	{
+        color:#EDA032;
+	background-image:url(/static/img/wasabee_markers_goto_pending.png)!important;
+	background-size: 14px 24px;
+	background-position:left;
+	background-repeat:no-repeat;
+	padding-left:22px;
+}
+.GetKeyPortalMarker	{
+        color:#7D7D7D;
+	background-image:url(/static/img/wasabee_markers_key_pending.png)!important;
+	background-size: 14px 24px;
+	background-position:left;
+	background-repeat:no-repeat;
+	padding-left:22px;
+}
+.CreateLinkAlert	{
+        color:#5994FF;
+	background-image:url(/static/img/wasabee_markers_link_pending.png)!important;
+	background-size: 14px 24px;
+	background-position:left;
+	background-repeat:no-repeat;
+	padding-left:22px;
+}
+.MeetAgentPortalMarker	{
+        color:#EDA032;
+	background-image:url(/static/img/wasabee_markers_meetagent_pending.png)!important;
+	background-size: 14px 24px;
+	background-position:left;
+	background-repeat:no-repeat;
+	padding-left:22px;
+}
+.OtherPortalAlert	{
+        color:#3679B4;
+	background-image:url(/static/img/wasabee_markers_other_pending.png)!important;
+	background-size: 14px 24px;
+	background-position:left;
+	background-repeat:no-repeat;
+	padding-left:22px;
+}
+.RechargePortalAlert	{
+        color:#53AD53;
+	background-image:url(/static/img/wasabee_markers_recharge_pending.png)!important;
+	background-size: 14px 24px;
+	background-position:left;
+	background-repeat:no-repeat;
+	padding-left:22px;
+}
+.UpgradePortalAlert	{
+        color:#448800;
+	background-image:url(/static/img/wasabee_markers_farm_pending.png)!important;
+	background-size: 14px 24px;
+	background-position:left;
+	background-repeat:no-repeat;
+	padding-left:22px;
+}
+.UseVirusPortalAlert	{
+        color:#8920C3;
+	background-image:url(/static/img/wasabee_markers_virus_pending.png)!important;
+	background-size: 14px 24px;
 	background-position:left;
 	background-repeat:no-repeat;
 	padding-left:22px;

@@ -86,11 +86,12 @@
 function loadOp(id) {
     xhr = new XMLHttpRequest();
     xhr.open('GET', "/api/v1/draw/" + id + "?json=y");
+    xhr.setRequestHeader('cache-control', 'no-cache, must-revalidate, post-check=0, pre-check=0');
+    xhr.setRequestHeader('pragma', 'no-cache');
+    xhr.setRequestHeader('expires', '0');
     xhr.onload = function() {
         if (xhr.status === 200) {
-		console.log(xhr.responseText);
         	const res = JSON.parse(xhr.responseText);
-		console.log(res);
 		const portals = portalMap(res);
 
 		document.title = res.name + " Operation Info";
@@ -202,8 +203,8 @@ async function opKeys(res, portals, id) {
 			if (k.has(koh.portalId)) {
 				const v = k.get(koh.portalId);
 				v.onhand = v.onhand + koh.onhand;
-				if (wme && v.gid == wme.GoogleID) {
-					v.ihave = v.onhand;
+				if (koh.gid == wme.GoogleID) {
+					v.ihave = koh.onhand;
 				}
 				k.set(koh.portalId, v);
 			}

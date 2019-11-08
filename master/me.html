@@ -30,7 +30,11 @@
 <em>Disable inactive teams to hide operations.</em>
   <ul class="list-group list-group-flush">
 	{{range .Ops}}
-		<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}"><strong>{{.Name}}</strong></a> ({{.TeamName}})</li>
+		<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}"><strong>{{.Name}}</strong></a> ({{.TeamName}})
+		{{if .IsOwner}}
+			[<a href="{{WebAPIPath}}/draw/{{.ID}}/copy">copy</a>]
+		{{end}}
+		</li>
 	{{end}}
   </ul>
 </div>

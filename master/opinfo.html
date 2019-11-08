@@ -2,10 +2,10 @@
 {{$drawID := .ID}}
 <html lang="en">
 <head>
-<title>{{.Name}} Op data</title>
+<title>Loading ...</title>
 {{template "styles"}}
 </head>
-<body>
+<body onload="loadOp({{.ID}})">
 {{template "nav"}}
 	<div class="content-sction-a">
 		<div class="container">
@@ -20,71 +20,32 @@
 <div class="card-header">Details</div>
 <div class="card-body">
   <ul class="list-group list-group-flush">
-    <li class="list-group-item"><strong>Name:</strong> {{.Name}}</li>
+    <li class="list-group-item" id="opname">loading... </li>
+    <li class="list-group-item" id="opcomment"></li>
     <li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}/stock">Stock Intel Link</a></li>
-    <li class="list-group-item"><strong>Op Info: {{.Comment}}</strong></li>
     <li class="list-group-item"><strong><a href="{{WebAPIPath}}/draw/{{.ID}}/myroute">My Route</a> (Google Maps)</strong></li>
   </ul>
 </div>
 </div>
 
 <div class="card mb-2">
-<div class="card-header">Links</div>
+<div class="card-header">Operation Steps</div>
 <div class="card-body">
-  <table class="table">
-   <thead>
-    <tr>
-     <th scope="col">Order</th>
-     <th scope="col">From</th>
-     <th scope="col">To</th>
-     <th scope="col">Distance</th>
-     <th scope="col">Assigned To</th>
-     <th scope="col">Description</th>
-     <th scope="col">Completed</th>
-    </tr>
-   </thead>
-   <tbody>
-	{{range .Links}}
-		<tr>
-		<td>{{.ThrowOrder}}</td>
-		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.FromID}}">{{.From}}</a></td>
-		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></td>
-		<td>{{.Distance}}km (level: {{$mpl := .MinPortalLevel}}{{printf "%.1f" $mpl}})</td>
-		<td><a href="{{WebAPIPath}}/agent/{{.AssignedToID}}" class="agent-name">{{.AssignedTo}}</a></form></td>
-		<td>{{.Desc}}</td>
-		<td>{{if .Completed}} <img src="/static/img/checkmark.png" alt="completed">{{end}}</td>
-		</tr>
-	{{end}}
-   </tbody>
-  </table>
-</div>
-</div>
-
-<div class="card mb-2">
-<div class="card-header">Markers</div>
-<div class="card-body">
-  <table class="table">
+  <table class="table" id="optable">
    <thead>
     <tr>
      <th scope="col">Order</th>
      <th scope="col">Portal</th>
-     <th scope="col">Type</th>
+     <th scope="col">To/Action</th>
+     <th scope="col">Distance</th>
      <th scope="col">Assigned To</th>
+     <th scope="col">Description</th>
      <th scope="col">Status</th>
-     <th scope="col">Comment</th>
+     <th scope="col">Completed</th>
     </tr>
    </thead>
-   <tbody>
-	{{range .Markers}}
-		<tr>
-		<td>{{.Order}}</td>
-		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.PortalID}}">{{.Portal}}</a></td>
-		<td><div class="{{.Type}}">{{.Type}}</div></td>
-		<td><a href="{{WebAPIPath}}/agent/{{.AssignedToID}}" class="agent-name">{{.AssignedTo}}</a></td>
-		<td>{{.State}}</form></td>
-		<td>{{.Comment}}</form></td>
-		</tr>
-	{{end}}
+   <tbody id="opsteps">
+     <!-- data goes here, populated by loadOp() -->
    </tbody>
   </table>
 </div>
@@ -102,15 +63,8 @@
      <th scope="col">My Count</th>
     </tr>
    </thead>
-   <tbody>
-	{{range .Keys}}
-		<tr>
-		<td>{{.Portal}}</td>
-		<td>{{.Required}}</td>
-		<td><div id="oh_{{.ID}}" oh="{{.Onhand}}" ih="{{.IHave}}">{{.Onhand}}</div></td>
-		<td><input type="text" size="3" name="onhand" id="{{.ID}}" onChange="keyOnHand({{.ID}}, this)" value="{{.IHave}}"/></td>
-		</tr>
-	{{end}}
+   <tbody id="opkeys">
+     <!-- data goes here, populated by loadOp() -->
    </tbody>
   </table>
 </div>
@@ -129,35 +83,193 @@
 {{template "footer"}}
 {{template "bootstrapjs"}} 
 <script>
-function keyOnHand(id, sel)
-{
-    sel.style.backgroundColor = "yellow";
-    sel.setAttribute("disabled","true");
+function loadOp(id) {
     xhr = new XMLHttpRequest();
-    xhr.open('POST', "/api/v1/draw/{{.ID}}/portal/" + id + "/keyonhand");
+    xhr.open('GET', "/api/v1/draw/" + id + "?json=y");
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+		console.log(xhr.responseText);
+        	const res = JSON.parse(xhr.responseText);
+		console.log(res);
+		const portals = portalMap(res);
+
+		document.title = res.name + " Operation Info";
+		document.getElementById("opname").innerHTML = "<strong>Name:</strong> " + res.name;
+		document.getElementById("opcomment").innerHTML = "<strong>Comment:</strong> " + res.comment;
+		const table = document.getElementById("opsteps");
+
+		let oldrow = table.lastElementChild;
+		while (oldrow) {
+			table.removeChild(oldrow);
+			oldrow = table.lastElementChild;
+		}
+
+		res.links.forEach(function(link) {
+			const r = table.insertRow(-1);
+			const pos = r.insertCell(0);
+			pos.innerHTML = link.throwOrderPos;
+			const src = r.insertCell(1);
+			const fromPortalName = portals.get(link.fromPortalId).name;
+			src.innerHTML = "<a href=\"/api/v1/draw/" + id + "/portal/" + link.fromPortalId + "\">" + fromPortalName + "</a>";
+			const dst = r.insertCell(2);
+			const toPortalName = portals.get(link.toPortalId).name;
+			dst.innerHTML = "<a href=\"/api/v1/draw/" + id + "/portal/" + link.toPortalId + "\">" + toPortalName + "</a>";
+			const distance = r.insertCell(3);
+			distance.innerHTML = calculateDistance(res, link.id);
+			const assignedTo = r.insertCell(4);
+			assignedTo.innerHTML = link.assignedToNickname; // for now, switch to resolving it properly later -- also link to profile
+			const description = r.insertCell(5);
+			description.innerHTML = link.description;
+			const stat = r.insertCell(6);
+			stat.innerHTML = "";
+			const completed = r.insertCell(7);
+			completed.innerHTML = "";
+		});
+		res.markers.forEach(function(marker) {
+			const r = table.insertRow(-1);
+			const pos = r.insertCell(0);
+			pos.innerHTML = marker.order;
+			const src = r.insertCell(1);
+			const portalName = portals.get(marker.portalId).name;
+			src.innerHTML = "<a href=\"/api/v1/draw/" + id + "/portal/" + marker.portalId + "\">" + portalName + "</a>";
+			const action = r.insertCell(2);
+			action.innerHTML = "<span class=\"" + marker.type + "\">" + marker.type + "</span>";
+			const distance = r.insertCell(3);
+			distance.innerHTML = "";
+			const assignedTo = r.insertCell(4);
+			assignedTo.innerHTML = marker.assignedNickname; // for now -- also link to profile
+			const description = r.insertCell(5);
+			description.innerHTML = marker.comment;
+			const stat = r.insertCell(6);
+			stat.innerHTML = marker.state;
+			const completed = r.insertCell(7);
+			completed.innerHTML = marker.completedBy;
+		});
+		/* convert to array -- this is dumb, there has to be a better way than requiring jquery for this */
+		const rows = $('#optable > tbody').children('tr').get();
+		rows.sort(function(a, b) {
+		  return a.cells[0].innerHTML - b.cells[0].innerHTML;
+		});
+		for (var i = 0; i < rows.length; i++) {  // .append() will move them for you
+		    table.append(rows[i]);
+		}
+
+		opKeys(res, portals, id);
+        } else {
+		// display error
+        }
+    }
+    xhr.send();
+}
+
+function portalMap(res) {
+	const m = new Map();
+	res.opportals.forEach(function(portal) {
+		m.set(portal.id, portal);
+	});
+	return m;
+}
+
+async function opKeys(res, portals, id) {
+	const wme = await getMe();
+	keytable = document.getElementById("opkeys");
+	oldrow = keytable.lastElementChild;
+	while (oldrow) {
+		keytable.removeChild(oldrow);
+		oldrow = keytable.lastElementChild;
+	}
+
+	const k = new Map();
+	if (res.links) {
+		res.links.forEach(function(link) {
+			if (k.has(link.toPortalId)) {
+				const v = k.get(link.toPortalId);
+				v.required = v.required + 1;
+				k.set(link.toPortalId, v);
+			} else {
+				const v = new Object();
+				v.portalId = link.toPortalId;
+				v.required = 1;
+				v.onhand = 0;
+				v.ihave = 0;
+				k.set(link.toPortalId, v);
+			}
+		});
+	}
+
+	if (res.keysonhand) {
+		res.keysonhand.forEach(function(koh) {
+			if (k.has(koh.portalId)) {
+				const v = k.get(koh.portalId);
+				v.onhand = v.onhand + koh.onhand;
+				if (wme && v.gid == wme.GoogleID) {
+					v.ihave = v.onhand;
+				}
+				k.set(koh.portalId, v);
+			}
+		});
+	}
+
+	k.forEach(function(key) {
+		const r = keytable.insertRow(-1);
+		r.setAttribute("id", key.portalId + ".row");
+		const portal = r.insertCell(0);
+		const portalName = portals.get(key.portalId).name;
+		portal.innerHTML = "<a href=\"/api/v1/draw/" + id + "/portal/" + key.portalId + "\">" + portalName + "</a>";
+		const required = r.insertCell(1);
+		required .innerHTML = key.required;
+		const onhand = r.insertCell(2);
+		onhand.innerHTML = key.onhand;
+		const me = r.insertCell(3);
+		ihaveinput = document.createElement("input");
+		ihaveinput.setAttribute("type", "text");
+		ihaveinput.setAttribute("size", 3);
+		ihaveinput.setAttribute("name", "onhand");
+		ihaveinput.setAttribute("id", key.portalId);
+		ihaveinput.setAttribute("value", key.ihave);
+		me.appendChild(ihaveinput);
+		ihaveinput.addEventListener('change', (event) => { keyOnHand(key.portalId, r, id, event); });
+	});
+}
+
+function agentIDtoName(res, id) {
+
+}
+
+function calculateDistance(res, linkID) {
+    return "0 (level 0)";
+}
+
+function getMe() {
+  return new Promise(function (resolve, reject) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', "/api/v1/me?json=y", true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+        	resolve(JSON.parse(xhr.responseText));
+	} else {
+		reject("unable to fetch /me");
+	}
+    };
+    xhr.send();
+  });
+}
+
+function keyOnHand(id, row, opid, event) {
+    row.style.backgroundColor = "yellow";
+    xhr = new XMLHttpRequest();
+    xhr.open('POST', "/api/v1/draw/" + opid + "/portal/" + id + "/keyonhand");
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
-    	sel.setAttribute("disabled","true");
-        var res = JSON.parse(xhr.responseText);
         if (xhr.status === 200) {
-            sleep(100).then(function() {
-                sel.style.backgroundColor = "green";
-                sleep(500).then(function() {
-                    sel.style.backgroundColor = "white";
-                    sel.removeAttribute("disabled");
-                });
-            });
-	    var ohid = document.getElementById("oh_" + id);
-	    newval = parseInt(sel.value, 10);
-	    if (isNaN(newval)) newval = 0; // @robely42 ... sigh
-	    if (newval < 0) newval = 0;
-	    ohid.innerHTML = (parseInt(ohid.getAttribute("oh"),10) - parseInt(ohid.getAttribute("ih"),10) + newval);
+	    /* rather than parsing this, just refresh */
+	    loadOp(opid);
         } else {
-	    sel.style.backgroundColor="#999"
+	    row.style.backgroundColor="#999"
             alert(xhr.status + ": " + xhr.responseText)
         }
     }
-    xhr.send(encodeURI('onhand=' + sel.value));
+    xhr.send(encodeURI('onhand=' + event.target.value));
 }
 
 function sleep(ms) {

@@ -85,7 +85,7 @@
 <script>
 function loadOp(id) {
     xhr = new XMLHttpRequest();
-    xhr.open('GET', "/api/v1/draw/" + id + "?json=y");
+    xhr.open('GET', "{{WebAPIPath}}/draw/" + id + "?json=y");
     xhr.setRequestHeader('cache-control', 'no-cache, must-revalidate, post-check=0, pre-check=0');
     xhr.setRequestHeader('pragma', 'no-cache');
     xhr.setRequestHeader('expires', '0');
@@ -104,19 +104,19 @@ function loadOp(id) {
 			table.removeChild(oldrow);
 			oldrow = table.lastElementChild;
 		}
-
-		res.links.forEach(function(link) {
+		if (res.links) {
+		 res.links.forEach(function(link) {
 			const r = table.insertRow(-1);
 			const pos = r.insertCell(0);
 			pos.innerHTML = link.throwOrderPos;
 			const src = r.insertCell(1);
 			const fromPortalName = portals.get(link.fromPortalId).name;
-			src.innerHTML = "<a href=\"/api/v1/draw/" + id + "/portal/" + link.fromPortalId + "\">" + fromPortalName + "</a>";
+			src.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + id + "/portal/" + link.fromPortalId + "\">" + fromPortalName + "</a>";
 			const dst = r.insertCell(2);
 			const toPortalName = portals.get(link.toPortalId).name;
-			dst.innerHTML = "<a href=\"/api/v1/draw/" + id + "/portal/" + link.toPortalId + "\">" + toPortalName + "</a>";
+			dst.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + id + "/portal/" + link.toPortalId + "\">" + toPortalName + "</a>";
 			const distance = r.insertCell(3);
-			distance.innerHTML = calculateDistance(res, link.id);
+			distance.innerHTML = calculateDistance(res, link.fromPortalId, link.toPortalId, portals);
 			const assignedTo = r.insertCell(4);
 			assignedTo.innerHTML = link.assignedToNickname; // for now, switch to resolving it properly later -- also link to profile
 			const description = r.insertCell(5);
@@ -125,14 +125,16 @@ function loadOp(id) {
 			stat.innerHTML = "";
 			const completed = r.insertCell(7);
 			completed.innerHTML = "";
-		});
-		res.markers.forEach(function(marker) {
+		 });
+		}
+		if (res.markers) {
+		 res.markers.forEach(function(marker) {
 			const r = table.insertRow(-1);
 			const pos = r.insertCell(0);
 			pos.innerHTML = marker.order;
 			const src = r.insertCell(1);
 			const portalName = portals.get(marker.portalId).name;
-			src.innerHTML = "<a href=\"/api/v1/draw/" + id + "/portal/" + marker.portalId + "\">" + portalName + "</a>";
+			src.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + id + "/portal/" + marker.portalId + "\">" + portalName + "</a>";
 			const action = r.insertCell(2);
 			action.innerHTML = "<span class=\"" + marker.type + "\">" + marker.type + "</span>";
 			const distance = r.insertCell(3);
@@ -145,7 +147,8 @@ function loadOp(id) {
 			stat.innerHTML = marker.state;
 			const completed = r.insertCell(7);
 			completed.innerHTML = marker.completedBy;
-		});
+		 });
+		}
 		/* convert to array -- this is dumb, there has to be a better way than requiring jquery for this */
 		const rows = $('#optable > tbody').children('tr').get();
 		rows.sort(function(a, b) {
@@ -216,7 +219,7 @@ async function opKeys(res, portals, id) {
 		r.setAttribute("id", key.portalId + ".row");
 		const portal = r.insertCell(0);
 		const portalName = portals.get(key.portalId).name;
-		portal.innerHTML = "<a href=\"/api/v1/draw/" + id + "/portal/" + key.portalId + "\">" + portalName + "</a>";
+		portal.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + id + "/portal/" + key.portalId + "\">" + portalName + "</a>";
 		const required = r.insertCell(1);
 		required .innerHTML = key.required;
 		const onhand = r.insertCell(2);
@@ -233,18 +236,46 @@ async function opKeys(res, portals, id) {
 	});
 }
 
-function agentIDtoName(res, id) {
+function calculateDistance(res, from, to, portals) {
+  const start = portals.get(from);
+  const end = portals.get(to);
+  const sl = parseFloat(start.lat);
+  const el = parseFloat(end.lat);
+  const startrl = Math.PI * sl / 180.0;
+  const endrl = Math.PI * el / 180.0;
+  const t = parseFloat(start.lng);
+  const th = parseFloat(end.lng);
+  const rt = Math.PI * (t - th) / 180.0;
 
+  let dist = Math.sin(startrl) * Math.sin(endrl) + Math.cos(startrl) * Math.cos(endrl) * Math.cos(rt);
+  if (dist > 1) {
+ 	dist = 1;
+  }
+  dist = Math.acos(dist);
+  dist = dist * 180 / Math.PI;
+  dist = dist * 60 * 1.1515 * 1.609344;
+  dist = (Math.round(dist * 100) / 100);
+
+  let level = 1.0;
+  if (dist > .016) {
+    level = fourthroot(dist * 1000) / (2 * fourthroot(10));
+  }
+  if (level > 8) {
+    level = 8;
+  }
+  level = (Math.round(level * 10) / 10);
+
+  return dist + "km (level " + level +")";
 }
 
-function calculateDistance(res, linkID) {
-    return "0 (level 0)";
+function fourthroot(a) {
+  return Math.pow(Math.E, Math.log(a)/4.0)
 }
 
 function getMe() {
   return new Promise(function (resolve, reject) {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', "/api/v1/me?json=y", true);
+    xhr.open('GET', "{{WebAPIPath}}/me?json=y", true);
     xhr.onload = function() {
         if (xhr.status === 200) {
         	resolve(JSON.parse(xhr.responseText));
@@ -259,7 +290,7 @@ function getMe() {
 function keyOnHand(id, row, opid, event) {
     row.style.backgroundColor = "yellow";
     xhr = new XMLHttpRequest();
-    xhr.open('POST', "/api/v1/draw/" + opid + "/portal/" + id + "/keyonhand");
+    xhr.open('POST', "{{WebAPIPath}}/draw/" + opid + "/portal/" + id + "/keyonhand");
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
         if (xhr.status === 200) {

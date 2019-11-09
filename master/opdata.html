@@ -2,10 +2,10 @@
 {{$drawID := .ID}}
 <html lang="en">
 <head>
-<title>{{.Name}} Op data</title>
+<title>Loading ... </title>
 {{template "styles"}}
 </head>
-<body>
+<body onload="loadOp({{.ID}})">
 {{template "nav"}}
 	<div class="content-sction-a">
 		<div class="container">
@@ -20,11 +20,11 @@
 <div class="card-header">Details</div>
 <div class="card-body">
 <ul class="list-group list-group-flush">
-<li class="list-group-item"><strong>Name:</strong> {{.Name}} (id: {{.ID}})</li>
-<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}/perms">Permissions</a></li>
-<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}/stock">Stock Intel Link</a></li>
-<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}?lite=y">User View</a></li>
-<li class="list-group-item"><textarea onChange="setopinfo({{.ID}}, this)">{{.Comment}}</textarea></a></li>
+  <li class="list-group-item"><strong>Name:</strong> {{.Name}} (id: {{.ID}})</li>
+  <li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}/perms">Permissions</a></li>
+  <li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}/stock">Stock Intel Link</a></li>
+  <li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}?lite=y">User View</a></li>
+  <li class="list-group-item"><textarea onChange="setopinfo({{.ID}}, this)">{{.Comment}}</textarea></a></li>
 </ul>
 </div>
 </div>
@@ -32,71 +32,26 @@
 <div class="card">
 <div class="card-header">Links</div>
 <div class="card-body">
- <table>
+ <table id="optable">
   <thead>
     <tr>
-     <td>&nbsp;</td>
-     <td>Order</td>
-     <td>From</td>
-     <td></td>
-     <td>To</td>
-     <td>Distance</td>
-     <td>Assigned To</td>
-     <td>Color</td>
-     <td>Description</td>
-     <td>Completed</td>
+     <th scope="col">&nbsp;<!-- handle --></th>
+     <th scope="col">Order</th>
+     <th scope="col">From</th>
+     <th scope="col"><!-- swap --></th>
+     <th scope="col">To/Type</th>
+     <th scope="col">Distance</th>
+     <th scope="col">Assigned To</th>
+     <th scope="col">Color</th>
+     <th scope="col">Desc.</th>
+     <th scope="col">Status</th>
+     <th scope="col">Done</th>
    </tr>
   </thead>
-  <tbody id="linklist">
-{{range .Links}}
-  <tr id="{{.ID}}" data-id="{{.ID}}">
-     <td><span class="handle"><img src="/static/img/reorder.svg" alt="reorder" style="width=:20px;height:20px;text-align:center;"></span></form></td>
-     <td><span id="throworder-{{.ID}}">{{.ThrowOrder}}</span></form></td>
-     <td><span id="rev-{{.ID}}-fm"><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.FromID}}">{{.From}}</a></span></td>
-     <td>&nbsp;<a href="#"><img src="/static/img/swap.svg" alt="reverse direction" style="width=:20px;height:20px;text-align:center;" onClick="changeLinkDirection({{.ID}}, this)"></a>&nbsp;</td>
-     <td><span id="rev-{{.ID}}-to"><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ToID}}">{{.To}}</a></span></td>
-     <td>{{.Distance}}km (level: {{printf "%.1f" .MinPortalLevel}}) </td>
-     <td><form action="#">{{OpUserMenu .AssignedToID $drawID .ID "agentAssignLink"}}</form></td>
-     <td><form action="#">{{OpColorMenu .Color .ID "colorAssignLink"}}</form></td>
-     <td><form action="#"><input type="text" name="desc" value="{{.Desc}}" onChange="assignLinkDesc({{.ID}}, this)"></form></td>
-     <td>{{if .Completed}} <img src="/static/img/checkmark.png" alt="completed"> {{end}}</td>
-  </tr>
-{{end}}
+  <tbody id="opsteps">
+  <!-- populated by loadOp() -->
  </tbody>
  </table>
-</div>
-</div>
-
-
-<div class="card mb-2">
-<div class="card-header">Markers</div>
-<div class="card-body">
-  <table class="table">
-   <thead>
-    <tr>
-     <th scope="col">&nbsp;</th>
-     <th scope="col">Order</th>
-     <th scope="col">Portal</th>
-     <th scope="col">Type</th>
-     <th scope="col">Assigned To</th>
-     <th scope="col">Comment</th>
-     <th scope="col">Status</th>
-    </tr>
-   </thead>
-   <tbody id="markerlist">
-	{{range .Markers}}
-		<tr id="{{.ID}}" data-id="{{.ID}}">
-                <td><span class="handle"><img src="/static/img/reorder.svg" alt="reorder" style="width=:20px;height:20px;text-align:center;"></span></form></td>
-		<td><span id="markerorder-{{.ID}}">{{.Order}}</span></td>
-		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.PortalID}}">{{.Portal}}</a></td>
-		<td><div class="{{.Type}}">{{.Type}}</div></td>
-		<td><form action="#">{{OpUserMenu .AssignedToID $drawID .ID "agentAssignMarker"}}</form></td>
-		<td><form action="#"><input type="text" name="comment" value="{{.Comment}}" onChange="assignMarkerComment({{.ID}}, this)"></form></td>
-		<td> {{.State}} </td>
-		</tr>
-	{{end}}
-   </tbody>
-  </table>
 </div>
 </div>
 
@@ -112,20 +67,7 @@
     </tr>
    </thead>
    <tbody>
-	{{range .Keys}}
-		<tr>
-		<td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ID}}">{{.Portal}}</a></td>
-		<td>{{.Required}}</td>
-		<td>{{.Onhand}}</form></td>
-		</tr>
-		{{range .OnhandList}}
-		<tr>
-		<td></td>
-		<td><a href="{{WebAPIPath}}/agent/{{.Gid}}" class="agent-name">{{.Agent}}</a></td>
-		<td>{{.Onhand}}</form></td>
-		</tr>
-		{{end}}
-	{{end}}
+   <!-- key list built by loadOp()-->
    </tbody>
   </table>
 </div>
@@ -143,13 +85,7 @@
     </tr>
    </thead>
    <tbody>
-   {{range .Capsules}}
-   <tr>
-     <td><a href="{{WebAPIPath}}/agent/{{.Gid}}" class="agent-name">{{.Agent}}</a></td>
-     <td><a href="{{WebAPIPath}}/draw/{{printf "%s" $drawID}}/portal/{{.ID}}">{{.Portal}}</a></td>
-     <td>{{.Required}}</td>
-   </tr>
-   {{end}}
+   <!-- cap list built by loadOp() -->
    </tbody>
   </table>
 </div>
@@ -180,15 +116,121 @@
 {{template "bootstrapjs"}}
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.js"></script>
 <script>
-var linklistsort = Sortable.create(linklist, {
+async function loadOp(id) {
+  const me = await getMe();
+  const res = await opPromise(id);
+  const portals = portalMap(res);
+
+  buildTable(res, id, portals);
+}
+
+function buildTable(res, opID, portals) {
+  document.title = res.name + " Operation Data";
+
+  const table = document.getElementById("opsteps");
+  let oldrow = table.lastElementChild;
+  while (oldrow) {
+    table.removeChild(oldrow);
+    oldrow = table.lastElementChild;
+  }
+  if (res.links) {
+   res.links.forEach(function(link) {
+    const r = table.insertRow(-1);
+    r.setAttribute("id", link.ID);
+    r.setAttribute("data-id", link.ID);
+    const handle = r.insertCell(0);
+    handle.innerHTML = "<span class=\"handle\"><img src=\"/static/img/reorder.svg\" alt=\"reorder\" style=\"width=:20px;height:20px;text-align:center;\"></span>";
+    const pos = r.insertCell(1);
+    pos.innerHTML = "<span id=\"opsteps-" + link.ID + "\">" + link.throwOrderPos + "</span>";
+    const src = r.insertCell(2);
+    const fromPortalName = portals.get(link.fromPortalId).name;
+    src.innerHTML = "<span id=\"rev-" + link.ID + "-fm\"><a href=\"{{WebAPIPath}}/draw/" + opID + "/portal/" + link.fromPortalId + "\">" + fromPortalName + "</a></span>";
+    const swap = r.insertCell(3);
+    // gotta build it by hand to get the addEvent
+    swap.innerHTML = "&nbsp;<a href=\"#\"><img src=\"/static/img/swap.svg\" alt=\"reverse direction\" style=\"width=:20px;height:20px;text-align:center;\"></a>&nbsp;"
+    // onClick="changeLinkDirection({{.ID}}, this)"
+    const dst = r.insertCell(4);
+    const toPortalName = portals.get(link.toPortalId).name;
+    dst.innerHTML = "<span id=\"rev-" + link.ID + "-to\"><a href=\"{{WebAPIPath}}/draw/" + opID + "/portal/" + link.toPortalId + "\">" + toPortalName + "</a></span>";
+    const distance = r.insertCell(5);
+    distance.innerHTML = calculateDistance(res, link.fromPortalId, link.toPortalId, portals);
+    const assignedTo = r.insertCell(6);
+    assignedTo.innerHTML = link.assignedToNickname; // for now, switch to resolving it properly later -- also link to profile
+    const color = r.insertCell(7);
+    // XXX 
+    const description = r.insertCell(8);
+    description.innerHTML = link.description;
+    const stat = r.insertCell(9);
+    stat.innerHTML = "";
+    const completed = r.insertCell(10);
+    completed.innerHTML = "";
+   });
+  }
+  if (res.markers) {
+   res.markers.forEach(function(marker) {
+    const r = table.insertRow(-1);
+    r.setAttribute("id", marker.ID);
+    r.setAttribute("data-id", marker.ID);
+    const handle = r.insertCell(0);
+    handle.innerHTML = "<span class=\"handle\"><img src=\"/static/img/reorder.svg\" alt=\"reorder\" style=\"width=:20px;height:20px;text-align:center;\"></span>";
+    const pos = r.insertCell(1);
+    pos.innerHTML = "<span id=\"opsteps-" + marker.ID + "\">" + marker.order + "</span>";
+    const src = r.insertCell(2);
+    const portalName = portals.get(marker.portalId).name;
+    src.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + opID + "/portal/" + marker.portalId + "\">" + portalName + "</a>";
+    const swap = r.insertCell(3);
+    const action = r.insertCell(4);
+    action.innerHTML = "<span class=\"" + marker.type + "\">" + marker.type + "</span>";
+    const distance = r.insertCell(5);
+    distance.innerHTML = "";
+    const assignedTo = r.insertCell(6);
+    assignedTo.innerHTML = marker.assignedNickname; // for now -- also link to profile
+    const color = r.insertCell(7);
+    const description = r.insertCell(8);
+    description.innerHTML = marker.comment;
+    const stat = r.insertCell(9);
+    stat.innerHTML = marker.state;
+    const completed = r.insertCell(10);
+    completed.innerHTML = marker.completedBy;
+   });
+  }
+
+  /* convert to array -- this is dumb, there has to be a better way than requiring jquery for this */
+  const rows = $('#optable > tbody').children('tr').get();
+  rows.sort(function(a, b) {
+    return a.cells[1].innerText - b.cells[1].innerText;
+  });
+  for (var i = 0; i < rows.length; i++) {  // .append() will move them for you
+    table.append(rows[i]);
+  }
+}
+
+function opPromise(id) {
+  return new Promise(function (resolve, reject) {
+    xhr = new XMLHttpRequest();
+    xhr.open('GET', "{{WebAPIPath}}/draw/" + id + "?json=y");
+    xhr.setRequestHeader('cache-control', 'no-cache, must-revalidate, post-check=0, pre-check=0');
+    xhr.setRequestHeader('pragma', 'no-cache');
+    xhr.setRequestHeader('expires', '0');
+    xhr.onload = function() {
+       if (xhr.status === 200) {
+         resolve(JSON.parse(xhr.responseText));
+       } else {
+         reject(xhr.responseText);
+       }
+    };
+    xhr.send();
+  });
+}
+
+var opstepsort = Sortable.create(opsteps, {
   multiDrag: true,
   selectedClass: 'selected',
   handle: ".handle",
   animation: 150,
   store: {
-    set: function (linklistsort) {
-      const order = linklistsort.toArray();
-      // console.log(order, "order")
+    set: function (opstepssort) {
+      const order = opstepssort.toArray();
       xhr = new XMLHttpRequest();
       xhr.open('POST', "/api/v1/draw/{{.ID}}/order");
       xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -197,7 +239,7 @@ var linklistsort = Sortable.create(linklist, {
         if (xhr.status === 200) {
 	  i = 1;
 	  order.forEach(function(link) {
-            const el = document.getElementById("throworder-" + link);
+            const el = document.getElementById("opsteps-" + link);
 	    el.innerHTML = i;
 	    i++;
 	  });
@@ -210,37 +252,7 @@ var linklistsort = Sortable.create(linklist, {
   }
 });
 
-var markerlistsort = Sortable.create(markerlist, {
-  multiDrag: true,
-  selectedClass: 'selected',
-  handle: ".handle",
-  animation: 150,
-  store: {
-    set: function (markerlistsort) {
-      var order = markerlistsort.toArray();
-      xhr = new XMLHttpRequest();
-      xhr.open('POST', "/api/v1/draw/{{.ID}}/markerorder");
-      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-      xhr.onload = function() {
-        var res = JSON.parse(xhr.responseText);
-        if (xhr.status === 200) {
-	  i = 1;
-	  order.forEach(function(marker) {
-	    const el = document.getElementById("markerorder-" + marker);
-	    el.innerHTML = i;
-	    i++;
-	  });
-        } else {
-	    alert(xhr.responseText)
-	}
-      }
-      xhr.send(encodeURI('order=' + order));
-    }
-  }
-});
-
-function agentAssignLink(id, sel)
-{
+function agentAssignLink(id, sel) {
     sel.style.backgroundColor = "yellow";
     sel.setAttribute("disabled","true");
     xhr = new XMLHttpRequest();
@@ -263,8 +275,7 @@ function agentAssignLink(id, sel)
     xhr.send(encodeURI('agent=' + sel.value));
 }
 
-function colorAssignLink(id, sel)
-{
+function colorAssignLink(id, sel) {
     sel.style.backgroundColor = "yellow";
     sel.setAttribute("disabled","true");
     xhr = new XMLHttpRequest();
@@ -287,8 +298,7 @@ function colorAssignLink(id, sel)
     xhr.send(encodeURI('color=' + sel.value));
 }
 
-function agentAssignMarker(id, sel)
-{
+function agentAssignMarker(id, sel) {
     sel.style.backgroundColor = "yellow";
     sel.setAttribute("disabled","true");
     xhr = new XMLHttpRequest();
@@ -311,8 +321,7 @@ function agentAssignMarker(id, sel)
     xhr.send(encodeURI('agent=' + sel.value));
 }
 
-function assignLinkDesc(id, sel)
-{
+function assignLinkDesc(id, sel) {
     sel.style.backgroundColor = "yellow";
     sel.setAttribute("disabled","true");
     xhr = new XMLHttpRequest();
@@ -340,7 +349,6 @@ function changeLinkDirection(id, sel) {
     sel.setAttribute("disabled","true");
     xhr = new XMLHttpRequest();
     xhr.open('GET', "/api/v1/draw/{{.ID}}/link/" + id + "/swap");
-    // xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
         var res = JSON.parse(xhr.responseText);
         if (xhr.status === 200) {
@@ -368,8 +376,7 @@ function changeLinkDirection(id, sel) {
     xhr.send(encodeURI('desc=' + sel.value));
 }
 
-function assignMarkerComment(id, sel)
-{
+function assignMarkerComment(id, sel) {
     sel.style.backgroundColor = "yellow";
     sel.setAttribute("disabled","true");
     xhr = new XMLHttpRequest();
@@ -392,8 +399,7 @@ function assignMarkerComment(id, sel)
     xhr.send(encodeURI('comment=' + sel.value));
 }
 
-function setopinfo(id, sel)
-{
+function setopinfo(id, sel) {
     sel.style.backgroundColor = "yellow";
     sel.setAttribute("disabled","true");
     xhr = new XMLHttpRequest();
@@ -414,6 +420,65 @@ function setopinfo(id, sel)
 	}
     }
     xhr.send(encodeURI('info=' + sel.value));
+}
+
+function portalMap(res) {
+  const m = new Map();
+  res.opportals.forEach(function(portal) {
+    m.set(portal.id, portal);
+  });
+  return m;
+}
+
+function getMe() {
+  return new Promise(function (resolve, reject) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', "{{WebAPIPath}}/me?json=y", true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+        	resolve(JSON.parse(xhr.responseText));
+	} else {
+		reject("unable to fetch /me");
+	}
+    };
+    xhr.send();
+  });
+}
+
+function calculateDistance(res, from, to, portals) {
+  const start = portals.get(from);
+  const end = portals.get(to);
+  const sl = parseFloat(start.lat);
+  const el = parseFloat(end.lat);
+  const startrl = Math.PI * sl / 180.0;
+  const endrl = Math.PI * el / 180.0;
+  const t = parseFloat(start.lng);
+  const th = parseFloat(end.lng);
+  const rt = Math.PI * (t - th) / 180.0;
+
+  let dist = Math.sin(startrl) * Math.sin(endrl) + Math.cos(startrl) * Math.cos(endrl) * Math.cos(rt);
+  if (dist > 1) {
+        dist = 1;
+  }
+  dist = Math.acos(dist);
+  dist = dist * 180 / Math.PI;
+  dist = dist * 60 * 1.1515 * 1.609344;
+  dist = (Math.round(dist * 100) / 100);
+
+  let level = 1.0;
+  if (dist > .016) {
+    level = fourthroot(dist * 1000) / (2 * fourthroot(10));
+  }
+  if (level > 8) {
+    level = 8;
+  }
+  level = (Math.round(level * 10) / 10);
+
+  return dist + "km (level " + level +")";
+}
+
+function fourthroot(a) {
+  return Math.pow(Math.E, Math.log(a)/4.0)
 }
 
 function sleep(ms) {

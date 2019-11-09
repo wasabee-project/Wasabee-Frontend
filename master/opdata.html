@@ -32,7 +32,7 @@
 <div class="card">
 <div class="card-header">Links</div>
 <div class="card-body">
- <table id="optable">
+ <table class="table" id="optable">
   <thead>
     <tr>
      <th scope="col">&nbsp;<!-- handle --></th>
@@ -119,12 +119,13 @@
 async function loadOp(id) {
   const me = await getMe();
   const res = await opPromise(id);
+  const agents = await agentMap(res);
   const portals = portalMap(res);
-
-  buildTable(res, id, portals);
+  
+  buildTable(res, id, portals, agents);
 }
 
-function buildTable(res, opID, portals) {
+function buildTable(res, opID, portals, agents) {
   document.title = res.name + " Operation Data";
 
   const table = document.getElementById("opsteps");
@@ -155,7 +156,8 @@ function buildTable(res, opID, portals) {
     const distance = r.insertCell(5);
     distance.innerHTML = calculateDistance(res, link.fromPortalId, link.toPortalId, portals);
     const assignedTo = r.insertCell(6);
-    assignedTo.innerHTML = link.assignedToNickname; // for now, switch to resolving it properly later -- also link to profile
+    const m = agentMenu(agents, "link", link.ID, link.assignedTo);
+    assignedTo.appendChild(m);
     const color = r.insertCell(7);
     // XXX 
     const description = r.insertCell(8);
@@ -184,7 +186,8 @@ function buildTable(res, opID, portals) {
     const distance = r.insertCell(5);
     distance.innerHTML = "";
     const assignedTo = r.insertCell(6);
-    assignedTo.innerHTML = marker.assignedNickname; // for now -- also link to profile
+    const m = agentMenu(agents, "marker", marker.ID, marker.assignedTo);
+    assignedTo.appendChild(m);
     const color = r.insertCell(7);
     const description = r.insertCell(8);
     description.innerHTML = marker.comment;
@@ -203,6 +206,37 @@ function buildTable(res, opID, portals) {
   for (var i = 0; i < rows.length; i++) {  // .append() will move them for you
     table.append(rows[i]);
   }
+}
+
+function agentMenu(agents, type, id, current) {
+  const m = document.createElement("select");
+
+  const unassigned = document.createElement("option");
+  unassigned.setAttribute("value", 0);
+  unassigned.text = "unassigned";
+  m.add(unassigned);
+
+  for (const [id, agent] of agents) {
+    const a = document.createElement("option");
+    a.setAttribute("value", id);
+    a.text = agent.name;
+    if (agent.squad && agent.squad != "boots") a.text = agent.name + " (" + agent.squad + ")";
+    if (id == current) {
+      a.setAttribute("selected", true);
+    }
+    m.add(a);
+  }
+
+  if (type == "marker") {
+    m.addEventListener("change", (event) => {
+      agentAssignMarker(id, m);
+    });
+  } else {
+    m.addEventListener("change", (event) => {
+      agentAssignLink(id, m);
+    });
+  }
+  return m;
 }
 
 function opPromise(id) {
@@ -428,6 +462,40 @@ function portalMap(res) {
     m.set(portal.id, portal);
   });
   return m;
+}
+
+/* move everything to newer for (x of y) structure */
+async function agentMap(res) {
+  const a = new Map();
+  const done = new Array();
+
+  for (const team of res.teamlist) {
+    done.push(team.teamid);
+    t = await getTeam(team.teamid);
+    for (const agent of t.agents) {
+      if (agent.state) {
+        if (!a.has(agent.id)) {
+	  a.set(agent.id, agent);
+	}
+      }
+    }
+  }
+  return a;
+}
+
+function getTeam(teamid) {
+  return new Promise(function (resolve, reject) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', "{{WebAPIPath}}/team/" + teamid + "?json=y", true);
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        resolve(JSON.parse(xhr.responseText));
+      } else {
+        reject("unable to fetch /me");
+      }
+    };
+    xhr.send();
+  });
 }
 
 function getMe() {

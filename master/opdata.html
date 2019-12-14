@@ -66,7 +66,7 @@
      <th scope="col">On Hand</th>
     </tr>
    </thead>
-   <tbody>
+   <tbody id="opkeys">
    <!-- key list built by loadOp()-->
    </tbody>
   </table>
@@ -84,7 +84,7 @@
      <th scope="col">Keys Required</th>
     </tr>
    </thead>
-   <tbody>
+   <tbody id="capbuild">
    <!-- cap list built by loadOp() -->
    </tbody>
   </table>
@@ -147,9 +147,14 @@ function buildTable(res, opID, portals, agents) {
     const fromPortalName = portals.get(link.fromPortalId).name;
     src.innerHTML = "<span id=\"rev-" + link.ID + "-fm\"><a href=\"{{WebAPIPath}}/draw/" + opID + "/portal/" + link.fromPortalId + "\">" + fromPortalName + "</a></span>";
     const swap = r.insertCell(3);
-    // gotta build it by hand to get the addEvent
-    swap.innerHTML = "&nbsp;<a href=\"#\"><img src=\"/static/img/swap.svg\" alt=\"reverse direction\" style=\"width=:20px;height:20px;text-align:center;\"></a>&nbsp;"
-    // onClick="changeLinkDirection({{.ID}}, this)"
+    // build dom manually to do the onclick
+    btn = document.createElement("img");
+    btn.setAttribute("src", "/static/img/swap.svg");
+    btn.setAttribute("alt", "reverse direction");
+    btn.setAttribute("style", "width=:20px;height:20px;text-align:center;");
+    btn.setAttribute("id", link.ID);
+    btn.onclick = changeLinkDirection;
+    swap.appendChild(btn);
     const dst = r.insertCell(4);
     const toPortalName = portals.get(link.toPortalId).name;
     dst.innerHTML = "<span id=\"rev-" + link.ID + "-to\"><a href=\"{{WebAPIPath}}/draw/" + opID + "/portal/" + link.toPortalId + "\">" + toPortalName + "</a></span>";
@@ -159,7 +164,7 @@ function buildTable(res, opID, portals, agents) {
     const m = agentMenu(agents, "link", link.ID, link.assignedTo);
     assignedTo.appendChild(m);
     const color = r.insertCell(7);
-    // XXX 
+    // XXX build color menu
     const description = r.insertCell(8);
     description.innerHTML = link.description;
     const stat = r.insertCell(9);
@@ -378,7 +383,9 @@ function assignLinkDesc(id, sel) {
     xhr.send(encodeURI('desc=' + sel.value));
 }
 
-function changeLinkDirection(id, sel) {
+function changeLinkDirection(event) {
+    const sel = event.target
+    const id = event.target.id
     sel.style.backgroundColor = "yellow";
     sel.setAttribute("disabled","true");
     xhr = new XMLHttpRequest();
@@ -399,10 +406,6 @@ function changeLinkDirection(id, sel) {
             const to = document.getElementById("rev-" + id + "-to");
 	    fm.replaceChild(oldTo.firstChild, fm.firstChild);
 	    to.replaceChild(oldFm.firstChild, to.firstChild);
-            kn = document.getElementById("keysneeded");
-	    kn.innerHTML = "Keys Needed <em>(refresh the page to update)</em>";
-            cbl = document.getElementById("capsulebuildlist");
-	    cbl.innerHTML = "Capsule Build List <em>(refresh the page to update)</em>";
 	} else {
 	    alert(xhr.responseText)
 	}

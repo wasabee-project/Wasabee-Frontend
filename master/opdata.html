@@ -164,7 +164,8 @@ function buildTable(res, opID, portals, agents) {
     const m = agentMenu(agents, "link", link.ID, link.assignedTo);
     assignedTo.appendChild(m);
     const color = r.insertCell(7);
-    // XXX build color menu
+    const cm = colorMenu(link);
+    color.appendChild(cm);
     const description = r.insertCell(8);
     description.innerHTML = link.description;
     const stat = r.insertCell(9);
@@ -244,6 +245,34 @@ function agentMenu(agents, type, id, current) {
   return m;
 }
 
+function colorMenu(link) {
+  const m = document.createElement("select");
+  m.onchange = colorAssignLink; 
+  m.id = link.ID;
+
+  const list = {
+    main: "Op Default",
+    groupa: "Orange",
+    groupb: "Light Orange",
+    groupc: "Tan",
+    groupd: "Purple",
+    groupe: "Teal",
+    groupf: "Pink"
+  };
+
+  for (name in list) {
+    const a = document.createElement("option");
+    a.setAttribute("value", name);
+    a.text = list[name];
+    if (link.color == name) {
+      a.setAttribute("selected", true);
+    }
+    m.add(a);
+  }
+
+  return m;
+}
+
 function opPromise(id) {
   return new Promise(function (resolve, reject) {
     xhr = new XMLHttpRequest();
@@ -314,7 +343,10 @@ function agentAssignLink(id, sel) {
     xhr.send(encodeURI('agent=' + sel.value));
 }
 
-function colorAssignLink(id, sel) {
+function colorAssignLink(event) {
+    const sel = event.target
+    const id = event.target.id
+
     sel.style.backgroundColor = "yellow";
     sel.setAttribute("disabled","true");
     xhr = new XMLHttpRequest();

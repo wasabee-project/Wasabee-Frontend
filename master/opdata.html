@@ -506,13 +506,17 @@ async function agentMap(res) {
 
   for (const team of res.teamlist) {
     done.push(team.teamid);
-    t = await getTeam(team.teamid);
-    for (const agent of t.agents) {
-      if (agent.state) {
-        if (!a.has(agent.id)) {
-	  a.set(agent.id, agent);
-	}
+    try {
+      t = await getTeam(team.teamid);
+      for (const agent of t.agents) {
+        if (agent.state) {
+          if (!a.has(agent.id)) {
+  	    a.set(agent.id, agent);
+  	  }
+        }
       }
+    } catch {
+      console.log('error fetching team: ' + team.teamid);
     }
   }
   return a;

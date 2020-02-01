@@ -122,10 +122,11 @@ async function loadOp(id) {
   const agents = await agentMap(res);
   const portals = portalMap(res);
   
-  buildTable(res, id, portals, agents);
+  buildOpOrder(res, id, portals, agents);
+  buildKeysNeeded(res, id, portals, agents);
 }
 
-function buildTable(res, opID, portals, agents) {
+function buildOpOrder(res, opID, portals, agents) {
   document.title = res.name + " Operation Data";
 
   const table = document.getElementById("opsteps");
@@ -214,7 +215,62 @@ function buildTable(res, opID, portals, agents) {
   }
 }
 
-function agentMenu(agents, type, id, current) {
+function buildKeysNeeded(res, opID, portals, agents) {
+  const table = document.getElementById("opkeys");
+  let oldrow = table.lastElementChild;
+  while (oldrow) {
+    table.removeChild(oldrow);
+    oldrow = table.lastElementChild;
+  }
+
+  const keyNeeded = new Map();
+  if (res.links) {
+   res.links.forEach(function(link) {
+      if (keyNeeded.has(link.toPortalId)) {
+       let current = keyNeeded.get(link.toPortalId);
+       keyNeeded.set(link.toPortalId, current + 1);
+     } else {
+       keyNeeded.set(link.toPortalId, 1);
+     }
+   });
+  }
+
+  const keyOnHand = new Map();
+  if (res.keysonhand) {
+   res.keysonhand.forEach(function(key) {
+      if (keyOnHand.has(key.portalId)) {
+       let current = keyOnHand.get(key.portalId);
+       keyOnHand.set(key.portalId, current + key.onhand);
+     } else {
+       keyOnHand.set(key.portalId, key.onhand);
+     }
+   });
+  }
+
+  // XXX sort the list based on portal name
+  for (const [k,v] of keyNeeded.entries()) {
+    let oh = 0;
+    if (keyOnHand.has(k)) {
+      oh = keyOnHand.get(k);
+    }
+
+    const r = table.insertRow(-1);
+    r.setAttribute("id", k + "-keyneeded");
+    const portalNameCell = r.insertCell(0);
+    const fromPortalName = portals.get(k).name;
+    portalNameCell.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + opID + "/portal/" + k + "\">" + fromPortalName + "</a>";
+    const requiredCell = r.insertCell(1);
+    requiredCell.innerHTML = v;
+    const onHandCell = r.insertCell(2);
+    onHandCell.innerHTML = oh;
+
+    if (oh < v) {
+      onHandCell.style.color = "red";
+    }
+  }
+};
+
+function agentMenu(agents, mType, id, current) {
   const m = document.createElement("select");
 
   const unassigned = document.createElement("option");
@@ -233,7 +289,7 @@ function agentMenu(agents, type, id, current) {
     m.add(a);
   }
 
-  if (type == "marker") {
+  if (mType == "marker") {
     m.addEventListener("change", (event) => {
       agentAssignMarker(id, m);
     });
@@ -491,32 +547,31 @@ function setopinfo(id, sel) {
     xhr.send(encodeURI('info=' + sel.value));
 }
 
+/* convert the array of portals sent by the server into a map for easy processing */
 function portalMap(res) {
   const m = new Map();
+  /* XXX move everything to newer for (x of y) structure */
   res.opportals.forEach(function(portal) {
     m.set(portal.id, portal);
   });
   return m;
 }
 
-/* move everything to newer for (x of y) structure */
+/* convert the array of agents sent by the server into a map for easy processing */
 async function agentMap(res) {
   const a = new Map();
   const done = new Array();
 
+  /* XXX move everything to newer for (x of y) structure */
   for (const team of res.teamlist) {
     done.push(team.teamid);
-    try {
-      t = await getTeam(team.teamid);
-      for (const agent of t.agents) {
-        if (agent.state) {
-          if (!a.has(agent.id)) {
-  	    a.set(agent.id, agent);
-  	  }
-        }
+    t = await getTeam(team.teamid);
+    for (const agent of t.agents) {
+      if (agent.state) {
+        if (!a.has(agent.id)) {
+	  a.set(agent.id, agent);
+	}
       }
-    } catch {
-      console.log('error fetching team: ' + team.teamid);
     }
   }
   return a;

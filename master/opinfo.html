@@ -86,9 +86,10 @@
 function loadOp(id) {
     xhr = new XMLHttpRequest();
     xhr.open('GET', "{{WebAPIPath}}/draw/" + id + "?json=y");
-    xhr.setRequestHeader('cache-control', 'no-cache, must-revalidate, post-check=0, pre-check=0');
+    xhr.setRequestHeader('cache-control', 'no-cache');
+    xhr.setRequestHeader('cache-control', 'no-store');
     xhr.setRequestHeader('pragma', 'no-cache');
-    xhr.setRequestHeader('expires', '0');
+    xhr.setRequestHeader('if-modified-since', 'Tue, 01 Jan 1980 1:00:00 GMT');
     xhr.onload = function() {
         if (xhr.status === 200) {
         	const res = JSON.parse(xhr.responseText);

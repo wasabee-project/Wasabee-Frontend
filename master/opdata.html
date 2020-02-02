@@ -122,11 +122,18 @@ async function loadOp(id) {
   const agents = await agentMap(res);
   const portals = portalMap(res);
   
-  buildOpOrder(res, id, portals, agents);
-  buildKeysNeeded(res, id, portals, agents);
+  buildOpOrder(res, portals, agents);
+  buildKeysNeeded(res, portals, agents);
 }
 
-function buildOpOrder(res, opID, portals, agents) {
+async function reloadKeys(id) {
+  const res = await opPromise(id);
+  const agents = await agentMap(res);
+  const portals = portalMap(res);
+  buildKeysNeeded(res, portals, agents);
+}
+
+function buildOpOrder(res, portals, agents) {
   document.title = res.name + " Operation Data";
 
   const table = document.getElementById("opsteps");
@@ -146,7 +153,7 @@ function buildOpOrder(res, opID, portals, agents) {
     pos.innerHTML = "<span id=\"opsteps-" + link.ID + "\">" + link.throwOrderPos + "</span>";
     const src = r.insertCell(2);
     const fromPortalName = portals.get(link.fromPortalId).name;
-    src.innerHTML = "<span id=\"rev-" + link.ID + "-fm\"><a href=\"{{WebAPIPath}}/draw/" + opID + "/portal/" + link.fromPortalId + "\">" + fromPortalName + "</a></span>";
+    src.innerHTML = "<span id=\"rev-" + link.ID + "-fm\"><a href=\"{{WebAPIPath}}/draw/" + res.ID + "/portal/" + link.fromPortalId + "\">" + fromPortalName + "</a></span>";
     const swap = r.insertCell(3);
     // build dom manually to do the onclick
     btn = document.createElement("img");
@@ -158,7 +165,7 @@ function buildOpOrder(res, opID, portals, agents) {
     swap.appendChild(btn);
     const dst = r.insertCell(4);
     const toPortalName = portals.get(link.toPortalId).name;
-    dst.innerHTML = "<span id=\"rev-" + link.ID + "-to\"><a href=\"{{WebAPIPath}}/draw/" + opID + "/portal/" + link.toPortalId + "\">" + toPortalName + "</a></span>";
+    dst.innerHTML = "<span id=\"rev-" + link.ID + "-to\"><a href=\"{{WebAPIPath}}/draw/" + res.ID + "/portal/" + link.toPortalId + "\">" + toPortalName + "</a></span>";
     const distance = r.insertCell(5);
     distance.innerHTML = calculateDistance(res, link.fromPortalId, link.toPortalId, portals);
     const assignedTo = r.insertCell(6);
@@ -186,7 +193,7 @@ function buildOpOrder(res, opID, portals, agents) {
     pos.innerHTML = "<span id=\"opsteps-" + marker.ID + "\">" + marker.order + "</span>";
     const src = r.insertCell(2);
     const portalName = portals.get(marker.portalId).name;
-    src.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + opID + "/portal/" + marker.portalId + "\">" + portalName + "</a>";
+    src.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + res.ID + "/portal/" + marker.portalId + "\">" + portalName + "</a>";
     const swap = r.insertCell(3);
     const action = r.insertCell(4);
     action.innerHTML = "<span class=\"" + marker.type + "\">" + marker.type + "</span>";
@@ -215,7 +222,7 @@ function buildOpOrder(res, opID, portals, agents) {
   }
 }
 
-function buildKeysNeeded(res, opID, portals, agents) {
+function buildKeysNeeded(res, portals, agents) {
   const table = document.getElementById("opkeys");
   let oldrow = table.lastElementChild;
   while (oldrow) {
@@ -258,7 +265,7 @@ function buildKeysNeeded(res, opID, portals, agents) {
     r.setAttribute("id", k + "-keyneeded");
     const portalNameCell = r.insertCell(0);
     const fromPortalName = portals.get(k).name;
-    portalNameCell.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + opID + "/portal/" + k + "\">" + fromPortalName + "</a>";
+    portalNameCell.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + res.ID + "/portal/" + k + "\">" + fromPortalName + "</a>";
     const requiredCell = r.insertCell(1);
     requiredCell.innerHTML = v;
     const onHandCell = r.insertCell(2);
@@ -293,6 +300,12 @@ function buildKeysNeeded(res, opID, portals, agents) {
   }
 
   const buildlist = document.getElementById("capbuild");
+  oldrow = buildlist.lastElementChild;
+  while (oldrow) {
+    buildlist.removeChild(oldrow);
+    oldrow = buildlist.lastElementChild;
+  }
+
   for (const [k, v] of capMap.entries()) {
     for (const [x, y] of v.entries()) {
       const r = buildlist.insertRow(-1);
@@ -303,7 +316,7 @@ function buildKeysNeeded(res, opID, portals, agents) {
       agentNameCell.innerHTML = "<a href=\"{{WebAPIPath}}/agent/" + k + "\">" + agent.name+ "</a>";
       const portal = portals.get(x);
       const portalNameCell = r.insertCell(1)
-      portalNameCell.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + opID + "/portal/" + x + "\">" + portal.name+ "</a>";
+      portalNameCell.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + res.ID + "/portal/" + x + "\">" + portal.name+ "</a>";
       const countCell = r.insertCell(2);
       countCell.innerHTML = y;
     }
@@ -426,13 +439,14 @@ function agentAssignLink(id, sel) {
     xhr.open('POST', "/api/v1/draw/{{.ID}}/link/" + id + "/assign");
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
-        var res = JSON.parse(xhr.responseText);
+        const res = JSON.parse(xhr.responseText);
         if (xhr.status === 200) {
 		sleep(100).then(function() {
 	        sel.style.backgroundColor = "green"
 	        sleep(500).then(function() {
 	            sel.style.backgroundColor = "white"
 	            sel.removeAttribute("disabled");
+		    reloadKeys({{.ID}});
 	        });
 	    });
         } else {
@@ -452,7 +466,7 @@ function colorAssignLink(event) {
     xhr.open('POST', "/api/v1/draw/{{.ID}}/link/" + id + "/color");
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
-        var res = JSON.parse(xhr.responseText);
+        const res = JSON.parse(xhr.responseText);
         if (xhr.status === 200) {
 		sleep(100).then(function() {
 	        sel.style.backgroundColor = "green"
@@ -475,7 +489,7 @@ function agentAssignMarker(id, sel) {
     xhr.open('POST', "/api/v1/draw/{{.ID}}/marker/" + id + "/assign");
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
-        var res = JSON.parse(xhr.responseText);
+        const res = JSON.parse(xhr.responseText);
         if (xhr.status === 200) {
 		sleep(100).then(function() {
 	        sel.style.backgroundColor = "green"

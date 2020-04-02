@@ -23,6 +23,8 @@ messaging.setBackgroundMessageHandler(async function(payload) {
   //   icon: '/static/android-chrome-192x192.png'
   // };
 
+  console.log(clients);
+
   const allClients = await clients.MatchAll({
     includeUncontrolled: true
   });

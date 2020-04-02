@@ -153,7 +153,7 @@ function buildOpOrder(res, portals, agents) {
     pos.innerHTML = "<span id=\"opsteps-" + link.ID + "\">" + link.throwOrderPos + "</span>";
     const src = r.insertCell(2);
     const fromPortalName = portals.get(link.fromPortalId).name;
-    src.innerHTML = "<span id=\"rev-" + link.ID + "-fm\"><a href=\"{{WebAPIPath}}/draw/" + res.ID + "/portal/" + link.fromPortalId + "\">" + fromPortalName + "</a></span>";
+    src.innerHTML = "<span id=\"rev-" + link.ID + "-fm\"><a href=\"{{WebAPIPath}}/draw/" + res.ID + "/portal/" + link.fromPortalId + "?json=n\">" + fromPortalName + "</a></span>";
     const swap = r.insertCell(3);
     // build dom manually to do the onclick
     btn = document.createElement("img");
@@ -165,7 +165,7 @@ function buildOpOrder(res, portals, agents) {
     swap.appendChild(btn);
     const dst = r.insertCell(4);
     const toPortalName = portals.get(link.toPortalId).name;
-    dst.innerHTML = "<span id=\"rev-" + link.ID + "-to\"><a href=\"{{WebAPIPath}}/draw/" + res.ID + "/portal/" + link.toPortalId + "\">" + toPortalName + "</a></span>";
+    dst.innerHTML = "<span id=\"rev-" + link.ID + "-to\"><a href=\"{{WebAPIPath}}/draw/" + res.ID + "/portal/" + link.toPortalId + "?json=n\">" + toPortalName + "</a></span>";
     const distance = r.insertCell(5);
     distance.innerHTML = calculateDistance(res, link.fromPortalId, link.toPortalId, portals);
     const assignedTo = r.insertCell(6);
@@ -193,7 +193,7 @@ function buildOpOrder(res, portals, agents) {
     pos.innerHTML = "<span id=\"opsteps-" + marker.ID + "\">" + marker.order + "</span>";
     const src = r.insertCell(2);
     const portalName = portals.get(marker.portalId).name;
-    src.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + res.ID + "/portal/" + marker.portalId + "\">" + portalName + "</a>";
+    src.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + res.ID + "/portal/" + marker.portalId + "?json=n\">" + portalName + "</a>";
     const swap = r.insertCell(3);
     const action = r.insertCell(4);
     action.innerHTML = "<span class=\"" + marker.type + "\">" + marker.type + "</span>";
@@ -265,7 +265,7 @@ function buildKeysNeeded(res, portals, agents) {
     r.setAttribute("id", k + "-keyneeded");
     const portalNameCell = r.insertCell(0);
     const fromPortalName = portals.get(k).name;
-    portalNameCell.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + res.ID + "/portal/" + k + "\">" + fromPortalName + "</a>";
+    portalNameCell.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + res.ID + "/portal/" + k + "?json=n\">" + fromPortalName + "</a>";
     const requiredCell = r.insertCell(1);
     requiredCell.innerHTML = v;
     const onHandCell = r.insertCell(2);
@@ -313,10 +313,10 @@ function buildKeysNeeded(res, portals, agents) {
       const agentNameCell = r.insertCell(0);
       const agent = agents.get(k);
       agentNameCell.innerHTML = agent.name;
-      agentNameCell.innerHTML = "<a href=\"{{WebAPIPath}}/agent/" + k + "\">" + agent.name+ "</a>";
+      agentNameCell.innerHTML = "<a href=\"{{WebAPIPath}}/agent/" + k + "?json=n\">" + agent.name+ "</a>";
       const portal = portals.get(x);
       const portalNameCell = r.insertCell(1)
-      portalNameCell.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + res.ID + "/portal/" + x + "\">" + portal.name+ "</a>";
+      portalNameCell.innerHTML = "<a href=\"{{WebAPIPath}}/draw/" + res.ID + "/portal/" + x + "?json=n\">" + portal.name+ "</a>";
       const countCell = r.insertCell(2);
       countCell.innerHTML = y;
     }

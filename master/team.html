@@ -28,7 +28,7 @@
 	{{range .Agent}}
 <tr>
 	<td>{{if .PictureURL}}<img src="{{.PictureURL}}" height="50" width="50">{{end}}</td>
-	<td><a href="{{WebAPIPath}}/agent/{{.Gid}}"> {{.Name}}</a></td>
+	<td><a href="{{WebAPIPath}}/agent/{{.Gid}}?json=n"> {{.Name}}</a></td>
         <td>{{if .State}} <img src="/static/img/checkmark.png" alt="has team enabled"> {{end}}</td>
         <td>{{if .Squad}}{{.Squad}} {{end}}</td>
 </tr>

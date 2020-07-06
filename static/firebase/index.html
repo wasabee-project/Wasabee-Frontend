@@ -3,7 +3,7 @@
 <head>
   <meta charset=utf-8 />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>fcmtesting</title>
+  <title>Firebase Cloud Messaging service runner</title>
   <link rel="manifest" href="/static/firebase/manifest.json">
 </head>
 <body>
@@ -11,21 +11,24 @@
   <div<p>this screen intended to be loaded in an iframe</p></div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-messaging.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-messaging.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-analytics.js"></script>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDAjLWwHfSoIbCuwDuKI34qlbj2NW1KVJA",
-    authDomain: "phdevbin.firebaseapp.com",
-    databaseURL: "https://phdevbin.firebaseio.com",
-    projectId: "phdevbin",
-    storageBucket: "",
-    messagingSenderId: "269534461245",
-    appId: "1:269534461245:web:75ff60f80205d6da"
-  };
+// Initialize the Firebase app in the service worker by passing in the messagingSenderId.
+  firebase.initializeApp({
+   apiKey: "AIzaSyDAjLWwHfSoIbCuwDuKI34qlbj2NW1KVJA",
+   authDomain: "phdevbin.firebaseapp.com",
+   databaseURL: "https://phdevbin.firebaseio.com",
+   projectId: "phdevbin",
+   storageBucket: "phdevbin.appspot.com",
+   messagingSenderId: "269534461245",
+   appId: "1:269534461245:web:75ff60f80205d6da",
+   measurementId: "G-LZR2PVKWM7",
+  });
+  firebase.analytics();
 
-  firebase.initializeApp(firebaseConfig);
   const messaging = firebase.messaging();
   messaging.usePublicVapidKey('BEB7mMFzF4way3Scjrwt62mWvpQcPnSm2_8iJaxokgzt9DqZqqidQ1phjuqHciVvcVVK5uJtJw3Bg1Kt8Nw2-hk');
   // requestPermission();
@@ -42,12 +45,13 @@
   });
 
   window.addEventListener("message", (event) => {
-    // This represents a message coming from the Service Worker. Forward it along to IITC.
+    // The message coming from the Service Worker. Forward it along to IITC.
+    console.log('service worker message received: ', event.data);
     window.parent.postMessage(event.data, "https://intel.ingress.com");
   });
 
   messaging.onMessage((payload) => {
-    console.log('Firebase message received: ', payload);
+    // console.log('Firebase message received: ', payload);
     // post the message to the IITC-hosted iframe.
     window.parent.postMessage(payload, "https://intel.ingress.com");
   });
@@ -76,8 +80,7 @@
         console.warn("Unable to send Firebase token to the server. (User not logged in?)", error);
       });
     } else {
-      console.log('Token already sent to server so won\'t send it again ' +
-          'unless it changes');
+      console.log("Token already sent to server");
     }
   }
 
@@ -111,7 +114,7 @@
 
       req.onload = function() {
         if (req.status === 200) {
-          console.log("token sent OK");
+          console.log("Firebase token sent to Wasabee server");
           resolve();
         } else {
           reject(Error(req.statusText));

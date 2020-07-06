@@ -1,99 +1,58 @@
 {{define "me"}}
 <html lang="en">
 <head>
-<title>{{.IngressName}} Agent data</title>
-{{template "styles"}}
+<title>Wasabee WebUI</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="anonymous"/>
+<link href="/static/css/bootstrap.min.css" rel="stylesheet">
+<link href="/static/css/landing-page.css" rel="stylesheet">
+<link href="/static/css/wasabee.css" rel="stylesheet">
+<link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+<link rel="manifest" href="/static/site.webmanifest">
+<link rel="mask-icon" href="/static/safari-pinned-tab.svg" color="#65d55b">
+<link rel="shortcut icon" href="/static/favicon.ico">
+<meta name="apple-mobile-web-app-title" content="Wasabee-WebUI">
+<meta name="application-name" content="Wasabee-WebUI">
+<meta name="msapplication-TileColor" content="#00a300">
+<meta name="msapplication-config" content="/static/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
 </head>
 <body>
-{{template "nav"}}
-	<div class="content-sction-a">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-12">
-					<div class="content-section-a">
-<!-- content starts here -->
-<h1>My Dashboard</h1>
-<div class="content-area">
-<div class="card mb-2">
-<div class="card-header">My Assignments</div>
-<div class="card-body">
-<em>You have assignments in the following operations.</em>
-  <ul class="list-group list-group-flush">
-	{{range .Assignments}}
-		<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.OpID}}"><strong>{{.OperationName}}</strong> ({{.Type}})</a></li>
-	{{end}}
-  </ul>
-</div>
-<div class="card mb-2">
-<div class="card-header">Operations</div>
-<div class="card-body">
-<em>Disable inactive teams to hide operations.</em>
-  <ul class="list-group list-group-flush">
-	{{range .Ops}}
-		<li class="list-group-item"><a href="{{WebAPIPath}}/draw/{{.ID}}"><strong>{{.Name}}</strong></a> ({{.TeamName}})</li>
-	{{end}}
-  </ul>
-</div>
-</div>
-</div>
 
-<div class="card mb-2">
-<div class="card-header">Teams</div>
-<div class="card-body">
-<em>Disable inactive teams. It is good opsec and reduces data transfer.</em>
-  <ul class="list-group list-group-flush">
-	{{range .Teams}}
-		<li class="list-group-item"><a href="{{WebAPIPath}}/team/{{.ID}}"><strong>{{.Name}}</strong></a> <span class="state">({{.State}})</span>
-{{if eq .State "Off"}}
-			[ <a href="{{WebAPIPath}}/me/{{.ID}}?state=On">On</a> ]
-{{else}}
-			[ <a href="{{WebAPIPath}}/me/{{.ID}}?state=Off">Off</a> ]
-{{end}}
-{{if .RocksComm}}
-			<span class="add-left-space"><em><a href="https://enlightened.rocks/comm/{{.RocksComm}}">This team is managed at enlightened.rocks</a></em></span>
-{{else}}
-			[ <a href="{{WebAPIPath}}/me/{{.ID}}/delete" class="delete">Remove Me</a> ]
-{{end}}
-		</li>
-	{{end}}
-  </ul>
-</div>
-</div>
+<!-- Navigation -->
+<!-- <nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation"> -->
+<nav class="navbar navbar-expand-md sticky-top topnav" role="navigation">
+ <button type="button" class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+  <span class="navbar-toggler-icon">[nav]</span>
+ </button>
+ <!-- this is managed in the js -->
+ <div class="collapse navbar-collapse" id="navbar-collapse"></div>
+</nav>
 
-<div class="card mb-2">
-  <div class="card-header">My Teams</div>
-  <div class="card-body">
-  <ul class="list-group list-group-flush">
-{{range .OwnedTeams}}
-    <li class="list-group-item">
-	<a href="{{WebAPIPath}}/team/{{.ID}}/edit" class="card-link"><strong>{{.Name}}</strong></a> [ <a href="{{WebAPIPath}}/team/{{.ID}}/delete" class="card-link delete">Delete</a> ]
-	</li>
-{{end}}
-  <li class="list-group-item">
-    <form action="{{WebAPIPath}}/team/new" method="get">
-    <input type="text" name="name" />
-    <input type="submit" name="update" value="new team" />
-    </form>
-  </li>
-  </ul>
+<!-- alerts go here -->
+<div id="wasabeeAlerts"></div>
+
+<!-- subnav goes here -->
+<div class="container" id="wasabeeSubnav"></div>
+
+<!-- content goes here -->
+<div id="wasabeeContent"></div>
+
+<footer>
+ <div class="container">
+  <div class="row">
+   <div class="col">
+    <p class="text-muted small">This site uses cookies for authentication purposes. You may opt into location tracking; your location and other information will be shared <strong>only</strong> with members of your teams. Your ENL information is verified with <a href="https://v.enl.one/">V</a> and <a href="https://enl.rocks">.rocks</a>. Please see the <a href="/privacy">Privacy Policy</a> for more information.</p>
+   </div>
   </div>
-</div>
-</div>
-		<!-- content ends here -->				
-						
-					</div>
-				</div>
-			</div>
+ </div>
+</footer>
 
-		</div>
-		<!-- /.container -->
-
-	</div>
-	<!-- /.intro-header -->
-
-{{template "firebase"}}
-{{template "footer"}}
-{{template "bootstrapjs"}}
+<script src="/static/app/dist/main.js"></script>
 </body>
 </html>
 {{end}}

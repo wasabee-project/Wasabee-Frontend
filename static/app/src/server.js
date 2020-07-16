@@ -4,7 +4,7 @@ import { notify } from "./notify";
 
 export function sendTokenToWasabee(token) {
   return new Promise(function (resolve, reject) {
-    const url = "/api/v1/me/firebase";
+    const url = `${window.wasabeewebui.server}/api/v1/me/firebase`;
     const req = new XMLHttpRequest();
     req.open("POST", url, true);
     req.withCredentials = true;
@@ -26,7 +26,7 @@ export function sendTokenToWasabee(token) {
 
 export function loadMe(force = false) {
   return new Promise(function (resolve, reject) {
-    const url = "/api/v1/me?json=y";
+    const url = `${window.wasabeewebui.server}/api/v1/me?json=y`;
     const req = new XMLHttpRequest();
     req.open("GET", url, true);
     req.withCredentials = true;
@@ -62,7 +62,7 @@ export function loadMe(force = false) {
 
 export function loadLogout() {
   return new Promise(function (resolve, reject) {
-    const url = "/api/v1/me/logout";
+    const url = `${window.wasabeewebui.server}/api/v1/me/logout`;
     const req = new XMLHttpRequest();
     req.open("GET", url, true);
     req.withCredentials = true;
@@ -87,7 +87,7 @@ export function loadLogout() {
 
 export function loadOp(opID) {
   return new Promise(function (resolve, reject) {
-    const url = `/api/v1/draw/${opID}`;
+    const url = `${window.wasabeewebui.server}/api/v1/draw/${opID}`;
     const req = new XMLHttpRequest();
     const localop = new WasabeeOp(localStorage[opID]);
 
@@ -178,6 +178,7 @@ function _sendLocation() {
           (reject) => {
             notify("Unable to send location to server", "danger");
             console.log(reject);
+	    stopSendLoc();
           }
         );
       },
@@ -194,7 +195,7 @@ function _sendLocation() {
 
 function _sendLoc(lat, lon) {
   return new Promise(function (resolve, reject) {
-    const url = `/api/v1/me?lat=${lat}&lon=${lon}`;
+    const url = `${window.wasabeewebui.server}/api/v1/me?lat=${lat}&lon=${lon}`;
     const req = new XMLHttpRequest();
 
     req.open("GET", url);
@@ -219,7 +220,7 @@ function _sendLoc(lat, lon) {
 
 export function loadTeam(teamID) {
   return new Promise(function (resolve, reject) {
-    const url = `/api/v1/team/${teamID}`;
+    const url = `${window.wasabeewebui.server}/api/v1/team/${teamID}`;
     const req = new XMLHttpRequest();
     req.open("GET", url, true);
     req.withCredentials = true;
@@ -243,7 +244,7 @@ export function loadTeam(teamID) {
 
 export function removeAgentFromTeam(teamID, googleID) {
   return new Promise(function (resolve, reject) {
-    const url = `/api/v1/team/${teamID}/${googleID}`;
+    const url = `${window.wasabeewebui.server}/api/v1/team/${teamID}/${googleID}`;
     const req = new XMLHttpRequest();
     req.open("DELETE", url, true);
     req.withCredentials = true;
@@ -267,7 +268,7 @@ export function removeAgentFromTeam(teamID, googleID) {
 
 export function setSquad(teamID, googleID, squad) {
   return new Promise(function (resolve, reject) {
-    const url = `/api/v1/team/${teamID}/${googleID}/squad`;
+    const url = `${window.wasabeewebui.server}/api/v1/team/${teamID}/${googleID}/squad`;
     const req = new XMLHttpRequest();
     req.open("POST", url, true);
     req.withCredentials = true;
@@ -293,7 +294,7 @@ export function setSquad(teamID, googleID, squad) {
 
 export function setDisplayName(teamID, googleID, displayname) {
   return new Promise(function (resolve, reject) {
-    const url = `/api/v1/team/${teamID}/${googleID}/displayname`;
+    const url = `${window.wasabeewebui.server}/api/v1/team/${teamID}/${googleID}/displayname`;
     const req = new XMLHttpRequest();
     req.open("POST", url, true);
     req.withCredentials = true;
@@ -320,7 +321,7 @@ export function setDisplayName(teamID, googleID, displayname) {
 
 export function setTeamState(teamID, state) {
   return new Promise(function (resolve, reject) {
-    const url = `/api/v1/me/${teamID}?state=${state}`;
+    const url = `${window.wasabeewebui.server}/api/v1/me/${teamID}?state=${state}`;
     const req = new XMLHttpRequest();
     req.open("GET", url, true);
     req.withCredentials = true;
@@ -345,7 +346,7 @@ export function setTeamState(teamID, state) {
 
 export function leaveTeam(teamID) {
   return new Promise(function (resolve, reject) {
-    const url = `/api/v1/me/${teamID}`;
+    const url = `${window.wasabeewebui.server}/api/v1/me/${teamID}`;
     const req = new XMLHttpRequest();
     req.open("DELETE", url, true);
     req.withCredentials = true;
@@ -370,7 +371,7 @@ export function leaveTeam(teamID) {
 
 export function changeTeamOwnerPromise(teamID, newOwner) {
   return new Promise(function (resolve, reject) {
-    const url = `/api/v1/team/${teamID}/chown?to=${newOwner}`;
+    const url = `${window.wasabeewebui.server}/api/v1/team/${teamID}/chown?to=${newOwner}`;
     const req = new XMLHttpRequest();
     req.open("GET", url, true);
     req.withCredentials = true;
@@ -395,7 +396,7 @@ export function changeTeamOwnerPromise(teamID, newOwner) {
 
 export function createJoinLinkPromise(teamID) {
   return new Promise(function (resolve, reject) {
-    const url = `/api/v1/team/${teamID}/genJoinKey`;
+    const url = `${window.wasabeewebui.server}/api/v1/team/${teamID}/genJoinKey`;
     const req = new XMLHttpRequest();
     req.open("GET", url, true);
     req.withCredentials = true;
@@ -420,7 +421,7 @@ export function createJoinLinkPromise(teamID) {
 
 export function deleteJoinLinkPromise(teamID) {
   return new Promise(function (resolve, reject) {
-    const url = `/api/v1/team/${teamID}/delJoinKey`;
+    const url = `${window.wasabeewebui.server}/api/v1/team/${teamID}/delJoinKey`;
     const req = new XMLHttpRequest();
     req.open("GET", url, true);
     req.withCredentials = true;

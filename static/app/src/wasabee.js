@@ -19,9 +19,18 @@ import { displayTeam } from "./displayTeam";
 
 export function wasabeeMain() {
   // a place to store runtime globals
-  window.wasabeewebui = {};
+  window.wasabeewebui = {
+// XXX too many things are hard-coded, need to make them consts 
+// XXX these are not used yet, I need to do that...
+    botname: "PhDevBot",
+    server: "https://server.wasabee.rocks",
+    cdnurl: "https://cdn.wasabee.rocks",
+    opIdLength: 40,
+  };
 
   firebaseInit();
+
+  // look in localStorage and update server config if the user has selected a different server
 
   // for debugging only, we listen to firebase directly and don't need the service worker
   window.addEventListener("message", (event) => {
@@ -29,6 +38,7 @@ export function wasabeeMain() {
     console.log("Service Worker message received: ", event);
   });
 
+  // if the user switches to another tab and back, update location
   document.addEventListener(
     "visibilitychange",
     () => {
@@ -41,6 +51,7 @@ export function wasabeeMain() {
     false
   );
 
+  // for some reason too many history events get registered, breaking back-button functionality
   window.onpopstate = (event) => {
     if (event.state != null) {
       console.log("popstate", event);
@@ -51,6 +62,9 @@ export function wasabeeMain() {
     }
   };
 
+  // TODO: off-line mode that just uses the data in localStorage
+  // for when you are doing an op and have low/no signal
+  
   // get /me, if not possible, request login
   loadMe().then(
     (resolve) => {
@@ -80,6 +94,7 @@ export function wasabeeMain() {
 }
 
 function buildMenu() {
+  // since we are using leaflet for the maps, might as well take advantage of its dom framework
   const nb = document.getElementById("navbar-collapse");
   const ul = L.DomUtil.create("ul", "navbar-nav mr-auto", nb);
 
@@ -146,6 +161,7 @@ function buildMenu() {
   });
 }
 
+// TODO: look at the current URL # and parse to determine where we ought to go
 function chooseScreen(state) {
   if (state == null || state.screen == null) {
     history.replaceState({ screen: "teams" }, "teams", "/me");
@@ -323,7 +339,8 @@ function opsList() {
     teamMap.set(t.ID, t.Name);
   }
 
-  // bootstrap layout
+  // bootstrap layout 
+  // XXX convert to `string literal` because this is too much to read
   const container = L.DomUtil.create("div", "container", content);
   const gridRow = L.DomUtil.create("div", "row", container);
   const gridCol = L.DomUtil.create("div", "col", gridRow);

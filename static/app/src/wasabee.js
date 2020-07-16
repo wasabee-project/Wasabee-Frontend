@@ -20,8 +20,8 @@ import { displayTeam } from "./displayTeam";
 export function wasabeeMain() {
   // a place to store runtime globals
   window.wasabeewebui = {
-// XXX too many things are hard-coded, need to make them consts 
-// XXX these are not used yet, I need to do that...
+    // XXX too many things are hard-coded, need to make them consts
+    // XXX these are not used yet, I need to do that...
     botname: "PhDevBot",
     server: "https://server.wasabee.rocks",
     cdnurl: "https://cdn.wasabee.rocks",
@@ -64,7 +64,7 @@ export function wasabeeMain() {
 
   // TODO: off-line mode that just uses the data in localStorage
   // for when you are doing an op and have low/no signal
-  
+
   // get /me, if not possible, request login
   loadMe().then(
     (resolve) => {
@@ -339,7 +339,7 @@ function opsList() {
     teamMap.set(t.ID, t.Name);
   }
 
-  // bootstrap layout 
+  // bootstrap layout
   // XXX convert to `string literal` because this is too much to read
   const container = L.DomUtil.create("div", "container", content);
   const gridRow = L.DomUtil.create("div", "row", container);

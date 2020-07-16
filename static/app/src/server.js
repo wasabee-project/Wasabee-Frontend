@@ -178,7 +178,7 @@ function _sendLocation() {
           (reject) => {
             notify("Unable to send location to server", "danger");
             console.log(reject);
-	    stopSendLoc();
+            stopSendLoc();
           }
         );
       },

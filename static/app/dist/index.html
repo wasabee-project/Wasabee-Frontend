@@ -1,0 +1,57 @@
+<html lang="en">
+<head>
+<title>Wasabee WebUI</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="anonymous"/>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<link href="https://cdn.wasabee.rocks/css/landing-page.css" rel="stylesheet">
+<link href="https://cdn.wasabee.rocks/css/wasabee.css" rel="stylesheet">
+<link rel="apple-touch-icon" sizes="180x180" href="https://cdn.wasabee.rocks/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://cdn.wasabee.rocks/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://cdn.wasabee.rocks/favicon-16x16.png">
+<link rel="manifest" href="/static/site.webmanifest">
+<link rel="mask-icon" href="https://cdn.wasabee.rocks/safari-pinned-tab.svg" color="#65d55b">
+<link rel="shortcut icon" href="https://cdn.wasabee.rocks/favicon.ico">
+<meta name="apple-mobile-web-app-title" content="Wasabee-WebUI">
+<meta name="application-name" content="Wasabee-WebUI">
+<meta name="msapplication-TileColor" content="#00a300">
+<meta name="msapplication-config" content="/static/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+</head>
+<body>
+
+<!-- Navigation -->
+<!-- <nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation"> -->
+<nav class="navbar navbar-expand-md sticky-top topnav" role="navigation">
+ <button type="button" class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+  <span class="navbar-toggler-icon">[nav]</span>
+ </button>
+ <!-- this is managed in the js -->
+ <div class="collapse navbar-collapse" id="navbar-collapse"></div>
+</nav>
+
+<!-- alerts go here -->
+<div id="wasabeeAlerts"></div>
+
+<!-- subnav goes here -->
+<div class="container" id="wasabeeSubnav"></div>
+
+<!-- content goes here -->
+<div id="wasabeeContent"></div>
+
+<footer>
+ <div class="container">
+  <div class="row">
+   <div class="col">
+    <p class="text-muted small">This site uses cookies for authentication purposes. You may opt into location tracking; your location and other information will be shared <strong>only</strong> with members of your teams. Your ENL information is verified with <a href="https://v.enl.one/">V</a> and <a href="https://enl.rocks">.rocks</a>. Please see the <a href="/privacy">Privacy Policy</a> for more information.</p>
+   </div>
+  </div>
+ </div>
+</footer>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+<script src="main.js"></script>
+</body>
+</html>

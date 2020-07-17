@@ -1,0 +1,6 @@
+static/app/dist/main.js
+static/app/node_modules/
+static/app/package-lock.json
+static/dev/
+static/prod/
+static/scot/

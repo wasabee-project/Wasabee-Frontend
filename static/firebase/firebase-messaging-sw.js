@@ -3,12 +3,10 @@
 // are not available in the service worker.
 importScripts('https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/7.15.5/firebase-messaging.js');
-// analytics depends on window... which does not exist in a service-worker
-// importScripts('https://www.gstatic.com/firebasejs/7.15.5/firebase-analytics.js');
  
 // Initialize the Firebase app in the service worker by passing in the messagingSenderId.
 firebase.initializeApp({
-  apiKey: "AIzaSyDAjLWwHfSoIbCuwDuKI34qlbj2NW1KVJA",
+  apiKey: "AIzaSyDfGX11zg-3s79hd5Kzbb1TwWvw-JtN33I",
   authDomain: "phdevbin.firebaseapp.com",
   databaseURL: "https://phdevbin.firebaseio.com",
   projectId: "phdevbin",
@@ -17,8 +15,6 @@ firebase.initializeApp({
   appId: "1:269534461245:web:75ff60f80205d6da",
   measurementId: "G-LZR2PVKWM7",
 });
-
-//firebase.analytics();
 
 // Retrieve an instance of Firebase Messaging so that it can handle background
 // messages.

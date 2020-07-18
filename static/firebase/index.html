@@ -132,7 +132,7 @@
 
   function sendTokenToWasabee(token) {
     return new Promise(function(resolve, reject) {
-      var url = "https://server.wasabee.rocks/api/v1/me/firebase";
+      var url = "/api/v1/me/firebase";
       var req = new XMLHttpRequest();
       req.open("POST", url, true);
       req.withCredentials = true;

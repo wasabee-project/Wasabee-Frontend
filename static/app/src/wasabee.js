@@ -24,7 +24,7 @@ export function wasabeeMain() {
     // XXX these are not used yet, I need to do that...
     botname: "PhDevBot",
     server: "https://server.wasabee.rocks",
-    cdnurl: "https://cdn.wasabee.rocks",
+    cdnurl: "https://cdn2.wasabee.rocks",
     opIdLength: 40,
   };
 

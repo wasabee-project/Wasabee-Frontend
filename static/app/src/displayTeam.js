@@ -144,7 +144,7 @@ function list(teamID) {
       for (const a of team.agents) {
         let state = "";
         if (a.state)
-          state = `<img src="https://cdn.wasabee.rocks/img/checkmark.png" alt="has team enabled">`;
+          state = `<img src="${window.wasabeewebui.cdnurl}/img/checkmark.png" alt="has team enabled">`;
         const row = `
 <tr>
 <td><img src="${a.pic}" height="50" width="50"></td>
@@ -296,7 +296,7 @@ function manage(teamID) {
       for (const a of team.agents) {
         let state = "";
         if (a.state)
-          state = `<img src="https://cdn.wasabee.rocks/img/checkmark.png" alt="has team enabled">`;
+          state = `<img src="${window.wasabeewebui.cdnurl}/img/checkmark.png" alt="has team enabled">`;
         let remove = "";
         if (!team.RockCommunity) {
           remove = `<button id="${teamID}.${a.id}.remove">Remove</button>`;

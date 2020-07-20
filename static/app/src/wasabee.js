@@ -31,7 +31,7 @@ export function wasabeeMain() {
   firebaseInit();
 
   // auto-detect server based on URL
-  
+
   // look in localStorage and update server config if the user has selected a different server
 
   // for debugging only, we listen to firebase directly and don't need the service worker

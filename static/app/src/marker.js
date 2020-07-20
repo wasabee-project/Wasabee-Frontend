@@ -34,6 +34,6 @@ export default class WasabeeMarker {
 
   // TBD
   get icon() {
-    return ${window.wasabeewebui.cdnurl} + "/img/marker.png";
+    return window.wasabeewebui.cdnurl + "/img/marker.png";
   }
 }

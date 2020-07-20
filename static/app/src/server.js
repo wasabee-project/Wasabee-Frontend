@@ -1,6 +1,7 @@
 import WasabeeOp from "./operation";
 import WasabeeMe from "./me";
 import WasabeeAgent from "./agent";
+import WasabeeTeam from "./team";
 import { notify } from "./notify";
 
 export function sendTokenToWasabee(token) {
@@ -260,7 +261,7 @@ export function loadTeam(teamID) {
     req.onload = function () {
       switch (req.status) {
         case 200:
-          resolve(req.response);
+          resolve(WasabeeTeam.create(req.response));
           break;
         default:
           reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));

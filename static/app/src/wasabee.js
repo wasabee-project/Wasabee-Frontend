@@ -211,12 +211,35 @@ function teamList() {
 
   content.innerHTML = `
 <div class="container"><div class="row"><div class="col">
-<h1>Teams</h1>
+<h1>Teams <a id="teamRefresh">🗘</a></h1>
 <table class="table table-striped">
 <thead class="thead"><tr><th scope="col">Team</th><th scope="col">State</th><th scope="col"></th><th scope="col">Ops</th></tr></thead>
 <tbody id="teams"></tbody>
 </table>
 </div></div></div>`;
+
+  const teamRefreshNav = document.getElementById("teamRefresh");
+  L.DomEvent.on(teamRefreshNav, "click", (ev) => {
+    L.DomEvent.stop(ev);
+    loadMe(true).then(
+      (resolve) => {
+        const nme = new WasabeeMe(resolve);
+        if (nme.GoogleID) {
+          nme.store();
+          syncOps(nme.Ops).then(() => {
+            teamList();
+          });
+        } else {
+          notify("bad data?");
+          console.log(resolve);
+        }
+      },
+      (reject) => {
+        notify(reject);
+        console.log(reject);
+      }
+    );
+  });
 
   const tbody = document.getElementById("teams");
 

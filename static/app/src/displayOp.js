@@ -28,6 +28,7 @@ export function displayOp(state) {
 <div class="collapse navbar-collapse" id="opNav">
   <ul class="navbar-nav" id="opNavbar">
    <li class="nav-item"><a class="nav-link" href="#operation.checklist.${state.op}" id="opChecklist">Checklist</a></li>
+   <li class="nav-item"><a class="nav-link" href="#operation.assignment.${state.op}" id="opAssignments">Assignments</a></li>
    <li class="nav-item"><a class="nav-link" href="#operation.map.${state.op}" id="opMap">Map</a></li>
    <li class="nav-item"><a class="nav-link" href="#operation.keys.${state.op}" id="opKeys">Keys</a></li>
   </ul>
@@ -37,11 +38,13 @@ export function displayOp(state) {
 
   const opNavbar = document.getElementById("opNavbar");
   const opListNav = document.getElementById("opChecklist");
+  const opAssignmentsNav = document.getElementById("opAssignments");
   const opMapNav = document.getElementById("opMap");
   const opKeysNav = document.getElementById("opKeys");
 
   for (const [nav, action] of [
     [opListNav, checklist],
+    [opAssignmentsNav, assignments],
     [opMapNav, map],
     [opKeysNav, keys],
   ]) {
@@ -98,6 +101,10 @@ export function displayOp(state) {
       L.DomUtil.addClass(opKeysNav, "active");
       keys(op);
       break;
+    case "assignments":
+      L.DomUtil.addClass(opKeysNav, "active");
+      assignments(op);
+      break;
     case "checklist":
     default:
       L.DomUtil.addClass(opListNav, "active");
@@ -105,7 +112,11 @@ export function displayOp(state) {
   }
 }
 
-function checklist(op) {
+function assignments(op) {
+  return checklist(op, true);
+}
+
+function checklist(op, assignmentsOnly = false) {
   history.pushState(
     { screen: "op", op: op.ID, subscreen: "checklist" },
     "op checklist",
@@ -156,7 +167,10 @@ function checklist(op) {
   steps.sort((a, b) => {
     return a.opOrder - b.opOrder;
   });
+  const me = WasabeeMe.get();
   for (const s of steps) {
+    if (assignmentsOnly && s.assignedTo != me.GoogleID) continue;
+
     const row = L.DomUtil.create("tr", null, opSteps);
     L.DomUtil.create("td", null, row).textContent = s.opOrder;
 

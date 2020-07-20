@@ -220,7 +220,7 @@ function map(op) {
   for (const l of op.links) {
     const latLngs = [
       op.getPortal(l.fromPortalId).latLng,
-      op.getPortal(l.fromPortalId).latLng,
+      op.getPortal(l.toPortalId).latLng,
     ];
 
     const newlink = new L.Geodesic(latLngs, {

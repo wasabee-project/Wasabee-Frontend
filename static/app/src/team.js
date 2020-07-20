@@ -44,8 +44,7 @@ export default class WasabeeTeam {
 
   getAgent(id) {
     for (const agent of this.agents) {
-      if (agent.id == id)
-        return agent;
+      if (agent.id == id) return agent;
     }
     return null;
   }

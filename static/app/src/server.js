@@ -258,10 +258,19 @@ export function loadTeam(teamID) {
     req.open("GET", url, true);
     req.withCredentials = true;
 
+    const localTeam = WasabeeTeam.get(teamID);
+    if (localTeam != null && localTeam.fetched) {
+      req.setRequestHeader("If-Modified-Since", localTeam.fetched);
+    }
+
     req.onload = function () {
       switch (req.status) {
         case 200:
           resolve(WasabeeTeam.create(req.response));
+          break;
+        case 304: // If-Modified-Since replied NotModified
+          // console.debug("server copy is older/unmodified, keeping local copy");
+          resolve(localTeam);
           break;
         default:
           reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));

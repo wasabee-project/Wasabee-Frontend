@@ -8,7 +8,7 @@ import { notify } from "./notify";
 import Sortable from "sortablejs";
 import "leaflet.geodesic";
 import { logEvent } from "./firebase";
-import { loadTeam, loadOp, deletePermPromise } from "./server";
+import { loadTeam, loadOp, addPermPromise, deletePermPromise } from "./server";
 
 export function displayOp(state) {
   const subnav = document.getElementById("wasabeeSubnav");
@@ -335,6 +335,8 @@ function manage(op) {
   );
   logEvent("screen_view", { screen_name: "op manage" });
 
+  const me = WasabeeMe.get();
+
   const content = document.getElementById("wasabeeContent");
   while (content.lastChild) content.removeChild(content.lastChild);
 
@@ -352,6 +354,10 @@ function manage(op) {
 <tbody id="opTable">
 </tbody>
 </table>
+<label>Add Team:
+  <select id="addTeamSelect"></select><select id="addRoleSelect"></select>
+</label>
+<button id="addButton">Add</button>
 </div></div></div>
 `;
 
@@ -372,6 +378,40 @@ function manage(op) {
     L.DomEvent.on(removeButton, "click", (ev) => {
       L.DomEvent.stop(ev);
       deletePermPromise(op.ID, t.teamid, t.role)
+        .then(() => loadOp(op.ID))
+        .then((op) => manage(op));
+    });
+  }
+
+  const addTeamSelect = document.getElementById("addTeamSelect");
+  for (const t of me.Teams) {
+    if (t.State != "On") continue;
+    const o = L.DomUtil.create("option", null, addTeamSelect);
+    o.value = t.ID;
+    o.textContent = t.Name;
+  }
+  const addRoleSelect = document.getElementById("addRoleSelect");
+  for (const role of ["read", "write", "assignedonly"]) {
+    const read = L.DomUtil.create("option", null, addRoleSelect);
+    read.value = role;
+    read.textContent = role;
+  }
+
+  if (me.Teams.length > 0) {
+    const addButton = document.getElementById("addButton");
+    L.DomEvent.on(addButton, "click", (ev) => {
+      L.DomEvent.stop(ev);
+      const teamID = addTeamSelect.value;
+      const role = addRoleSelect.value;
+
+      // avoid duplicate
+      for (const t of op.teamlist) {
+        if (t.teamid == teamID && t.role == role) {
+          loadOp(op.ID).then((op) => manage(op));
+          return;
+        }
+      }
+      addPermPromise(op.ID, teamID, role)
         .then(() => loadOp(op.ID))
         .then((op) => manage(op));
     });

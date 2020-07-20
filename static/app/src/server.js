@@ -515,6 +515,36 @@ export function deleteJoinLinkPromise(teamID) {
   });
 }
 
+export const addPermPromise = function (opID, teamID, role) {
+  return new Promise((resolve, reject) => {
+    const url = `${window.wasabeewebui.server}/api/v1/draw/${opID}/perms`;
+    const req = new XMLHttpRequest();
+
+    req.open("POST", url);
+    req.withCredentials = true;
+
+    req.onload = function () {
+      switch (req.status) {
+        case 200:
+          resolve(true);
+          break;
+        default:
+          reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
+          break;
+      }
+    };
+
+    req.onerror = function () {
+      reject(`Network Error: ${req.responseText}`);
+    };
+
+    const fd = new FormData();
+    fd.append("team", teamID);
+    fd.append("role", role);
+    req.send(fd);
+  });
+};
+
 export const deletePermPromise = function (opID, teamID, role) {
   return new Promise((resolve, reject) => {
     const url = `${window.wasabeewebui.server}/api/v1/draw/${opID}/perms`;

@@ -194,6 +194,28 @@ function chooseScreen(state) {
   }
 }
 
+function loadMeAndOps() {
+  clearOpsStorage();
+  return new Promise(function (resolve, reject) {
+    loadMe(true)
+      .then((json) => {
+        const nme = new WasabeeMe(json);
+        if (nme.GoogleID) {
+          nme.store();
+          syncOps(nme.Ops).then(resolve);
+        } else {
+          console.log(json);
+          reject("bad data?");
+        }
+      })
+      .catch((error) => {
+        notify(error);
+        console.log(error);
+        reject(error);
+      });
+  });
+}
+
 function teamList() {
   logEvent("screen_view", { screen_name: "teams" });
   history.pushState({ screen: "teams" }, "teams", "#teams");
@@ -221,24 +243,7 @@ function teamList() {
   const teamRefreshNav = document.getElementById("teamRefresh");
   L.DomEvent.on(teamRefreshNav, "click", (ev) => {
     L.DomEvent.stop(ev);
-    loadMe(true).then(
-      (resolve) => {
-        const nme = new WasabeeMe(resolve);
-        if (nme.GoogleID) {
-          nme.store();
-          syncOps(nme.Ops).then(() => {
-            teamList();
-          });
-        } else {
-          notify("bad data?");
-          console.log(resolve);
-        }
-      },
-      (reject) => {
-        notify(reject);
-        console.log(reject);
-      }
-    );
+    loadMeAndOps().then(() => teamList());
   });
 
   const tbody = document.getElementById("teams");
@@ -278,24 +283,7 @@ function teamList() {
           logEvent("join_group");
         }
 
-        loadMe(true).then(
-          (resolve) => {
-            const nme = new WasabeeMe(resolve);
-            if (nme.GoogleID) {
-              nme.store();
-              syncOps(nme.Ops).then(() => {
-                teamList();
-              });
-            } else {
-              notify("bad data?");
-              console.log(resolve);
-            }
-          },
-          (reject) => {
-            notify(reject);
-            console.log(reject);
-          }
-        );
+        loadMeAndOps().then(() => teamList());
       });
     });
 
@@ -309,27 +297,9 @@ function teamList() {
         L.DomEvent.stop(ev);
         // XXX use real promise chainng
         leaveTeam(t.ID).then(() => {
-          clearOpsStorage();
+          //clearOpsStorage();
           logEvent("leave_group");
-          loadMe(true).then(
-            (resolve) => {
-              console.log(resolve);
-              const nme = new WasabeeMe(resolve);
-              if (nme.GoogleID) {
-                nme.store();
-                syncOps(nme.Ops).then(() => {
-                  teamList();
-                });
-              } else {
-                notify("bad data?");
-                console.log(resolve);
-              }
-            },
-            (reject) => {
-              notify(reject);
-              console.log(reject);
-            }
-          );
+          loadMeAndOps().then(() => teamList());
         });
       });
     }
@@ -386,24 +356,7 @@ function opsList() {
   const teamRefreshNav = document.getElementById("opsRefresh");
   L.DomEvent.on(teamRefreshNav, "click", (ev) => {
     L.DomEvent.stop(ev);
-    loadMe(true).then(
-      (resolve) => {
-        const nme = new WasabeeMe(resolve);
-        if (nme.GoogleID) {
-          nme.store();
-          syncOps(nme.Ops).then(() => {
-            opsList();
-          });
-        } else {
-          notify("bad data?");
-          console.log(resolve);
-        }
-      },
-      (reject) => {
-        notify(reject);
-        console.log(reject);
-      }
-    );
+    loadMeAndOps().then(() => opsList());
   });
 
   const tbody = document.getElementById("ops");

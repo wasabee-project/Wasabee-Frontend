@@ -102,11 +102,17 @@ export function loadOp(opID) {
     req.onload = function () {
       switch (req.status) {
         case 200:
-          resolve(req.response);
+          try {
+            const op = new WasabeeOp(req.response);
+            op.store();
+            resolve(op);
+          } catch (e) {
+            reject(e);
+          }
           break;
         case 304: // If-Modified-Since replied NotModified
           // console.debug("server copy is older/unmodified, keeping local copy");
-          resolve(localStorage[opID]);
+          resolve(localop);
           break;
         case 401:
           reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
@@ -161,10 +167,7 @@ export function syncOps(ops) {
     for (const o of opsID) promises.push(loadOp(o));
     Promise.allSettled(promises).then((results) => {
       for (const r of results) {
-        if (r.status == "fulfilled") {
-          const newop = new WasabeeOp(r.value);
-          newop.store();
-        } else {
+        if (r.status != "fulfilled") {
           console.log(r);
           notify("Op load failed");
         }

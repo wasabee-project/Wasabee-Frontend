@@ -219,6 +219,15 @@ function teamList() {
 </div></div></div>`;
 
   const tbody = document.getElementById("teams");
+
+  if (me.Teams.length == 0) {
+    tbody.innerHTML = `
+<tr>
+<td colspan="4">You are not on any teams, have your operator add you with this GoogleID: ${me.GoogleID}</td>
+</tr>
+`;
+  }
+
   for (const t of me.Teams) {
     const row = L.DomUtil.create("tr", null, tbody);
     const name = L.DomUtil.create("td", null, row);

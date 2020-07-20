@@ -6,6 +6,7 @@ import {
   changeTeamOwnerPromise,
   createJoinLinkPromise,
   deleteJoinLinkPromise,
+  addAgentToTeam,
 } from "./server";
 import { notify } from "./notify";
 import WasabeeMe from "./me";
@@ -250,7 +251,10 @@ function manage(teamID) {
   content.innerHTML = `
 <div class="container"><div class="row"><div class="col">
 <h1 id="teamName"></h1>
-<div>Form for adding agents will go here</div>
+<label>Add Agent: 
+  <input type="text" id="addAgent" placeholder="GoogleID or Agent Name" />
+</label>
+<buton id="addAgentButton">Add</button>
 <table class="table table-striped">
 <thead>
 <tr>
@@ -270,17 +274,21 @@ function manage(teamID) {
 
   const teamName = document.getElementById("teamName");
   const teamTable = document.getElementById("teamTable");
+  const addAgent = document.getElementById("addAgent");
+  const addAgentButton = document.getElementById("addAgentButton");
 
-  /*
-<li class="list-group-item">
-<form action="{{WebAPIPath}}/team/{{.ID}}" method="get">
-<input type="text" name="key" />
-<input type="submit" name="add" value="Add agent to team" />
-<small>You can use an Agent name, a GoogleID, or an EnlID</small>
-</form>
-</li>
-</ul>
- */
+  L.DomEvent.on(addAgentButton, "click", () => {
+    addAgentToTeam(teamID, addAgent.value).then(
+      () => {
+        // just reload the screen
+        manage(teamID);
+      },
+      (reject) => {
+        console.log(reject);
+        notify(reject);
+      }
+    );
+  });
 
   loadTeam(teamID).then(
     (json) => {

@@ -125,7 +125,8 @@ export function syncOps(ops) {
   // will never reject
   return new Promise(function (resolve) {
     const promises = new Array();
-    for (const o of ops) promises.push(loadOp(o.ID));
+    const opsID = new Set(ops.map((o) => o.ID));
+    for (const o of opsID) promises.push(loadOp(o));
     Promise.allSettled(promises).then((results) => {
       for (const r of results) {
         if (r.status == "fulfilled") {

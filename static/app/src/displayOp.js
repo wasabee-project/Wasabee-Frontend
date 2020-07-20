@@ -6,6 +6,7 @@ import { notify } from "./notify";
 import Sortable from "sortablejs";
 import "leaflet.geodesic";
 import { logEvent } from "./firebase";
+import { loadAgent } from "./server";
 
 export function displayOp(state) {
   const subnav = document.getElementById("wasabeeSubnav");
@@ -156,7 +157,13 @@ function checklist(op) {
 
       L.DomUtil.create("td", s.type, row).textContent = " " + s.type;
       L.DomUtil.create("td", null, row).textContent = " ";
-      L.DomUtil.create("td", null, row).textContent = s.assignedTo;
+      const assignedToTD = L.DomUtil.create("td", null, row);
+      assignedToTD.textContent = s.assignedTo;
+      if (s.assignedTo != null && s.assignedTo != "") {
+        loadAgent(s.assignedTo).then(
+          (agent) => (assignedToTD.textContent = agent.name)
+        );
+      }
       L.DomUtil.create("td", null, row).textContent = s.comment;
       L.DomUtil.create("td", null, row).textContent = s.state;
       L.DomUtil.create("td", null, row).textContent = s.completedBy;
@@ -170,7 +177,13 @@ function checklist(op) {
       tPortal.textContent = tp.name;
 
       L.DomUtil.create("td", null, row).textContent = calculateDistance(fp, tp);
-      L.DomUtil.create("td", null, row).textContent = s.assignedTo;
+      const assignedToTD = L.DomUtil.create("td", null, row);
+      assignedToTD.textContent = s.assignedTo;
+      if (s.assignedTo != null && s.assignedTo != "") {
+        loadAgent(s.assignedTo).then(
+          (agent) => (assignedToTD.textContent = agent.name)
+        );
+      }
       L.DomUtil.create("td", null, row).textContent = s.comment;
       L.DomUtil.create("td", null, row).textContent = s.state;
       L.DomUtil.create("td", null, row).textContent = s.completed;

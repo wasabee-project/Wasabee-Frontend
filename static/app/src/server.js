@@ -1,5 +1,6 @@
 import WasabeeOp from "./operation";
 import WasabeeMe from "./me";
+import WasabeeAgent from "./agent";
 import { notify } from "./notify";
 
 export function sendTokenToWasabee(token) {
@@ -120,6 +121,36 @@ export function loadOp(opID) {
     req.send();
   });
 }
+
+export const loadAgent = function (GID) {
+  return new Promise(function (resolve, reject) {
+    if (GID == null || GID == "null" || GID == "") {
+      reject("null gid");
+    }
+
+    const url = `${window.wasabeewebui.server}/api/v1/agent/${GID}`;
+    const req = new XMLHttpRequest();
+
+    req.open("GET", url);
+    req.withCredentials = true;
+
+    req.onload = function () {
+      if (req.status === 200) {
+        try {
+          resolve(WasabeeAgent.create(req.response));
+        } catch (e) {
+          reject(e);
+        }
+      } else {
+        reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
+      }
+    };
+    req.onerror = function () {
+      reject(Error(`Network Error: ${req.responseText}`));
+    };
+    req.send();
+  });
+};
 
 export function syncOps(ops) {
   // will never reject

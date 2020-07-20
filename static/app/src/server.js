@@ -242,6 +242,32 @@ export function loadTeam(teamID) {
   });
 }
 
+export function addAgentToTeam(teamID, googleID) {
+  return new Promise(function (resolve, reject) {
+    const url = `${window.wasabeewebui.server}/api/v1/team/${teamID}/${googleID}`;
+    const req = new XMLHttpRequest();
+    req.open("POST", url, true);
+    req.withCredentials = true;
+
+    req.onload = function () {
+      switch (req.status) {
+        case 200:
+          resolve(req.response);
+          break;
+        default:
+          reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
+          break;
+      }
+    };
+    req.onerror = function () {
+      reject(Error(`Network Error: ${req.responseText}`));
+    };
+
+    const fd = new FormData();
+    req.send(fd);
+  });
+}
+
 export function removeAgentFromTeam(teamID, googleID) {
   return new Promise(function (resolve, reject) {
     const url = `${window.wasabeewebui.server}/api/v1/team/${teamID}/${googleID}`;

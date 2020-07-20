@@ -254,7 +254,7 @@ function manage(teamID) {
 <label>Add Agent: 
   <input type="text" id="addAgent" placeholder="GoogleID or Agent Name" />
 </label>
-<buton id="addAgentButton">Add</button>
+<button id="addAgentButton">Add</button>
 <table class="table table-striped">
 <thead>
 <tr>

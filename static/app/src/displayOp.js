@@ -39,27 +39,20 @@ export function displayOp(state) {
   const opListNav = document.getElementById("opChecklist");
   const opMapNav = document.getElementById("opMap");
   const opKeysNav = document.getElementById("opKeys");
-  L.DomEvent.on(opListNav, "click", (ev) => {
-    L.DomEvent.stop(ev);
-    for (const c of opNavbar.children)
-      for (const a of c.children) L.DomUtil.removeClass(a, "active");
-    L.DomUtil.addClass(opListNav, "active");
-    checklist(op);
-  });
-  L.DomEvent.on(opMapNav, "click", (ev) => {
-    L.DomEvent.stop(ev);
-    for (const c of opNavbar.children)
-      for (const a of c.children) L.DomUtil.removeClass(a, "active");
-    L.DomUtil.addClass(opMapNav, "active");
-    map(op);
-  });
-  L.DomEvent.on(opKeysNav, "click", (ev) => {
-    L.DomEvent.stop(ev);
-    for (const c of opNavbar.children)
-      for (const a of c.children) L.DomUtil.removeClass(a, "active");
-    L.DomUtil.addClass(opKeysNav, "active");
-    keys(op);
-  });
+
+  for (const [nav, action] of [
+    [opListNav, checklist],
+    [opMapNav, map],
+    [opKeysNav, keys],
+  ]) {
+    L.DomEvent.on(nav, "click", (ev) => {
+      L.DomEvent.stop(ev);
+      for (const c of opNavbar.children)
+        for (const a of c.children) L.DomUtil.removeClass(a, "active");
+      L.DomUtil.addClass(nav, "active");
+      action(op);
+    });
+  }
 
   const me = WasabeeMe.get();
 

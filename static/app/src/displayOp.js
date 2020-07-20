@@ -8,7 +8,7 @@ import { notify } from "./notify";
 import Sortable from "sortablejs";
 import "leaflet.geodesic";
 import { logEvent } from "./firebase";
-import { loadTeam, loadOp } from "./server";
+import { loadTeam, loadOp, deletePermPromise } from "./server";
 
 export function displayOp(state) {
   const subnav = document.getElementById("wasabeeSubnav");
@@ -346,6 +346,7 @@ function manage(op) {
 <tr>
 <th scope="col">Team</th>
 <th scope="col">Permission</th>
+<th scope="col">&nbsp;</th>
 </tr>
 </thead>
 <tbody id="opTable">
@@ -360,12 +361,20 @@ function manage(op) {
     const team = WasabeeTeam.get(t.teamid);
     const name = team ? team.name : t.teamid;
     const role = t.role;
-    const row = `
-<tr>
-<td>${name}</td>
-<td>${role}</td>
-</tr>`;
-    opTable.insertAdjacentHTML("beforeend", row);
+
+    const row = L.DomUtil.create("tr", null, opTable);
+    L.DomUtil.create("td", null, row).textContent = name;
+    L.DomUtil.create("td", null, row).textContent = role;
+
+    const tdRm = L.DomUtil.create("td", null, row);
+    const removeButton = L.DomUtil.create("button", null, tdRm);
+    removeButton.textContent = "Remove";
+    L.DomEvent.on(removeButton, "click", (ev) => {
+      L.DomEvent.stop(ev);
+      deletePermPromise(op.ID, t.teamid, t.role)
+        .then(() => loadOp(op.ID))
+        .then((op) => manage(op));
+    });
   }
 }
 

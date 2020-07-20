@@ -82,10 +82,17 @@ export function displayOp(state) {
   const opRefreshNav = document.getElementById("opRefresh");
   L.DomEvent.on(opRefreshNav, "click", (ev) => {
     L.DomEvent.stop(ev);
-    const promises = [loadOp(state.op)];
-    const teamset = new Set(op.teamlist.map((t) => t.teamid));
-    for (const t of teamset) promises.push(loadTeam(t));
-    Promise.allSettled(promises).then(() => displayOp(history.state));
+    loadOp(state.op)
+      .then((op) => {
+        const promises = [];
+        const teamset = new Set(op.teamlist.map((t) => t.teamid));
+        for (const t of teamset) promises.push(loadTeam(t));
+        return Promise.allSettled(promises);
+      })
+      .then(() => displayOp(history.state))
+      .catch(() =>
+        notify("Op load failed, please refresh from operations list")
+      );
   });
 
   switch (state.subscreen) {

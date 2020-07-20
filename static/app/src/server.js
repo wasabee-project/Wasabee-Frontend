@@ -169,7 +169,7 @@ export function syncOps(ops) {
       for (const r of results) {
         if (r.status != "fulfilled") {
           console.log(r);
-          notify("Op load failed");
+          notify("Op load failed, please refresh");
         }
       }
       resolve(true);

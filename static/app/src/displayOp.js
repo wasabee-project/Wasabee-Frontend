@@ -340,16 +340,12 @@ function manage(op) {
 
   content.innerHTML = `
 <div class="container"><div class="row"><div class="col">
-<h1 id="opName"></h1>
+<h1 id="opName">${op.name}</h1>
 <table class="table table-striped">
 <thead>
 <tr>
-<th scope="col">&nbsp;</th>
-<th scope="col">Agent</th>
-<th scope="col">Enabled</th>
-<th scope="col">Squad</th>
-<th scope="col">Display Name</th>
-<th scope="col">&nbsp;</th>
+<th scope="col">Team</th>
+<th scope="col">Permission</th>
 </tr>
 </thead>
 <tbody id="opTable">
@@ -358,9 +354,19 @@ function manage(op) {
 </div></div></div>
 `;
 
-  const opName = document.getElementById("opName");
-  opName.textContent = op.name;
-  // const opTable = document.getElementById("opTable");
+  const opTable = document.getElementById("opTable");
+
+  for (const t of op.teamlist) {
+    const team = WasabeeTeam.get(t.teamid);
+    const name = team ? team.name : t.teamid;
+    const role = t.role;
+    const row = `
+<tr>
+<td>${name}</td>
+<td>${role}</td>
+</tr>`;
+    opTable.insertAdjacentHTML("beforeend", row);
+  }
 }
 
 function keys(op) {

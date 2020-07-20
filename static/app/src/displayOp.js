@@ -124,6 +124,8 @@ function checklist(op, assignmentsOnly = false) {
   );
   logEvent("screen_view", { screen_name: "op checklist" });
 
+  const me = WasabeeMe.get();
+
   const content = document.getElementById("wasabeeContent");
   while (content.lastChild) content.removeChild(content.lastChild);
 
@@ -167,7 +169,6 @@ function checklist(op, assignmentsOnly = false) {
   steps.sort((a, b) => {
     return a.opOrder - b.opOrder;
   });
-  const me = WasabeeMe.get();
   for (const s of steps) {
     if (assignmentsOnly && s.assignedTo != me.GoogleID) continue;
 
@@ -239,6 +240,8 @@ function map(op) {
   );
   logEvent("screen_view", { screen_name: "op setting" });
 
+  const me = WasabeeMe.get();
+
   const content = document.getElementById("wasabeeContent");
   while (content.lastChild) content.removeChild(content.lastChild);
   const height = Math.max(window.innerHeight - 300, 200);
@@ -258,6 +261,22 @@ function map(op) {
 
   map.fitBounds(op.mbr);
 
+  const defaultLayer = L.layerGroup().addTo(map);
+  const assignmentsLayer = L.layerGroup().addTo(map);
+
+  L.control
+    .layers(
+      {},
+      {
+        Default: defaultLayer,
+        Assignments: assignmentsLayer,
+      },
+      { collapsed: false }
+    )
+    .addTo(map);
+
+  const assignedAnchors = new Set();
+
   for (const m of op.markers) {
     const targetPortal = op.getPortal(m.portalId);
     const marker = L.marker(targetPortal.latLng, {
@@ -265,7 +284,9 @@ function map(op) {
       state: m.state,
       // icon: L.icon({ iconUrl: m.icon, shadowUrl: null, iconSize: L.point(24, 40), iconAnchor: L.point(12, 40), popupAnchor: L.point(-1, -48), }),
     });
-    marker.addTo(map);
+
+    if (m.assignedTo == me.GoogleID) marker.addTo(assignmentsLayer);
+    else marker.addTo(defaultLayer);
   }
 
   for (const l of op.links) {
@@ -280,7 +301,12 @@ function map(op) {
       color: "green",
     });
     // console.log(newlink);
-    newlink.addTo(map);
+
+    if (l.assignedTo == me.GoogleID) {
+      newlink.addTo(assignmentsLayer);
+      assignedAnchors.add(l.fromPortalId);
+      assignedAnchors.add(l.toPortalId);
+    } else newlink.addTo(defaultLayer);
   }
   for (const a of op.anchors) {
     const targetPortal = op.getPortal(a);
@@ -288,7 +314,9 @@ function map(op) {
       title: targetPortal.name,
       // icon: L.icon({ iconUrl: m.icon, shadowUrl: null, iconSize: L.point(24, 40), iconAnchor: L.point(12, 40), popupAnchor: L.point(-1, -48), }),
     });
-    marker.addTo(map);
+
+    if (assignedAnchors.has(a)) marker.addTo(assignmentsLayer);
+    else marker.addTo(defaultLayer);
   }
 }
 

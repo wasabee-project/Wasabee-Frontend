@@ -167,6 +167,8 @@ function buildMenu() {
 
 // TODO: look at the current URL # and parse to determine where we ought to go
 function chooseScreen(state) {
+  if (!state) state = history.state;
+
   if (state == null || state.screen == null) {
     history.replaceState({ screen: "teams" }, "teams", "/me");
     teamList();

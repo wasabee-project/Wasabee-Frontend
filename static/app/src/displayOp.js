@@ -133,7 +133,7 @@ function assignments(op) {
 
 function checklist(op, assignmentsOnly = false) {
   history.pushState(
-    { screen: "op", op: op.ID, subscreen: "checklist" },
+    { screen: "operation", op: op.ID, subscreen: "checklist" },
     "op checklist",
     `#op.checklist.${op.ID}`
   );
@@ -233,7 +233,7 @@ function checklist(op, assignmentsOnly = false) {
 
 function map(op) {
   history.pushState(
-    { screen: "op", op: op.ID, subscreen: "map" },
+    { screen: "operation", op: op.ID, subscreen: "map" },
     "op map",
     `#op.map.${op.ID}`
   );
@@ -388,7 +388,7 @@ function map(op) {
 
 function permissions(op) {
   history.pushState(
-    { screen: "op", op: op.ID, subscreen: "permissions" },
+    { screen: "operation", op: op.ID, subscreen: "permissions" },
     "op permissions",
     `#op.permissions.${op.ID}`
   );
@@ -479,7 +479,7 @@ function permissions(op) {
 
 function keys(op) {
   history.pushState(
-    { screen: "op", op: op.ID, subscreen: "keys" },
+    { screen: "operation", op: op.ID, subscreen: "keys" },
     "op keys",
     `#op.keys.${op.ID}`
   );
@@ -510,7 +510,7 @@ function keys(op) {
 
 function manage(op) {
   history.pushState(
-    { screen: "op", op: op.ID, subscreen: "manage" },
+    { screen: "operation", op: op.ID, subscreen: "manage" },
     "op manage",
     `#op.manage.${op.ID}`
   );

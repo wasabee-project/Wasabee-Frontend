@@ -27,32 +27,29 @@ export function displayOp(state) {
 </button>
 <div class="collapse navbar-collapse" id="opNav">
   <ul class="navbar-nav" id="opNavbar">
-   <li class="nav-item"><a class="nav-link" href="#operation.checklist.${state.op}" id="opChecklist">Checklist</a></li>
-   <li class="nav-item"><a class="nav-link" href="#operation.assignment.${state.op}" id="opAssignments">Assignments</a></li>
-   <li class="nav-item"><a class="nav-link" href="#operation.map.${state.op}" id="opMap">Map</a></li>
-   <li class="nav-item"><a class="nav-link" href="#operation.keys.${state.op}" id="opKeys">Keys</a></li>
   </ul>
  </div>
 </nav>
 `;
 
   const opNavbar = document.getElementById("opNavbar");
-  const opListNav = document.getElementById("opChecklist");
-  const opAssignmentsNav = document.getElementById("opAssignments");
-  const opMapNav = document.getElementById("opMap");
-  const opKeysNav = document.getElementById("opKeys");
 
-  for (const [nav, action] of [
-    [opListNav, checklist],
-    [opAssignmentsNav, assignments],
-    [opMapNav, map],
-    [opKeysNav, keys],
+  for (const [nav, action, name] of [
+    ["checklist", checklist, "Checklist"],
+    ["assignments", assignments, "Assignments"],
+    ["map", map, "Map"],
+    ["keys", keys, "Keys"],
   ]) {
-    L.DomEvent.on(nav, "click", (ev) => {
+    const li = L.DomUtil.create("li", "nav-item", opNavbar);
+    const link = L.DomUtil.create("a", "nav-link", li);
+    link.href = `#operation.${nav}.${state.op}`;
+    link.textContent = name;
+    link.id = "op" + nav;
+    L.DomEvent.on(link, "click", (ev) => {
       L.DomEvent.stop(ev);
       for (const c of opNavbar.children)
         for (const a of c.children) L.DomUtil.removeClass(a, "active");
-      L.DomUtil.addClass(nav, "active");
+      L.DomUtil.addClass(link, "active");
       action(op);
     });
   }
@@ -65,16 +62,23 @@ export function displayOp(state) {
   for (const t of op.teamlist) if (t.role == "write") write = true;
 
   if (write || owner) {
-    const m = `<li class="nav-item"><a class="nav-link" href="#operation.manage.${state.op}" id="opManage">Manage</a></li>`;
-    opNavbar.insertAdjacentHTML("beforeend", m);
-    const opManageNav = document.getElementById("opManage");
-    L.DomEvent.on(opManageNav, "click", (ev) => {
-      L.DomEvent.stop(ev);
-      for (const c of opNavbar.children)
-        for (const a of c.children) L.DomUtil.removeClass(a, "active");
-      L.DomUtil.addClass(opManageNav, "active");
-      manage(op);
-    });
+    for (const [nav, action, name] of [
+      ["manage", manage, "Manage"],
+      ["permissions", permissions, "Permissions"],
+    ]) {
+      const li = L.DomUtil.create("li", "nav-item", opNavbar);
+      const link = L.DomUtil.create("a", "nav-link", li);
+      link.href = `#operation.${nav}.${state.op}`;
+      link.textContent = name;
+      link.id = "op" + nav;
+      L.DomEvent.on(link, "click", (ev) => {
+        L.DomEvent.stop(ev);
+        for (const c of opNavbar.children)
+          for (const a of c.children) L.DomUtil.removeClass(a, "active");
+        L.DomUtil.addClass(link, "active");
+        action(op);
+      });
+    }
   }
 
   const m = `<li class="nav-item"><a class="nav-link" id="opRefresh">🗘</a></li>`;
@@ -97,24 +101,28 @@ export function displayOp(state) {
 
   switch (state.subscreen) {
     case "map":
-      L.DomUtil.addClass(opMapNav, "active");
+      L.DomUtil.addClass(document.getElementById("opmap"), "active");
       map(op);
       break;
     case "manage":
-      L.DomUtil.addClass(document.getElementById("opManage"), "active");
+      L.DomUtil.addClass(document.getElementById("opmanage"), "active");
       manage(op);
       break;
     case "keys":
-      L.DomUtil.addClass(opKeysNav, "active");
+      L.DomUtil.addClass(document.getElementById("opkeys"), "active");
       keys(op);
       break;
     case "assignments":
-      L.DomUtil.addClass(opKeysNav, "active");
+      L.DomUtil.addClass(document.getElementById("opassignments"), "active");
       assignments(op);
+      break;
+    case "permissions":
+      L.DomUtil.addClass(document.getElementById("permissions"), "active");
+      permissions(op);
       break;
     case "checklist":
     default:
-      L.DomUtil.addClass(opListNav, "active");
+      L.DomUtil.addClass(document.getElementById("opchecklist"), "active");
       checklist(op);
   }
 }
@@ -327,13 +335,13 @@ function map(op) {
   }
 }
 
-function manage(op) {
+function permissions(op) {
   history.pushState(
-    { screen: "op", op: op.ID, subscreen: "manage" },
-    "op manage",
-    `#op.manage.${op.ID}`
+    { screen: "op", op: op.ID, subscreen: "permissions" },
+    "op permissions",
+    `#op.permissions.${op.ID}`
   );
-  logEvent("screen_view", { screen_name: "op manage" });
+  logEvent("screen_view", { screen_name: "op permissions" });
 
   const me = WasabeeMe.get();
 
@@ -436,10 +444,36 @@ function keys(op) {
 <thead>
 <tr>
 <th scope="col">&nbsp;</th>
-<th scope="col">Agent</th>
-<th scope="col">Enabled</th>
-<th scope="col">Squad</th>
-<th scope="col">Display Name</th>
+</tr>
+</thead>
+<tbody id="opTable">
+</tbody>
+</table>
+</div></div></div>
+`;
+
+  const opName = document.getElementById("opName");
+  opName.textContent = op.name;
+  // const opTable = document.getElementById("opTable");
+}
+
+function manage(op) {
+  history.pushState(
+    { screen: "op", op: op.ID, subscreen: "manage" },
+    "op manage",
+    `#op.manage.${op.ID}`
+  );
+  logEvent("screen_view", { screen_name: "op manage" });
+
+  const content = document.getElementById("wasabeeContent");
+  while (content.lastChild) content.removeChild(content.lastChild);
+
+  content.innerHTML = `
+<div class="container"><div class="row"><div class="col">
+<h1 id="opName"></h1>
+<table class="table table-striped">
+<thead>
+<tr>
 <th scope="col">&nbsp;</th>
 </tr>
 </thead>
@@ -454,7 +488,7 @@ function keys(op) {
   // const opTable = document.getElementById("opTable");
 }
 
-export function calculateDistance(from, to) {
+function calculateDistance(from, to) {
   const sl = parseFloat(from.lat);
   const el = parseFloat(to.lat);
   const startrl = (Math.PI * sl) / 180.0;

@@ -159,6 +159,32 @@ export const loadAgent = function (GID) {
   });
 };
 
+export const loadConfig = function () {
+  return new Promise(function (resolve, reject) {
+    const url = `${window.wasabeewebui.server}/wasabee-webui-config.json`;
+    const req = new XMLHttpRequest();
+
+    req.open("GET", url);
+    // req.withCredentials = true;
+
+    req.onload = function () {
+      if (req.status === 200) {
+        try {
+          resolve(JSON.parse(req.response));
+        } catch (e) {
+          reject(e);
+        }
+      } else {
+        reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
+      }
+    };
+    req.onerror = function () {
+      reject(Error(`Network Error: ${req.responseText}`));
+    };
+    req.send();
+  });
+};
+
 export function syncOps(ops) {
   // will never reject
   return new Promise(function (resolve) {

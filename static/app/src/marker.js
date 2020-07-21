@@ -34,9 +34,33 @@ export default class WasabeeMarker {
 
   // TBD
   get icon() {
+    const iconTypes = {
+      CapturePortalMarker: "capture",
+      LetDecayPortalAlert: "decay",
+      ExcludeMarker: "exclude",
+      DestroyPortalAlert: "destroy",
+      FarmPortalMarker: "farm",
+      GotoPortalMarker: "goto",
+      GetKeyPortalMarker: "key",
+      CreateLinkAlert: "link",
+      MeetAgentPortalMarker: "meetagent",
+      OtherPortalAlert: "other",
+      RechargePortalAlert: "recharge",
+      UpgradePortalAlert: "upgrade",
+      UseVirusPortalAlert: "virus",
+    };
+
+    // at some point we are going to get consistent
+    var state = this.state;
+    if (this.state == "completed") state = "done";
+
     return (
       window.wasabeewebui.cdnurl +
-      "/img/markers/wasabee_markers_goto_pending.png"
+      "/img/markers/wasabee_markers_" +
+      iconTypes[this.type] +
+      "_" +
+      state +
+      ".png"
     );
   }
 }

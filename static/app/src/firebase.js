@@ -7,26 +7,14 @@ import { notify } from "./notify";
 
 let messaging = null;
 let inited = false;
-//     apiKey: "AIzaSyDAjLWwHfSoIbCuwDuKI34qlbj2NW1KVJA",
 
 export function firebaseInit() {
-  const firebaseConfig = {
-    apiKey: "AIzaSyA0hqk5heTlLbqLKHFQqwMERdfIcoF3XF0",
-    authDomain: "phdevbin.firebaseapp.com",
-    databaseURL: "https://phdevbin.firebaseio.com",
-    projectId: "phdevbin",
-    storageBucket: "phdevbin.appspot.com",
-    messagingSenderId: "269534461245",
-    appId: "1:269534461245:web:b0eaa3ead2ea6fbe6a5954",
-    measurementId: "G-5WQ9N23Z7S",
-  };
-
   try {
-    firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(window.wasabeewebui.firebaseConfig);
     firebase.analytics();
     messaging = firebase.messaging();
     messaging.usePublicVapidKey(
-      "BEB7mMFzF4way3Scjrwt62mWvpQcPnSm2_8iJaxokgzt9DqZqqidQ1phjuqHciVvcVVK5uJtJw3Bg1Kt8Nw2-hk"
+      window.wasabeewebui.publicVapidKey
     );
     inited = true;
   } catch (e) {

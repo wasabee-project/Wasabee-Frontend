@@ -79,12 +79,12 @@ export function displaySettings() {
       tg.innerHTML = `<div>Telegram ID: ${me.Telegram.ID} (verified)</div>`;
     } else {
       if (me.Telegram.Authtoken) {
-        tg.innerHTML = `Tell the bot (<a href="tg://resolve?domain=PhDevBin">@PhDevBin</a>) <a href="https://telegram.me/PhDevBin?start=${me.Telegram.Authtoken}">${me.Telegram.Authtoken}</a> to conclude verification.`;
+        tg.innerHTML = `Tell the bot (<a href="tg://resolve?domain=${window.wasabeewebui.botname}">@${window.wasabeewebui.botname}</a>) <a href="https://telegram.me/${window.wasabeewebui.botname}?start=${me.Telegram.Authtoken}">${me.Telegram.Authtoken}</a> to conclude verification.`;
       } else {
-        tg.innerHTML = `Tell the bot (<a href="tg://resolve?domain=PhDevBin">@PhDevBin</a>) <a href="https://telegram.me/PhDevBin?start=${me.LocationKey}">${me.LocationKey}</a> to start the verification process.`;
+        tg.innerHTML = `Tell the bot (<a href="tg://resolve?domain=${window.wasabeewebui.botname}">@${window.wasabeewebui.botname}</a>) <a href="https://telegram.me/${window.wasabeewebui.botname}?start=${me.LocationKey}">${me.LocationKey}</a> to start the verification process.`;
       }
     }
   } else {
-    tg.innerHTML = `Tell the bot (<a href="tg://resolve?domain=PhDevBin">@PhDevBin</a>) <a href="https://telegram.me/PhDevBin?start=${me.LocationKey}">${me.LocationKey}</a> to start the verification process.`;
+    tg.innerHTML = `Tell the bot (<a href="tg://resolve?domain=${window.wasabeewebui.botname}">@${window.wasabeewebui.botname}</a>) <a href="https://telegram.me/${window.wasabeewebui.botname}?start=${me.LocationKey}">${me.LocationKey}</a> to start the verification process.`;
   }
 }

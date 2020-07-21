@@ -18,7 +18,7 @@ export function displayTeam(state) {
 
   subnav.innerHTML = `
 <nav class="navbar navbar-expand-sm navbar-light bg-light">
-<button class="navbar-toggler" type="button" data-toggle="collapse" data-garget="#teamsNav" aria-controls="teamsNav" aria-expanded="false" aria-label="Toggle Subnav">
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#teamsNav" aria-controls="teamsNav" aria-expanded="false" aria-label="Toggle Subnav">
 <span class="navbar-toggler-icon"></span>
 </button>
 <div class="collapse navbar-collapse" id="teamsNav">

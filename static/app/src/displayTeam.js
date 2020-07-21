@@ -235,7 +235,7 @@ function manage(teamID) {
   content.innerHTML = `
 <div class="container"><div class="row"><div class="col">
 <h1 id="teamName"></h1>
-<label>Add Agent: 
+<label>Add Agent:
   <input type="text" id="addAgent" placeholder="GoogleID or Agent Name" />
 </label>
 <button id="addAgentButton">Add</button>
@@ -285,17 +285,13 @@ function manage(teamID) {
         if (!team.RockCommunity) {
           remove = `<button id="${teamID}.${a.id}.remove">Remove</button>`;
         }
-        let displayname = "";
-        if (a.displayname) {
-          displayname = a.displayname;
-        }
         const row = `
 <tr>
 <td><img src="${a.pic}" height="50" width="50"></td>
 <td>${a.name}</td>
 <td>${state}</td>
 <td><input type="text" value="${a.squad}" id="${teamID}.${a.id}.squad" /></td>
-<td><input type="text" value="${displayname}" id="${teamID}.${a.id}.displayname" /></td>
+<td><input type="text" value="${a.name}" id="${teamID}.${a.id}.displayname" /></td>
 <td>${remove}</td>
 </tr>`;
         teamTable.insertAdjacentHTML("beforeend", row);

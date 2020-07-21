@@ -34,6 +34,9 @@ export default class WasabeeMarker {
 
   // TBD
   get icon() {
-    return window.wasabeewebui.cdnurl + "/img/marker.png";
+    return (
+      window.wasabeewebui.cdnurl +
+      "/img/markers/wasabee_markers_goto_pending.png"
+    );
   }
 }

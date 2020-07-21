@@ -297,9 +297,16 @@ function map(op) {
     const marker = L.marker(targetPortal.latLng, {
       title: targetPortal.name,
       state: m.state,
-      // icon: L.icon({ iconUrl: m.icon, shadowUrl: null, iconSize: L.point(24, 40), iconAnchor: L.point(12, 40), popupAnchor: L.point(-1, -48), }),
+      icon: L.icon({
+        iconUrl: m.icon,
+        shadowUrl: null,
+        iconSize: L.point(24, 40),
+        iconAnchor: L.point(12, 40),
+        popupAnchor: L.point(-1, -48),
+      }),
     });
 
+    marker.bindPopup(targetPortal.name);
     if (m.assignedTo == me.GoogleID) marker.addTo(assignmentsLayer);
     else marker.addTo(defaultLayer);
   }
@@ -327,9 +334,16 @@ function map(op) {
     const targetPortal = op.getPortal(a);
     const marker = L.marker(targetPortal.latLng, {
       title: targetPortal.name,
-      // icon: L.icon({ iconUrl: m.icon, shadowUrl: null, iconSize: L.point(24, 40), iconAnchor: L.point(12, 40), popupAnchor: L.point(-1, -48), }),
+      icon: L.icon({
+        iconUrl: `${window.wasabeewebui.cdnurl}/img/markers/marker_layer_groupa.png`,
+        shadowUrl: null,
+        iconSize: L.point(24, 40),
+        iconAnchor: L.point(12, 40),
+        popupAnchor: L.point(-1, -48),
+      }),
     });
 
+    marker.bindPopup(targetPortal.name);
     if (assignedAnchors.has(a)) marker.addTo(assignmentsLayer);
     else marker.addTo(defaultLayer);
   }

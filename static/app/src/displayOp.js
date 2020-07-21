@@ -199,17 +199,9 @@ function checklist(op, assignmentsOnly = false) {
       L.DomUtil.create("td", null, row).textContent = " ";
       const assignedToTD = L.DomUtil.create("td", null, row);
       assignedToTD.textContent = s.assignedTo;
-      if (s.assignedTo != null && s.assignedTo != "") {
-        for (const teamEntry of op.teamlist) {
-          const team = WasabeeTeam.get(teamEntry.teamid);
-          if (team) {
-            const agent = team.getAgent(s.assignedTo);
-            if (agent) {
-              assignedToTD.textContent = agent.name;
-              break;
-            }
-          }
-        }
+      if (s.assignedTo) {
+        const agent = op.getAgent(s.assignedTo);
+        if (agent) assignedToTD.textContent = agent.name;
       }
       L.DomUtil.create("td", null, row).textContent = s.comment;
       L.DomUtil.create("td", null, row).textContent = s.state;
@@ -226,17 +218,9 @@ function checklist(op, assignmentsOnly = false) {
       L.DomUtil.create("td", null, row).textContent = calculateDistance(fp, tp);
       const assignedToTD = L.DomUtil.create("td", null, row);
       assignedToTD.textContent = s.assignedTo;
-      if (s.assignedTo != null && s.assignedTo != "") {
-        for (const teamEntry of op.teamlist) {
-          const team = WasabeeTeam.get(teamEntry.teamid);
-          if (team) {
-            const agent = team.getAgent(s.assignedTo);
-            if (agent) {
-              assignedToTD.textContent = agent.name;
-              break;
-            }
-          }
-        }
+      if (s.assignedTo) {
+        const agent = op.getAgent(s.assignedTo);
+        if (agent) assignedToTD.textContent = agent.name;
       }
       L.DomUtil.create("td", null, row).textContent = s.comment;
       L.DomUtil.create("td", null, row).textContent = s.state;
@@ -320,6 +304,8 @@ function map(op) {
     if (m.assignedTo) {
       const at = L.DomUtil.create("div", null, popup);
       at.textContent = m.assignedTo;
+      const agent = op.getAgent(m.assignedTo);
+      if (agent) at.textContent = agent.name;
     }
 
     const route = L.DomUtil.create("button", null, popup);

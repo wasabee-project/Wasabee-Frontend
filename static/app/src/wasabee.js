@@ -16,6 +16,7 @@ import { displaySettings } from "./displaySettings";
 import { notify } from "./notify";
 import { displayOp } from "./displayOp";
 import { displayTeam } from "./displayTeam";
+import polyfill from "./polyfill";
 
 export function wasabeeMain() {
   // a place to store runtime globals
@@ -405,6 +406,9 @@ function clearOpsStorage() {
     if (id.length == 40) delete localStorage[id];
   }
 }
+
+// polyfill
+polyfill();
 
 // entry into main
 wasabeeMain();

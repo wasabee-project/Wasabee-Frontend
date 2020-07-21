@@ -334,7 +334,6 @@ function map(op) {
           targetPortal.lng
       );
     });
-    console.log(popup);
 
     marker.bindPopup(popup);
     if (m.assignedTo == me.GoogleID) marker.addTo(assignmentsLayer);
@@ -373,7 +372,29 @@ function map(op) {
       }),
     });
 
-    marker.bindPopup(targetPortal.name);
+    const popup = L.DomUtil.create("div");
+    const name = L.DomUtil.create("div", "portalname", popup);
+    name.textContent = targetPortal.name;
+
+    if (a.comment) {
+      const comment = L.DomUtil.create("div", null, popup);
+      comment.textContent = a.comment;
+    }
+
+    const route = L.DomUtil.create("button", null, popup);
+    route.textContent = "Google Map";
+    L.DomEvent.on(route, "click", (ev) => {
+      L.DomEvent.stop(ev);
+      marker.closePopup();
+      window.open(
+        "https://www.google.com/maps/search/?api=1&query=" +
+          targetPortal.lat +
+          "," +
+          targetPortal.lng
+      );
+    });
+
+    marker.bindPopup(popup);
     if (assignedAnchors.has(a)) marker.addTo(assignmentsLayer);
     else marker.addTo(defaultLayer);
   }

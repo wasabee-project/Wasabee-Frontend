@@ -2,6 +2,7 @@ import "bootstrap";
 import L from "leaflet";
 import { firebaseInit, runFirebaseStart, logEvent } from "./firebase";
 import {
+  loadConfig,
   loadMe,
   loadLogout,
   syncOps,
@@ -19,21 +20,46 @@ import { displayTeam } from "./displayTeam";
 import polyfill from "./polyfill";
 
 export function wasabeeMain() {
-  // a place to store runtime globals
-  window.wasabeewebui = {
-    // XXX too many things are hard-coded, need to make them consts
-    // XXX these are not used yet, I need to do that...
-    botname: "PhDevBot",
-    server: "https://server.wasabee.rocks",
-    cdnurl: "https://cdn2.wasabee.rocks",
-    opIdLength: 40,
-  };
-
-  firebaseInit();
-
+  // opIdLength: 40,
   // auto-detect server based on URL
-
   // look in localStorage and update server config if the user has selected a different server
+  window.wasabeewebui = {};
+
+  loadConfig().then(
+    (config) => {
+      window.wasabeewebui = config;
+      firebaseInit();
+      loadMe().then(
+        (resolve) => {
+          // run init logic here
+          runFirebaseStart();
+
+          const me = new WasabeeMe(resolve);
+          if (me.GoogleID) {
+            me.store();
+            startSendLoc();
+            syncOps(me.Ops).then(() => {
+              buildMenu();
+              chooseScreen(null);
+            });
+          } else {
+            console.log(me);
+            notify("refresh required");
+          }
+        },
+        (reject) => {
+          // redirect to /login and try again
+          console.log(reject);
+          notify(reject);
+          // window.location.href = "/login";
+        }
+      );
+    },
+    (reject) => {
+      notify("unable to load config: " + reject);
+      console.log(reject);
+    }
+  );
 
   // for debugging only, we listen to firebase directly and don't need the service worker
   window.addEventListener("message", (event) => {
@@ -69,31 +95,6 @@ export function wasabeeMain() {
   // for when you are doing an op and have low/no signal
 
   // get /me, if not possible, request login
-  loadMe().then(
-    (resolve) => {
-      // run init logic here
-      runFirebaseStart();
-
-      const me = new WasabeeMe(resolve);
-      if (me.GoogleID) {
-        me.store();
-        startSendLoc();
-        syncOps(me.Ops).then(() => {
-          buildMenu();
-          chooseScreen(null);
-        });
-      } else {
-        console.log(me);
-        notify("refresh required");
-      }
-    },
-    (reject) => {
-      // redirect to /login and try again
-      console.log(reject);
-      notify(reject);
-      // window.location.href = "/login";
-    }
-  );
 }
 
 function buildMenu() {

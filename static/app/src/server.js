@@ -161,7 +161,7 @@ export const loadAgent = function (GID) {
 
 export const loadConfig = function () {
   return new Promise(function (resolve, reject) {
-    const url = `${window.wasabeewebui.server}/wasabee-webui-config.json`;
+    const url = `/static/wasabee-webui-config.json`;
     const req = new XMLHttpRequest();
 
     req.open("GET", url);

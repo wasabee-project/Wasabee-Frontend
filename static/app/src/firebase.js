@@ -13,9 +13,7 @@ export function firebaseInit() {
     firebase.initializeApp(window.wasabeewebui.firebaseConfig);
     firebase.analytics();
     messaging = firebase.messaging();
-    messaging.usePublicVapidKey(
-      window.wasabeewebui.publicVapidKey
-    );
+    messaging.usePublicVapidKey(window.wasabeewebui.publicVapidKey);
     inited = true;
   } catch (e) {
     notify(

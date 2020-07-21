@@ -1,11 +1,14 @@
 import WasabeeOp from "./operation";
 import WasabeeLink from "./link";
+import WasabeeTeam from "./team";
+import WasabeeMe from "./me";
 import WasabeeMarker from "./marker";
 import { notify } from "./notify";
 // import Sortable, { MultiDrag, Swap} from 'sortablejs';
 import Sortable from "sortablejs";
 import "leaflet.geodesic";
 import { logEvent } from "./firebase";
+import { loadTeam, loadOp, addPermPromise, deletePermPromise } from "./server";
 
 export function displayOp(state) {
   const subnav = document.getElementById("wasabeeSubnav");
@@ -19,12 +22,13 @@ export function displayOp(state) {
 
   subnav.innerHTML = `
 <nav class="navbar navbar-expand-sm navbar-light bg-light">
-<button class="navbar-toggler" type="button" data-toggle="collapse" data-garget="#opNav" aria-controls="opNav" aria-expanded="false" aria-label="Toggle Subnav">
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#opNav" aria-controls="opNav" aria-expanded="false" aria-label="Toggle Subnav">
 <span class="navbar-toggler-icon"></span>
 </button>
 <div class="collapse navbar-collapse" id="opNav">
   <ul class="navbar-nav" id="opNavbar">
-   <li class="nav-item"><a class="nav-link active" href="#operation.checklist.${state.op}" id="opChecklist">Checklist</a></li>
+   <li class="nav-item"><a class="nav-link" href="#operation.checklist.${state.op}" id="opChecklist">Checklist</a></li>
+   <li class="nav-item"><a class="nav-link" href="#operation.assignment.${state.op}" id="opAssignments">Assignments</a></li>
    <li class="nav-item"><a class="nav-link" href="#operation.map.${state.op}" id="opMap">Map</a></li>
    <li class="nav-item"><a class="nav-link" href="#operation.keys.${state.op}" id="opKeys">Keys</a></li>
   </ul>
@@ -34,36 +38,33 @@ export function displayOp(state) {
 
   const opNavbar = document.getElementById("opNavbar");
   const opListNav = document.getElementById("opChecklist");
+  const opAssignmentsNav = document.getElementById("opAssignments");
   const opMapNav = document.getElementById("opMap");
   const opKeysNav = document.getElementById("opKeys");
-  L.DomEvent.on(opListNav, "click", (ev) => {
-    L.DomEvent.stop(ev);
-    for (const c of opNavbar.children)
-      for (const a of c.children) L.DomUtil.removeClass(a, "active");
-    L.DomUtil.addClass(opListNav, "active");
-    checklist(op);
-  });
-  L.DomEvent.on(opMapNav, "click", (ev) => {
-    L.DomEvent.stop(ev);
-    for (const c of opNavbar.children)
-      for (const a of c.children) L.DomUtil.removeClass(a, "active");
-    L.DomUtil.addClass(opMapNav, "active");
-    map(op);
-  });
-  L.DomEvent.on(opKeysNav, "click", (ev) => {
-    L.DomEvent.stop(ev);
-    for (const c of opNavbar.children)
-      for (const a of c.children) L.DomUtil.removeClass(a, "active");
-    L.DomUtil.addClass(opKeysNav, "active");
-    keys(op);
-  });
 
-  // let owned = false;
-  // determine if I own it...
+  for (const [nav, action] of [
+    [opListNav, checklist],
+    [opAssignmentsNav, assignments],
+    [opMapNav, map],
+    [opKeysNav, keys],
+  ]) {
+    L.DomEvent.on(nav, "click", (ev) => {
+      L.DomEvent.stop(ev);
+      for (const c of opNavbar.children)
+        for (const a of c.children) L.DomUtil.removeClass(a, "active");
+      L.DomUtil.addClass(nav, "active");
+      action(op);
+    });
+  }
+
+  const me = WasabeeMe.get();
+
+  let owner = me.GoogleID == op.creator;
+
   let write = false;
-  // write access?
+  for (const t of op.teamlist) if (t.role == "write") write = true;
 
-  if (write) {
+  if (write || owner) {
     const m = `<li class="nav-item"><a class="nav-link" href="#operation.manage.${state.op}" id="opManage">Manage</a></li>`;
     opNavbar.insertAdjacentHTML("beforeend", m);
     const opManageNav = document.getElementById("opManage");
@@ -76,31 +77,61 @@ export function displayOp(state) {
     });
   }
 
+  const m = `<li class="nav-item"><a class="nav-link" id="opRefresh">🗘</a></li>`;
+  opNavbar.insertAdjacentHTML("beforeend", m);
+  const opRefreshNav = document.getElementById("opRefresh");
+  L.DomEvent.on(opRefreshNav, "click", (ev) => {
+    L.DomEvent.stop(ev);
+    loadOp(state.op)
+      .then((op) => {
+        const promises = [];
+        const teamset = new Set(op.teamlist.map((t) => t.teamid));
+        for (const t of teamset) promises.push(loadTeam(t));
+        return Promise.allSettled(promises);
+      })
+      .then(() => displayOp(history.state))
+      .catch(() =>
+        notify("Op load failed, please refresh from operations list")
+      );
+  });
+
   switch (state.subscreen) {
-    case "checklist":
-      checklist(op);
-      break;
     case "map":
+      L.DomUtil.addClass(opMapNav, "active");
       map(op);
       break;
     case "manage":
+      L.DomUtil.addClass(document.getElementById("opManage"), "active");
       manage(op);
       break;
     case "keys":
+      L.DomUtil.addClass(opKeysNav, "active");
       keys(op);
       break;
+    case "assignments":
+      L.DomUtil.addClass(opKeysNav, "active");
+      assignments(op);
+      break;
+    case "checklist":
     default:
+      L.DomUtil.addClass(opListNav, "active");
       checklist(op);
   }
 }
 
-function checklist(op) {
+function assignments(op) {
+  return checklist(op, true);
+}
+
+function checklist(op, assignmentsOnly = false) {
   history.pushState(
     { screen: "op", op: op.ID, subscreen: "checklist" },
     "op checklist",
     `#op.checklist.${op.ID}`
   );
   logEvent("screen_view", { screen_name: "op checklist" });
+
+  const me = WasabeeMe.get();
 
   const content = document.getElementById("wasabeeContent");
   while (content.lastChild) content.removeChild(content.lastChild);
@@ -111,7 +142,7 @@ function checklist(op) {
 <div class="card-header" id="opName">${op.name}</div>
 <div class="card-body">
 <ul class="list-group list-group-flush">
-<li class="list-group-item" id="opComment">${op.comment}</li>
+<li class="list-group-item" id="opComment">Comment: ${op.comment}</li>
 <li class="list-group-item"><a href="/api/vi/draw/${op.ID}/stock">Stock Intel Link</a></li>
 <li class="list-group-item"><strong><a href="/api/v1/draw/${op.ID}/myroute">My Route</a> (Google Maps)</strong></li>
 </ul>
@@ -146,6 +177,8 @@ function checklist(op) {
     return a.opOrder - b.opOrder;
   });
   for (const s of steps) {
+    if (assignmentsOnly && s.assignedTo != me.GoogleID) continue;
+
     const row = L.DomUtil.create("tr", null, opSteps);
     L.DomUtil.create("td", null, row).textContent = s.opOrder;
 
@@ -156,7 +189,20 @@ function checklist(op) {
 
       L.DomUtil.create("td", s.type, row).textContent = " " + s.type;
       L.DomUtil.create("td", null, row).textContent = " ";
-      L.DomUtil.create("td", null, row).textContent = s.assignedTo;
+      const assignedToTD = L.DomUtil.create("td", null, row);
+      assignedToTD.textContent = s.assignedTo;
+      if (s.assignedTo != null && s.assignedTo != "") {
+        for (const teamEntry of op.teamlist) {
+          const team = WasabeeTeam.get(teamEntry.teamid);
+          if (team) {
+            const agent = team.getAgent(s.assignedTo);
+            if (agent) {
+              assignedToTD.textContent = agent.name;
+              break;
+            }
+          }
+        }
+      }
       L.DomUtil.create("td", null, row).textContent = s.comment;
       L.DomUtil.create("td", null, row).textContent = s.state;
       L.DomUtil.create("td", null, row).textContent = s.completedBy;
@@ -170,7 +216,20 @@ function checklist(op) {
       tPortal.textContent = tp.name;
 
       L.DomUtil.create("td", null, row).textContent = calculateDistance(fp, tp);
-      L.DomUtil.create("td", null, row).textContent = s.assignedTo;
+      const assignedToTD = L.DomUtil.create("td", null, row);
+      assignedToTD.textContent = s.assignedTo;
+      if (s.assignedTo != null && s.assignedTo != "") {
+        for (const teamEntry of op.teamlist) {
+          const team = WasabeeTeam.get(teamEntry.teamid);
+          if (team) {
+            const agent = team.getAgent(s.assignedTo);
+            if (agent) {
+              assignedToTD.textContent = agent.name;
+              break;
+            }
+          }
+        }
+      }
       L.DomUtil.create("td", null, row).textContent = s.comment;
       L.DomUtil.create("td", null, row).textContent = s.state;
       L.DomUtil.create("td", null, row).textContent = s.completed;
@@ -187,6 +246,8 @@ function map(op) {
     `#op.map.${op.ID}`
   );
   logEvent("screen_view", { screen_name: "op setting" });
+
+  const me = WasabeeMe.get();
 
   const content = document.getElementById("wasabeeContent");
   while (content.lastChild) content.removeChild(content.lastChild);
@@ -207,6 +268,22 @@ function map(op) {
 
   map.fitBounds(op.mbr);
 
+  const defaultLayer = L.layerGroup().addTo(map);
+  const assignmentsLayer = L.layerGroup().addTo(map);
+
+  L.control
+    .layers(
+      {},
+      {
+        Default: defaultLayer,
+        Assignments: assignmentsLayer,
+      },
+      { collapsed: false }
+    )
+    .addTo(map);
+
+  const assignedAnchors = new Set();
+
   for (const m of op.markers) {
     const targetPortal = op.getPortal(m.portalId);
     const marker = L.marker(targetPortal.latLng, {
@@ -214,13 +291,15 @@ function map(op) {
       state: m.state,
       // icon: L.icon({ iconUrl: m.icon, shadowUrl: null, iconSize: L.point(24, 40), iconAnchor: L.point(12, 40), popupAnchor: L.point(-1, -48), }),
     });
-    marker.addTo(map);
+
+    if (m.assignedTo == me.GoogleID) marker.addTo(assignmentsLayer);
+    else marker.addTo(defaultLayer);
   }
 
   for (const l of op.links) {
     const latLngs = [
       op.getPortal(l.fromPortalId).latLng,
-      op.getPortal(l.fromPortalId).latLng,
+      op.getPortal(l.toPortalId).latLng,
     ];
 
     const newlink = new L.Geodesic(latLngs, {
@@ -229,7 +308,12 @@ function map(op) {
       color: "green",
     });
     // console.log(newlink);
-    newlink.addTo(map);
+
+    if (l.assignedTo == me.GoogleID) {
+      newlink.addTo(assignmentsLayer);
+      assignedAnchors.add(l.fromPortalId);
+      assignedAnchors.add(l.toPortalId);
+    } else newlink.addTo(defaultLayer);
   }
   for (const a of op.anchors) {
     const targetPortal = op.getPortal(a);
@@ -237,7 +321,9 @@ function map(op) {
       title: targetPortal.name,
       // icon: L.icon({ iconUrl: m.icon, shadowUrl: null, iconSize: L.point(24, 40), iconAnchor: L.point(12, 40), popupAnchor: L.point(-1, -48), }),
     });
-    marker.addTo(map);
+
+    if (assignedAnchors.has(a)) marker.addTo(assignmentsLayer);
+    else marker.addTo(defaultLayer);
   }
 }
 
@@ -249,32 +335,87 @@ function manage(op) {
   );
   logEvent("screen_view", { screen_name: "op manage" });
 
+  const me = WasabeeMe.get();
+
   const content = document.getElementById("wasabeeContent");
   while (content.lastChild) content.removeChild(content.lastChild);
 
   content.innerHTML = `
 <div class="container"><div class="row"><div class="col">
-<h1 id="opName"></h1>
+<h1 id="opName">${op.name}</h1>
 <table class="table table-striped">
 <thead>
 <tr>
-<th scope="col">&nbsp;</th>
-<th scope="col">Agent</th>
-<th scope="col">Enabled</th>
-<th scope="col">Squad</th>
-<th scope="col">Display Name</th>
+<th scope="col">Team</th>
+<th scope="col">Permission</th>
 <th scope="col">&nbsp;</th>
 </tr>
 </thead>
 <tbody id="opTable">
 </tbody>
 </table>
+<label>Add Team:
+  <select id="addTeamSelect"></select><select id="addRoleSelect"></select>
+</label>
+<button id="addButton">Add</button>
 </div></div></div>
 `;
 
-  const opName = document.getElementById("opName");
-  opName.textContent = op.name;
-  // const opTable = document.getElementById("opTable");
+  const opTable = document.getElementById("opTable");
+
+  for (const t of op.teamlist) {
+    const team = WasabeeTeam.get(t.teamid);
+    const name = team ? team.name : t.teamid;
+    const role = t.role;
+
+    const row = L.DomUtil.create("tr", null, opTable);
+    L.DomUtil.create("td", null, row).textContent = name;
+    L.DomUtil.create("td", null, row).textContent = role;
+
+    const tdRm = L.DomUtil.create("td", null, row);
+    const removeButton = L.DomUtil.create("button", null, tdRm);
+    removeButton.textContent = "Remove";
+    L.DomEvent.on(removeButton, "click", (ev) => {
+      L.DomEvent.stop(ev);
+      deletePermPromise(op.ID, t.teamid, t.role)
+        .then(() => loadOp(op.ID))
+        .then((op) => manage(op));
+    });
+  }
+
+  const addTeamSelect = document.getElementById("addTeamSelect");
+  for (const t of me.Teams) {
+    if (t.State != "On") continue;
+    const o = L.DomUtil.create("option", null, addTeamSelect);
+    o.value = t.ID;
+    o.textContent = t.Name;
+  }
+  const addRoleSelect = document.getElementById("addRoleSelect");
+  for (const role of ["read", "write", "assignedonly"]) {
+    const read = L.DomUtil.create("option", null, addRoleSelect);
+    read.value = role;
+    read.textContent = role;
+  }
+
+  if (me.Teams.length > 0) {
+    const addButton = document.getElementById("addButton");
+    L.DomEvent.on(addButton, "click", (ev) => {
+      L.DomEvent.stop(ev);
+      const teamID = addTeamSelect.value;
+      const role = addRoleSelect.value;
+
+      // avoid duplicate
+      for (const t of op.teamlist) {
+        if (t.teamid == teamID && t.role == role) {
+          loadOp(op.ID).then((op) => manage(op));
+          return;
+        }
+      }
+      addPermPromise(op.ID, teamID, role)
+        .then(() => loadOp(op.ID))
+        .then((op) => manage(op));
+    });
+  }
 }
 
 function keys(op) {

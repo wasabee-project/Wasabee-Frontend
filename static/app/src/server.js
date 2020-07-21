@@ -1,5 +1,7 @@
 import WasabeeOp from "./operation";
 import WasabeeMe from "./me";
+import WasabeeAgent from "./agent";
+import WasabeeTeam from "./team";
 import { notify } from "./notify";
 
 export function sendTokenToWasabee(token) {
@@ -100,11 +102,17 @@ export function loadOp(opID) {
     req.onload = function () {
       switch (req.status) {
         case 200:
-          resolve(req.response);
+          try {
+            const op = new WasabeeOp(req.response);
+            op.store();
+            resolve(op);
+          } catch (e) {
+            reject(e);
+          }
           break;
         case 304: // If-Modified-Since replied NotModified
           // console.debug("server copy is older/unmodified, keeping local copy");
-          resolve(localStorage[opID]);
+          resolve(localop);
           break;
         case 401:
           reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
@@ -121,19 +129,47 @@ export function loadOp(opID) {
   });
 }
 
+export const loadAgent = function (GID) {
+  return new Promise(function (resolve, reject) {
+    if (GID == null || GID == "null" || GID == "") {
+      reject("null gid");
+    }
+
+    const url = `${window.wasabeewebui.server}/api/v1/agent/${GID}`;
+    const req = new XMLHttpRequest();
+
+    req.open("GET", url);
+    req.withCredentials = true;
+
+    req.onload = function () {
+      if (req.status === 200) {
+        try {
+          resolve(WasabeeAgent.create(req.response));
+        } catch (e) {
+          reject(e);
+        }
+      } else {
+        reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
+      }
+    };
+    req.onerror = function () {
+      reject(Error(`Network Error: ${req.responseText}`));
+    };
+    req.send();
+  });
+};
+
 export function syncOps(ops) {
   // will never reject
   return new Promise(function (resolve) {
     const promises = new Array();
-    for (const o of ops) promises.push(loadOp(o.ID));
+    const opsID = new Set(ops.map((o) => o.ID));
+    for (const o of opsID) promises.push(loadOp(o));
     Promise.allSettled(promises).then((results) => {
       for (const r of results) {
-        if (r.status == "fulfilled") {
-          const newop = new WasabeeOp(r.value);
-          newop.store();
-        } else {
+        if (r.status != "fulfilled") {
           console.log(r);
-          notify("Op load failed");
+          notify("Op load failed, please refresh");
         }
       }
       resolve(true);
@@ -225,10 +261,19 @@ export function loadTeam(teamID) {
     req.open("GET", url, true);
     req.withCredentials = true;
 
+    const localTeam = WasabeeTeam.get(teamID);
+    if (localTeam != null && localTeam.fetched) {
+      req.setRequestHeader("If-Modified-Since", localTeam.fetched);
+    }
+
     req.onload = function () {
       switch (req.status) {
         case 200:
-          resolve(req.response);
+          resolve(WasabeeTeam.create(req.response));
+          break;
+        case 304: // If-Modified-Since replied NotModified
+          // console.debug("server copy is older/unmodified, keeping local copy");
+          resolve(localTeam);
           break;
         default:
           reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
@@ -469,3 +514,63 @@ export function deleteJoinLinkPromise(teamID) {
     req.send();
   });
 }
+
+export const addPermPromise = function (opID, teamID, role) {
+  return new Promise((resolve, reject) => {
+    const url = `${window.wasabeewebui.server}/api/v1/draw/${opID}/perms`;
+    const req = new XMLHttpRequest();
+
+    req.open("POST", url);
+    req.withCredentials = true;
+
+    req.onload = function () {
+      switch (req.status) {
+        case 200:
+          resolve(true);
+          break;
+        default:
+          reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
+          break;
+      }
+    };
+
+    req.onerror = function () {
+      reject(`Network Error: ${req.responseText}`);
+    };
+
+    const fd = new FormData();
+    fd.append("team", teamID);
+    fd.append("role", role);
+    req.send(fd);
+  });
+};
+
+export const deletePermPromise = function (opID, teamID, role) {
+  return new Promise((resolve, reject) => {
+    const url = `${window.wasabeewebui.server}/api/v1/draw/${opID}/perms`;
+    const req = new XMLHttpRequest();
+
+    req.open("DELETE", url);
+    req.withCredentials = true;
+
+    req.onload = function () {
+      switch (req.status) {
+        case 200:
+          resolve(true);
+          break;
+        default:
+          reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
+          break;
+      }
+    };
+
+    req.onerror = function () {
+      reject(`Network Error: ${req.responseText}`);
+    };
+
+    const fd = new FormData();
+    fd.append("team", teamID);
+    fd.append("role", role);
+    req.send(fd);
+  });
+};

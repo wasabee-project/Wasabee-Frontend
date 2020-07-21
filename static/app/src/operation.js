@@ -36,7 +36,7 @@ export class WasabeeOp {
     this.markers = this.convertMarkersToObjs(obj.markers);
     if (!this.markers) this.markers = new Array();
     this.color = obj.color ? obj.color : DEFAULT_OPERATION_COLOR;
-    this.comment = obj.comment ? obj.comment : null;
+    this.comment = obj.comment ? obj.comment : "";
     this.teamlist = obj.teamlist ? obj.teamlist : Array();
     this.fetched = obj.fetched ? obj.fetched : null;
     this.stored = obj.stored ? obj.stored : null;

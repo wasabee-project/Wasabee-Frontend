@@ -194,6 +194,28 @@ function chooseScreen(state) {
   }
 }
 
+function loadMeAndOps() {
+  clearOpsStorage();
+  return new Promise(function (resolve, reject) {
+    loadMe(true)
+      .then((json) => {
+        const nme = new WasabeeMe(json);
+        if (nme.GoogleID) {
+          nme.store();
+          syncOps(nme.Ops).then(resolve);
+        } else {
+          console.log(json);
+          reject("bad data?");
+        }
+      })
+      .catch((error) => {
+        notify(error);
+        console.log(error);
+        reject(error);
+      });
+  });
+}
+
 function teamList() {
   logEvent("screen_view", { screen_name: "teams" });
   history.pushState({ screen: "teams" }, "teams", "#teams");
@@ -211,12 +233,18 @@ function teamList() {
 
   content.innerHTML = `
 <div class="container"><div class="row"><div class="col">
-<h1>Teams</h1>
+<h1>Teams <a id="teamRefresh">🗘</a></h1>
 <table class="table table-striped">
 <thead class="thead"><tr><th scope="col">Team</th><th scope="col">State</th><th scope="col"></th><th scope="col">Ops</th></tr></thead>
 <tbody id="teams"></tbody>
 </table>
 </div></div></div>`;
+
+  const teamRefreshNav = document.getElementById("teamRefresh");
+  L.DomEvent.on(teamRefreshNav, "click", (ev) => {
+    L.DomEvent.stop(ev);
+    loadMeAndOps().then(() => teamList());
+  });
 
   const tbody = document.getElementById("teams");
 
@@ -255,24 +283,7 @@ function teamList() {
           logEvent("join_group");
         }
 
-        loadMe(true).then(
-          (resolve) => {
-            const nme = new WasabeeMe(resolve);
-            if (nme.GoogleID) {
-              nme.store();
-              syncOps(nme.Ops).then(() => {
-                teamList();
-              });
-            } else {
-              notify("bad data?");
-              console.log(resolve);
-            }
-          },
-          (reject) => {
-            notify(reject);
-            console.log(reject);
-          }
-        );
+        loadMeAndOps().then(() => teamList());
       });
     });
 
@@ -286,27 +297,9 @@ function teamList() {
         L.DomEvent.stop(ev);
         // XXX use real promise chainng
         leaveTeam(t.ID).then(() => {
-          clearOpsStorage();
+          //clearOpsStorage();
           logEvent("leave_group");
-          loadMe(true).then(
-            (resolve) => {
-              console.log(resolve);
-              const nme = new WasabeeMe(resolve);
-              if (nme.GoogleID) {
-                nme.store();
-                syncOps(nme.Ops).then(() => {
-                  teamList();
-                });
-              } else {
-                notify("bad data?");
-                console.log(resolve);
-              }
-            },
-            (reject) => {
-              notify(reject);
-              console.log(reject);
-            }
-          );
+          loadMeAndOps().then(() => teamList());
         });
       });
     }
@@ -351,22 +344,22 @@ function opsList() {
   }
 
   // bootstrap layout
-  // XXX convert to `string literal` because this is too much to read
-  const container = L.DomUtil.create("div", "container", content);
-  const gridRow = L.DomUtil.create("div", "row", container);
-  const gridCol = L.DomUtil.create("div", "col", gridRow);
+  content.innerHTML = `
+<div class="container"><div class="row"><div class="col">
+<h1>Operations <a id="opsRefresh">🗘</a></h1>
+<table class="table table-striped">
+<thead class="thead"><tr><th scope="col">Operation</th><th scope="col">Comment</th><th scope="col">Teams</th></tr></thead>
+<tbody id="ops"></tbody>
+</table>
+</div></div></div>`;
 
-  const table = L.DomUtil.create("table", "table table-striped", gridCol);
-  const thead = L.DomUtil.create("thead", "thead", table);
-  const tr = L.DomUtil.create("tr", null, thead);
-  const th1 = L.DomUtil.create("th", null, tr);
-  th1.textContent = "Operation";
-  const th2 = L.DomUtil.create("th", null, tr);
-  th2.textContent = "Comment";
-  const th3 = L.DomUtil.create("th", null, tr);
-  th3.textContent = "Teams";
-  for (const c of tr.children) c.scope = "col";
-  const tbody = L.DomUtil.create("tbody", null, table);
+  const teamRefreshNav = document.getElementById("opsRefresh");
+  L.DomEvent.on(teamRefreshNav, "click", (ev) => {
+    L.DomEvent.stop(ev);
+    loadMeAndOps().then(() => opsList());
+  });
+
+  const tbody = document.getElementById("ops");
 
   const lsk = Object.keys(localStorage);
   for (const id of lsk) {

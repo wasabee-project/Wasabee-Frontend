@@ -165,11 +165,11 @@ function buildMenu() {
   });
 }
 
-// TODO: look at the current URL # and parse to determine where we ought to go
 function chooseScreen(state) {
   if (!state) state = history.state;
 
   if (state == null || state.screen == null) {
+    // check to see if "deep link"
     state = {};
     const s = window.location.href.substring(
       window.location.href.lastIndexOf("#") + 1
@@ -186,8 +186,6 @@ function chooseScreen(state) {
       }
     }
   }
-
-  console.log(state);
 
   switch (state.screen) {
     case "operation":
@@ -206,7 +204,6 @@ function chooseScreen(state) {
       teamList();
       break;
     default:
-      console.log("chooseScreen: ", state, window.location.href);
       teamList();
   }
 }

@@ -81,7 +81,7 @@ export function displayOp(state) {
     }
   }
 
-  const m = `<li class="nav-item"><a class="nav-link" id="opRefresh">🗘</a></li>`;
+  const m = `<li class="nav-item"><a class="nav-link" id="opRefresh">↻</a></li>`;
   opNavbar.insertAdjacentHTML("beforeend", m);
   const opRefreshNav = document.getElementById("opRefresh");
   L.DomEvent.on(opRefreshNav, "click", (ev) => {

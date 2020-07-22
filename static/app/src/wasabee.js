@@ -237,7 +237,7 @@ function teamList() {
 
   content.innerHTML = `
 <div class="container"><div class="row"><div class="col">
-<h1>Teams <a id="teamRefresh">🗘</a></h1>
+<h1>Teams <a id="teamRefresh">↻</a></h1>
 <table class="table table-striped">
 <thead class="thead"><tr><th scope="col">Team</th><th scope="col">State</th><th scope="col"></th><th scope="col">Ops</th></tr></thead>
 <tbody id="teams"></tbody>
@@ -350,7 +350,7 @@ function opsList() {
   // bootstrap layout
   content.innerHTML = `
 <div class="container"><div class="row"><div class="col">
-<h1>Operations <a id="opsRefresh">🗘</a></h1>
+<h1>Operations <a id="opsRefresh">↻</a></h1>
 <table class="table table-striped">
 <thead class="thead"><tr><th scope="col">Operation</th><th scope="col">Comment</th><th scope="col">Teams</th></tr></thead>
 <tbody id="ops"></tbody>

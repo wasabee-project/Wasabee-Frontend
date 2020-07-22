@@ -227,8 +227,6 @@ function checklist(op, assignmentsOnly = false) {
       L.DomUtil.create("td", null, row).textContent = s.completed;
     }
   }
-  // disable this once the manage screen is done
-  Sortable.create(opSteps);
 }
 
 function map(op) {
@@ -516,27 +514,141 @@ function manage(op) {
   );
   logEvent("screen_view", { screen_name: "op manage" });
 
+  // const me = WasabeeMe.get();
+
   const content = document.getElementById("wasabeeContent");
   while (content.lastChild) content.removeChild(content.lastChild);
 
   content.innerHTML = `
-<div class="container"><div class="row"><div class="col">
-<h1 id="opName"></h1>
-<table class="table table-striped">
+
+<div class="card mb-2">
+<div class="card-header" id="opName">${op.name}</div>
+<div class="card-body">
+<ul class="list-group list-group-flush">
+<li class="list-group-item" id="opComment"><textarea id="opComment">${op.comment}</textarea></li>
+</ul>
+</div>
+</div>
+<table class="table table-striped" id="optable">
 <thead>
 <tr>
-<th scope="col">&nbsp;</th>
+<th scope="col">Order</th>
+<th scope="col">Portal</th>
+<th scope="col">To/Action</th>
+<th scope="col">Distance</th>
+<th scope="col">Assigned To</th>
+<th scope="col">Description</th>
+<th scope="col">Status</th>
+<th scope="col">Completed</th>
 </tr>
 </thead>
-<tbody id="opTable">
-</tbody>
+<tbody id="opSteps"><!-- data goes here --></tbody>
 </table>
+</div>
+</div>
+
+<div id="opTable"></div>
 </div></div></div>
 `;
 
-  const opName = document.getElementById("opName");
-  opName.textContent = op.name;
-  // const opTable = document.getElementById("opTable");
+  const opSteps = document.getElementById("opSteps");
+  const opComment = document.getElementById("opComment");
+  L.DomEvent.on(opComment, "change", () => {
+    console.log("changing op comment");
+    // XXX push change to server
+    op.comment = opComment.value;
+    op.Save();
+  });
+
+  const steps = op.markers.concat(op.links);
+  steps.sort((a, b) => {
+    return a.opOrder - b.opOrder;
+  });
+  for (const s of steps) {
+    const row = L.DomUtil.create("tr", null, opSteps);
+    row.id = s.ID;
+    row.setAttribute("data-id", s.ID);
+    const opstep = L.DomUtil.create("td", null, row);
+    opstep.textContent = s.opOrder;
+    opstep.id = "opsteps-" + s.ID;
+
+    if (s instanceof WasabeeMarker) {
+      const portal = L.DomUtil.create("td", null, row);
+
+      const p = op.getPortal(s.portalId);
+      portal.textContent = p.name;
+
+      L.DomUtil.create("td", s.type, row).textContent = " " + s.type;
+      L.DomUtil.create("td", null, row).textContent = " ";
+      const assignedToTD = L.DomUtil.create("td", null, row);
+      assignedToTD.textContent = s.assignedTo;
+      if (s.assignedTo) {
+        const agent = op.getAgent(s.assignedTo);
+        if (agent) assignedToTD.textContent = agent.name;
+      }
+      L.DomUtil.create("td", null, row).textContent = s.comment;
+      L.DomUtil.create("td", null, row).textContent = s.state;
+      L.DomUtil.create("td", null, row).textContent = s.completedBy;
+    }
+    if (s instanceof WasabeeLink) {
+      const fPortal = L.DomUtil.create("td", null, row);
+
+      const fp = op.getPortal(s.fromPortalId);
+      fPortal.textContent = fp.name;
+      const tPortal = L.DomUtil.create("td", null, row);
+      const tp = op.getPortal(s.toPortalId);
+      tPortal.textContent = tp.name;
+
+      L.DomUtil.create("td", null, row).textContent = calculateDistance(fp, tp);
+      const assignedToTD = L.DomUtil.create("td", null, row);
+      assignedToTD.textContent = s.assignedTo;
+      if (s.assignedTo) {
+        const agent = op.getAgent(s.assignedTo);
+        if (agent) assignedToTD.textContent = agent.name;
+      }
+      L.DomUtil.create("td", null, row).textContent = s.comment;
+      L.DomUtil.create("td", null, row).textContent = s.state;
+      L.DomUtil.create("td", null, row).textContent = s.completed;
+    }
+  }
+
+  Sortable.create(opSteps, {
+    multiDrag: true,
+    selectedClass: "selected",
+    animation: 150,
+    store: {
+      set: (o) => {
+        const order = o.toArray();
+        const xhr = new XMLHttpRequest();
+        xhr.open(
+          "POST",
+          `${window.wasabeewebui.server}/api/v1/draw/${op.ID}/order`
+        );
+        xhr.setRequestHeader(
+          "Content-Type",
+          "application/x-www-form-urlencoded"
+        );
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            let i = 1;
+            for (const obj of order) {
+              const el = document.getElementById("opsteps-" + obj);
+              if (el) {
+                el.textContent = i;
+                i++;
+              } else {
+                console.log("unable to get opsteps-" + obj);
+              }
+            }
+          } else {
+            console.log(xhr.responseText);
+            notify(xhr.responseText);
+          }
+        };
+        xhr.send(encodeURI("order=" + order));
+      },
+    },
+  });
 }
 
 function calculateDistance(from, to) {

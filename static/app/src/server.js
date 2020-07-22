@@ -2,6 +2,7 @@ import WasabeeOp from "./operation";
 import WasabeeMe from "./me";
 import WasabeeAgent from "./agent";
 import WasabeeTeam from "./team";
+import WasabeeMarker from "./marker";
 import { notify } from "./notify";
 
 export function sendTokenToWasabee(token) {
@@ -598,5 +599,37 @@ export const deletePermPromise = function (opID, teamID, role) {
     fd.append("team", teamID);
     fd.append("role", role);
     req.send(fd);
+  });
+};
+
+export const setAssignmentStatus = function (op, object, completed) {
+  let type = "link";
+  if (object instanceof WasabeeMarker) type = "marker";
+  let c = "incomplete";
+  if (completed) c = "complete";
+
+  return new Promise((resolve, reject) => {
+    const url = `${window.wasabeewebui.server}/api/v1/draw/${op.ID}/${type}/${object.ID}/${c}`;
+    const req = new XMLHttpRequest();
+
+    req.open("GET", url);
+    req.withCredentials = true;
+
+    req.onload = function () {
+      switch (req.status) {
+        case 200:
+          resolve(true);
+          break;
+        default:
+          reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
+          break;
+      }
+    };
+
+    req.onerror = function () {
+      reject(`Network Error: ${req.responseText}`);
+    };
+
+    req.send();
   });
 };

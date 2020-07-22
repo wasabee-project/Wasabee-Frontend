@@ -8,7 +8,13 @@ import { notify } from "./notify";
 import Sortable from "sortablejs";
 import "leaflet.geodesic";
 import { logEvent } from "./firebase";
-import { loadTeam, loadOp, addPermPromise, deletePermPromise } from "./server";
+import {
+  loadTeam,
+  loadOp,
+  addPermPromise,
+  deletePermPromise,
+  setAssignmentStatus,
+} from "./server";
 
 export function displayOp(state) {
   const subnav = document.getElementById("wasabeeSubnav");
@@ -223,14 +229,23 @@ function checklist(op, assignmentsOnly = false) {
     }
 
     // on this screen, agents can only adjust the state of tasks assigned to them
-    const completed = L.DomUtil.create("td", null, row);
-    const completedCheck = L.DomUtil.create("input", null, completed);
+    const completedCell = L.DomUtil.create("td", null, row);
+    const completedCheck = L.DomUtil.create("input", null, completedCell);
     completedCheck.type = "checkbox";
     if (s.assignedTo == me.GoogleID) {
-      completed.disabled = false;
+      completedCheck.disabled = false;
       L.DomEvent.on(completedCheck, "change", (ev) => {
         L.DomEvent.stop(ev);
-        // XXX TBW setAssignmentStatus(op, s, completed.checked);
+        setAssignmentStatus(op, s, completedCheck.checked).then(
+          () => {
+            s.completed = completedCheck.checked;
+            op.update();
+          },
+          (reject) => {
+            notify(reject);
+            console.log(reject);
+          }
+        );
       });
     } else {
       completedCheck.disabled = true;
@@ -604,7 +619,6 @@ function manage(op) {
       }
       L.DomUtil.create("td", null, row).textContent = s.comment;
       L.DomUtil.create("td", null, row).textContent = s.state;
-      L.DomUtil.create("td", null, row).textContent = s.completedBy;
     }
     if (s instanceof WasabeeLink) {
       const fPortal = L.DomUtil.create("td", null, row);
@@ -624,7 +638,32 @@ function manage(op) {
       }
       L.DomUtil.create("td", null, row).textContent = s.comment;
       L.DomUtil.create("td", null, row).textContent = s.state;
-      L.DomUtil.create("td", null, row).textContent = s.completed;
+    }
+    const completedCell = L.DomUtil.create("td", null, row);
+    const completedCheck = L.DomUtil.create("input", null, completedCell);
+    completedCheck.type = "checkbox";
+    completedCheck.disabled = false;
+    L.DomEvent.on(completedCheck, "change", (ev) => {
+      L.DomEvent.stop(ev);
+      setAssignmentStatus(op, s, completedCheck.checked).then(
+        () => {
+          s.completed = completedCheck.checked;
+          op.update();
+        },
+        (reject) => {
+          notify(reject);
+          console.log(reject);
+        }
+      );
+    });
+
+    // XXX we need to make a WasabeeLink.completed getter for both IITC and WebUI
+    if (s instanceof WasabeeLink) {
+      completedCheck.checked = s.completed;
+    } else {
+      let c = false;
+      if (s.completedBy) c = true;
+      completedCheck.checked = c;
     }
   }
 

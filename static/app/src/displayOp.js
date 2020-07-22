@@ -165,7 +165,6 @@ function checklist(op, assignmentsOnly = false) {
 <th scope="col">Distance</th>
 <th scope="col">Assigned To</th>
 <th scope="col">Description</th>
-<th scope="col">Status</th>
 <th scope="col">Completed</th>
 </tr>
 </thead>
@@ -178,7 +177,6 @@ function checklist(op, assignmentsOnly = false) {
 </div></div></div>
 `;
 
-  // const opTable = document.getElementById("opTable");
   const opSteps = document.getElementById("opSteps");
   const steps = op.markers.concat(op.links);
   steps.sort((a, b) => {
@@ -204,8 +202,6 @@ function checklist(op, assignmentsOnly = false) {
         if (agent) assignedToTD.textContent = agent.name;
       }
       L.DomUtil.create("td", null, row).textContent = s.comment;
-      L.DomUtil.create("td", null, row).textContent = s.state;
-      L.DomUtil.create("td", null, row).textContent = s.completedBy;
     }
     if (s instanceof WasabeeLink) {
       const fPortal = L.DomUtil.create("td", null, row);
@@ -223,8 +219,27 @@ function checklist(op, assignmentsOnly = false) {
         if (agent) assignedToTD.textContent = agent.name;
       }
       L.DomUtil.create("td", null, row).textContent = s.comment;
-      L.DomUtil.create("td", null, row).textContent = s.state;
-      L.DomUtil.create("td", null, row).textContent = s.completed;
+    }
+
+    // on this screen, agents can only adjust the state of tasks assigned to them
+    const completed = L.DomUtil.create("td", null, row);
+    const completedCheck = L.DomUtil.create("input", null, completed);
+    completedCheck.type = "checkbox";
+    if (s.assignedTo == me.GoogleID) {
+      completed.disabled = false;
+      L.DomEvent.on(completedCheck, "change", (ev) => {
+        L.DomEvent.stop(ev);
+        // XXX TBW setAssignmentStatus(op, s, completed.checked);
+      });
+    } else {
+      completedCheck.disabled = true;
+    }
+    if (s instanceof WasabeeLink) {
+      completedCheck.checked = s.completed;
+    } else {
+      let c = false;
+      if (s.completedBy) c = true;
+      completedCheck.checked = c;
     }
   }
 }

@@ -2,6 +2,7 @@ import WasabeeLink from "./link";
 import WasabeePortal from "./portal";
 import WasabeeMarker from "./marker";
 import WasabeeMe from "./me";
+import WasabeeTeam from "./team";
 
 // this is from the IITC plugin, with minimal changes to make maintaining the two easier.
 // ALWAYS make functional changes to the IITC version then migrage those changes here
@@ -828,6 +829,20 @@ export class WasabeeOp {
     };
     this.keysonhand.push(k);
     this.update(false);
+  }
+
+  // get first team agent from agentid
+  // note: agent name depends on the team
+  getAgent(agentid) {
+    const teamset = new Set(this.teamlist.map((t) => t.teamid));
+    for (const t of teamset) {
+      const team = WasabeeTeam.get(t);
+      if (team) {
+        const agent = team.getAgent(agentid);
+        if (agent) return agent;
+      }
+    }
+    return null;
   }
 }
 

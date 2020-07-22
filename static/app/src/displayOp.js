@@ -133,7 +133,7 @@ function assignments(op) {
 
 function checklist(op, assignmentsOnly = false) {
   history.pushState(
-    { screen: "op", op: op.ID, subscreen: "checklist" },
+    { screen: "operation", op: op.ID, subscreen: "checklist" },
     "op checklist",
     `#op.checklist.${op.ID}`
   );
@@ -199,17 +199,9 @@ function checklist(op, assignmentsOnly = false) {
       L.DomUtil.create("td", null, row).textContent = " ";
       const assignedToTD = L.DomUtil.create("td", null, row);
       assignedToTD.textContent = s.assignedTo;
-      if (s.assignedTo != null && s.assignedTo != "") {
-        for (const teamEntry of op.teamlist) {
-          const team = WasabeeTeam.get(teamEntry.teamid);
-          if (team) {
-            const agent = team.getAgent(s.assignedTo);
-            if (agent) {
-              assignedToTD.textContent = agent.name;
-              break;
-            }
-          }
-        }
+      if (s.assignedTo) {
+        const agent = op.getAgent(s.assignedTo);
+        if (agent) assignedToTD.textContent = agent.name;
       }
       L.DomUtil.create("td", null, row).textContent = s.comment;
       L.DomUtil.create("td", null, row).textContent = s.state;
@@ -226,17 +218,9 @@ function checklist(op, assignmentsOnly = false) {
       L.DomUtil.create("td", null, row).textContent = calculateDistance(fp, tp);
       const assignedToTD = L.DomUtil.create("td", null, row);
       assignedToTD.textContent = s.assignedTo;
-      if (s.assignedTo != null && s.assignedTo != "") {
-        for (const teamEntry of op.teamlist) {
-          const team = WasabeeTeam.get(teamEntry.teamid);
-          if (team) {
-            const agent = team.getAgent(s.assignedTo);
-            if (agent) {
-              assignedToTD.textContent = agent.name;
-              break;
-            }
-          }
-        }
+      if (s.assignedTo) {
+        const agent = op.getAgent(s.assignedTo);
+        if (agent) assignedToTD.textContent = agent.name;
       }
       L.DomUtil.create("td", null, row).textContent = s.comment;
       L.DomUtil.create("td", null, row).textContent = s.state;
@@ -249,7 +233,7 @@ function checklist(op, assignmentsOnly = false) {
 
 function map(op) {
   history.pushState(
-    { screen: "op", op: op.ID, subscreen: "map" },
+    { screen: "operation", op: op.ID, subscreen: "map" },
     "op map",
     `#op.map.${op.ID}`
   );
@@ -320,6 +304,8 @@ function map(op) {
     if (m.assignedTo) {
       const at = L.DomUtil.create("div", null, popup);
       at.textContent = m.assignedTo;
+      const agent = op.getAgent(m.assignedTo);
+      if (agent) at.textContent = agent.name;
     }
 
     const route = L.DomUtil.create("button", null, popup);
@@ -402,7 +388,7 @@ function map(op) {
 
 function permissions(op) {
   history.pushState(
-    { screen: "op", op: op.ID, subscreen: "permissions" },
+    { screen: "operation", op: op.ID, subscreen: "permissions" },
     "op permissions",
     `#op.permissions.${op.ID}`
   );
@@ -493,7 +479,7 @@ function permissions(op) {
 
 function keys(op) {
   history.pushState(
-    { screen: "op", op: op.ID, subscreen: "keys" },
+    { screen: "operation", op: op.ID, subscreen: "keys" },
     "op keys",
     `#op.keys.${op.ID}`
   );
@@ -524,7 +510,7 @@ function keys(op) {
 
 function manage(op) {
   history.pushState(
-    { screen: "op", op: op.ID, subscreen: "manage" },
+    { screen: "operation", op: op.ID, subscreen: "manage" },
     "op manage",
     `#op.manage.${op.ID}`
   );

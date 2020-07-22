@@ -117,7 +117,7 @@ export function displayOp(state) {
       assignments(op);
       break;
     case "permissions":
-      L.DomUtil.addClass(document.getElementById("permissions"), "active");
+      L.DomUtil.addClass(document.getElementById("oppermissions"), "active");
       permissions(op);
       break;
     case "checklist":

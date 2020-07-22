@@ -32,7 +32,6 @@ export default class WasabeeMarker {
     return marker;
   }
 
-  // TBD
   get icon() {
     const iconTypes = {
       CapturePortalMarker: "capture",

@@ -84,9 +84,9 @@ export function wasabeeMain() {
   window.onpopstate = (event) => {
     if (event.state != null) {
       console.log("popstate", event);
+      history.go(-1);
       chooseScreen(event.state);
-      // use the leaflet event stoppers
-      event.preventDefault();
+      // L.DomEvent.stop(event);
       return true;
     }
   };
@@ -170,12 +170,25 @@ function chooseScreen(state) {
   if (!state) state = history.state;
 
   if (state == null || state.screen == null) {
-    history.replaceState({ screen: "teams" }, "teams", "/me");
-    teamList();
-    return;
+    state = {};
+    const s = window.location.href.substring(
+      window.location.href.lastIndexOf("#") + 1
+    );
+    if (!s) {
+      state.screen = "teams";
+    } else {
+      const y = s.split(".");
+      state.screen = y[0];
+      if (y[1] && y[2]) {
+        state.subscreen = y[1];
+        state.team = y[2];
+        state.op = y[2];
+      }
+    }
   }
 
   console.log(state);
+
   switch (state.screen) {
     case "operation":
       displayOp(state);
@@ -193,7 +206,7 @@ function chooseScreen(state) {
       teamList();
       break;
     default:
-      console.log("unknown state for chooseScreen", state);
+      console.log("chooseScreen: ", state, window.location.href);
       teamList();
   }
 }

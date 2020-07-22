@@ -142,7 +142,7 @@ function checklist(op, assignmentsOnly = false) {
   history.pushState(
     { screen: "operation", op: op.ID, subscreen: subscreen },
     "op ${subscreen}",
-    `#op.${subscreen}.${op.ID}`
+    `#operation.${subscreen}.${op.ID}`
   );
   logEvent("screen_view", { screen_name: `op ${subscreen}` });
 
@@ -264,7 +264,7 @@ function map(op) {
   history.pushState(
     { screen: "operation", op: op.ID, subscreen: "map" },
     "op map",
-    `#op.map.${op.ID}`
+    `#operation.map.${op.ID}`
   );
   logEvent("screen_view", { screen_name: "op setting" });
 
@@ -419,7 +419,7 @@ function permissions(op) {
   history.pushState(
     { screen: "operation", op: op.ID, subscreen: "permissions" },
     "op permissions",
-    `#op.permissions.${op.ID}`
+    `#operation.permissions.${op.ID}`
   );
   logEvent("screen_view", { screen_name: "op permissions" });
 
@@ -510,7 +510,7 @@ function keys(op) {
   history.pushState(
     { screen: "operation", op: op.ID, subscreen: "keys" },
     "op keys",
-    `#op.keys.${op.ID}`
+    `#operations.keys.${op.ID}`
   );
   logEvent("screen_view", { screen_name: "op keys" });
 
@@ -541,7 +541,7 @@ function manage(op) {
   history.pushState(
     { screen: "operation", op: op.ID, subscreen: "manage" },
     "op manage",
-    `#op.manage.${op.ID}`
+    `#operation.manage.${op.ID}`
   );
   logEvent("screen_view", { screen_name: "op manage" });
 

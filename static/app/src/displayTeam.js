@@ -351,7 +351,7 @@ function manage(teamID) {
 
 function settings(teamID) {
   history.pushState(
-    { screen: "team", team: teamID, subscreen: "setting" },
+    { screen: "team", team: teamID, subscreen: "settings" },
     "team settings",
     `#team.settings.${teamID}`
   );

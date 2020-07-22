@@ -132,12 +132,13 @@ function assignments(op) {
 }
 
 function checklist(op, assignmentsOnly = false) {
+  const subscreen = assignmentsOnly ? "assignments" : "checklist";
   history.pushState(
-    { screen: "operation", op: op.ID, subscreen: "checklist" },
-    "op checklist",
-    `#op.checklist.${op.ID}`
+    { screen: "operation", op: op.ID, subscreen: subscreen },
+    "op ${subscreen}",
+    `#op.${subscreen}.${op.ID}`
   );
-  logEvent("screen_view", { screen_name: "op checklist" });
+  logEvent("screen_view", { screen_name: `op ${subscreen}` });
 
   const me = WasabeeMe.get();
 

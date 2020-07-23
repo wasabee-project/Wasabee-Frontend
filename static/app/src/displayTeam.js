@@ -462,10 +462,15 @@ function settings(teamID) {
         L.DomEvent.on(generate, "click", (ev) => {
           L.DomEvent.stop(ev);
           createJoinLinkPromise(team.id).then(
-            () => {
-              notify("Join link created");
-              // XXX this is hackish, the server should respond with the token
-              joinLink.textContent = "refresh to update";
+            (resolve) => {
+              try {
+                const k = JSON.parse(resolve);
+                notify("Join link created: " + k.Key);
+                joinLink.innerHTML = `<a href="/api/v1/team/${team.id}/join/${k.Key}">copy this link</a> to share with agents`;
+              } catch (e) {
+                console.log(e);
+                notify(e);
+              }
             },
             (reject) => {
               joinLink.textContent = "unable to create link";

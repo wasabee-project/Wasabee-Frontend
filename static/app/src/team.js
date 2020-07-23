@@ -9,6 +9,9 @@ export default class WasabeeTeam {
     this.id = null;
     this.agents = [];
     this.fetched = null;
+    this.jst = null;
+    this.rc = null;
+    this.rk = null;
   }
 
   static create(data) {
@@ -26,6 +29,9 @@ export default class WasabeeTeam {
     const team = new WasabeeTeam();
     team.id = data.id;
     team.name = data.name;
+    team.rc = data.rc;
+    team.rk = data.rk;
+    team.jlt = data.jlt;
     team.fetched = Date.now();
     for (const agent of data.agents) {
       team.agents.push(WasabeeAgent.create(agent));

@@ -196,7 +196,7 @@ export function syncOps(ops) {
       for (const r of results) {
         if (r.status != "fulfilled") {
           console.log(r);
-          notify("Op load failed, please refresh");
+          notify("Op load failed, please refresh", "warning", true);
         }
       }
       resolve(true);
@@ -239,14 +239,14 @@ function _sendLocation() {
             // console.log("location sent");
           },
           (reject) => {
-            notify("Unable to send location to server", "danger");
+            notify("Unable to send location to server", "warning", true);
             console.log(reject);
             stopSendLoc();
           }
         );
       },
       (error) => {
-        notify("Unable to determine location", "danger");
+        notify("Unable to determine location", "secondary", false);
         console.log(error);
         if (window.wasabeewebui.sendLocInterval) {
           stopSendLoc();

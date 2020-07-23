@@ -150,7 +150,7 @@ function list(teamID) {
     },
     (reject) => {
       console.log(reject);
-      notify(reject);
+      notify(reject, "danger", true);
     }
   );
 }
@@ -215,7 +215,7 @@ function map(teamID) {
       }
     },
     (reject) => {
-      notify(reject);
+      notify(reject, "danger", true);
       console.log(reject);
     }
   );
@@ -269,7 +269,7 @@ function manage(teamID) {
       },
       (reject) => {
         console.log(reject);
-        notify(reject);
+        notify(reject, "danger", true);
       }
     );
   });
@@ -305,7 +305,7 @@ function manage(teamID) {
               manage(teamID);
             },
             (reject) => {
-              notify(reject);
+              notify(reject, "danger", true);
               console.log(reject);
             }
           );
@@ -319,7 +319,7 @@ function manage(teamID) {
               manage(teamID);
             },
             (reject) => {
-              notify(reject);
+              notify(reject, "danger", true);
               console.log(reject);
             }
           );
@@ -335,7 +335,7 @@ function manage(teamID) {
               manage(teamID);
             },
             (reject) => {
-              notify(reject);
+              notify(reject, "danger", true);
               console.log(reject);
             }
           );
@@ -343,7 +343,7 @@ function manage(teamID) {
       }
     },
     (reject) => {
-      notify(reject);
+      notify(reject, "danger", true);
       console.log(reject);
     }
   );
@@ -436,7 +436,7 @@ function settings(teamID) {
           (reject) => {
             newOwner.value = "";
             console.log(reject);
-            notify(reject);
+            notify(reject, "danger", true);
           }
         );
       });
@@ -452,7 +452,7 @@ function settings(teamID) {
             },
             (reject) => {
               console.log(reject);
-              notify(reject);
+              notify(reject, "danger", true);
             }
           );
         });
@@ -465,17 +465,17 @@ function settings(teamID) {
             (resolve) => {
               try {
                 const k = JSON.parse(resolve);
-                notify("Join link created: " + k.Key);
+                notify("Join link created: " + k.Key, "success", false);
                 joinLink.innerHTML = `<a href="/api/v1/team/${team.id}/join/${k.Key}">copy this link</a> to share with agents`;
               } catch (e) {
                 console.log(e);
-                notify(e);
+                notify(e, "danger", true);
               }
             },
             (reject) => {
               joinLink.textContent = "unable to create link";
               console.log(reject);
-              notify(reject);
+              notify(reject, "danger", true);
             }
           );
         });
@@ -483,7 +483,7 @@ function settings(teamID) {
     },
     (reject) => {
       console.log(reject);
-      notify(reject);
+      notify(reject, "danger", true);
     }
   );
 }

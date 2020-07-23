@@ -44,12 +44,14 @@ export function firebaseInit() {
         // {"Quit", "Generic Message", "Agent Location Change", "Map Change", "Marker Status Change", "Marker Assignment Change", "Link Status Change",
         //  "Link Assignment Change", "Subscribe"}
         case "Agent Location Change":
+          console.log(payload);
           // if on the matching team's map, update. otherwise ignore
           break;
         case "Generic Message":
           notify(JSON.stringify(payload), "primary", false);
           break;
         case "Map Change":
+          console.log("firebase map change: ", payload);
           // download op
           break;
         case "Login":

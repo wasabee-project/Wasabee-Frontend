@@ -44,7 +44,7 @@ export function wasabeeMain() {
             });
           } else {
             console.log(me);
-            notify("refresh required");
+            notify("refresh required", "warning", true);
           }
         },
         (reject) => {
@@ -56,14 +56,14 @@ export function wasabeeMain() {
       );
     },
     (reject) => {
-      notify("unable to load config: " + reject);
+      notify("unable to load config: " + reject, "danger", true);
       console.log(reject);
     }
   );
 
   // for debugging only, we listen to firebase directly and don't need the service worker
   window.addEventListener("message", (event) => {
-    notify(JSON.stringify(event), "primary");
+    notify(JSON.stringify(event), "dark");
     console.log("Service Worker message received: ", event);
   });
 
@@ -223,7 +223,7 @@ function loadMeAndOps() {
         }
       })
       .catch((error) => {
-        notify(error);
+        notify(error, "danger", true);
         console.log(error);
         reject(error);
       });

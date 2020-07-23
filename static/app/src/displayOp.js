@@ -23,7 +23,7 @@ export function displayOp(state) {
 
   const op = new WasabeeOp(localStorage[state.op]);
   if (!op) {
-    notify("invalid op");
+    notify("invalid op", "danger", true);
     return;
   }
 
@@ -102,7 +102,11 @@ export function displayOp(state) {
       })
       .then(() => displayOp(history.state))
       .catch(() =>
-        notify("Op load failed, please refresh from operations list")
+        notify(
+          "Op load failed, please refresh from operations list",
+          "warning",
+          true
+        )
       );
   });
 
@@ -243,7 +247,7 @@ function checklist(op, assignmentsOnly = false) {
             op.update();
           },
           (reject) => {
-            notify(reject);
+            notify(reject, "danger", true);
             console.log(reject);
           }
         );
@@ -623,7 +627,7 @@ function keys(op) {
         () => {},
         (reject) => {
           console.log(reject);
-          notify(reject);
+          notify(reject, "danger", true);
         }
       );
     });
@@ -635,11 +639,11 @@ function keys(op) {
     L.DomEvent.on(cap, "change", () => {
       updateKeyCount(op, k.id, count.value, cap.value).then(
         () => {
-          notify("count updated");
+          notify("count updated", "success", false);
         },
         (reject) => {
           console.log(reject);
-          notify(reject);
+          notify(reject, "danger", true);
         }
       );
     });
@@ -773,7 +777,7 @@ function manage(op) {
           op.update();
         },
         (reject) => {
-          notify(reject);
+          notify(reject, "danger", true);
           console.log(reject);
         }
       );
@@ -819,7 +823,7 @@ function manage(op) {
             }
           } else {
             console.log(xhr.responseText);
-            notify(xhr.responseText);
+            notify(xhr.responseText, "danger", true);
           }
         };
         xhr.send(encodeURI("order=" + order));

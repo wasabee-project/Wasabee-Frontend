@@ -633,3 +633,34 @@ export const setAssignmentStatus = function (op, object, completed) {
     req.send();
   });
 };
+
+export const updateKeyCount = function (op, portalID, count, capsule) {
+  return new Promise((resolve, reject) => {
+    const url = `${window.wasabeewebui.server}/api/v1/draw/${op.ID}/portal/${portalID}/keyonhand`;
+    const req = new XMLHttpRequest();
+
+    req.open("POST", url);
+    req.withCredentials = true;
+
+    req.onload = function () {
+      switch (req.status) {
+        case 200:
+          resolve(true);
+          break;
+        default:
+          reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
+          break;
+      }
+    };
+
+    req.onerror = function () {
+      reject(`Network Error: ${req.responseText}`);
+    };
+
+    const fd = new FormData();
+    fd.append("portal", portalID);
+    fd.append("onhand", count);
+    fd.append("capsule", capsule);
+    req.send(fd);
+  });
+};

@@ -14,6 +14,7 @@ import {
   addPermPromise,
   deletePermPromise,
   setAssignmentStatus,
+  updateKeyCount,
 } from "./server";
 
 export function displayOp(state) {
@@ -514,6 +515,7 @@ function keys(op) {
   );
   logEvent("screen_view", { screen_name: "op keys" });
 
+  const me = WasabeeMe.get();
   const content = document.getElementById("wasabeeContent");
   while (content.lastChild) content.removeChild(content.lastChild);
 
@@ -523,10 +525,26 @@ function keys(op) {
 <table class="table table-striped">
 <thead>
 <tr>
-<th scope="col">&nbsp;</th>
+<th scope="col">Portal</th>
+<th scope="col">Required</th>
+<th scope="col">Total</th>
+<th scope="col">My Count</th>
+<th scope="col">Capsule</th>
 </tr>
 </thead>
-<tbody id="opTable">
+<tbody id="myInput">
+</tbody>
+</table><hr>
+<table class="table table-striped">
+<thead>
+<tr>
+<th scope="col">Portal</th>
+<th scope="col">Agent</th>
+<th scope="col">Count</th>
+<th scope="col">Capsule</th>
+</tr>
+</thead>
+<tbody id="opDetail">
 </tbody>
 </table>
 </div></div></div>
@@ -534,7 +552,111 @@ function keys(op) {
 
   const opName = document.getElementById("opName");
   opName.textContent = op.name;
-  // const opTable = document.getElementById("opTable");
+  const myInput = document.getElementById("myInput");
+
+  const klist = new Array();
+  for (const a of op.anchors) {
+    const k = {};
+    const links = op.links.filter(function (listLink) {
+      return listLink.toPortalId == a;
+    });
+
+    k.id = a;
+    k.Required = links.length;
+    k.onHand = 0;
+    k.iHave = 0;
+    k.capsule = "";
+    if (k.Required == 0) continue;
+
+    const thesekeys = op.keysonhand.filter(function (kk) {
+      return kk.portalId == a;
+    });
+    if (thesekeys && thesekeys.length > 0) {
+      for (const t of thesekeys) {
+        k.onHand += t.onhand;
+        if (t.gid == me.GoogleID) {
+          k.iHave = t.onhand;
+          k.capsule = t.capsule;
+        }
+      }
+    }
+    klist.push(k);
+  }
+
+  for (const p of op.markers.filter(function (marker) {
+    return marker.type == "GetKeyPortalMarker";
+  })) {
+    const k = {};
+    k.id = p.portalId;
+    k.Required = "Not Specified";
+    k.onHand = 0;
+    k.iHave = 0;
+    k.capsule = "";
+
+    const thesekeys = op.keysonhand.filter(function (kk) {
+      return kk.portalId == k.id;
+    });
+    if (thesekeys && thesekeys.length > 0) {
+      for (const t of thesekeys) {
+        k.onHand += t.onhand;
+        if (t.gid == me.GoogleID) {
+          k.iHave = t.onhand;
+          k.capsule = t.capsule;
+        }
+      }
+    }
+    klist.push(k);
+  }
+
+  for (const k of klist) {
+    const tr = L.DomUtil.create("tr", null, myInput);
+    L.DomUtil.create("td", null, tr).textContent = op.getPortal(k.id).name;
+    L.DomUtil.create("td", null, tr).textContent = k.Required;
+    L.DomUtil.create("td", null, tr).textContent = k.onHand;
+
+    const cc = L.DomUtil.create("td", null, tr);
+    const count = L.DomUtil.create("input", null, cc);
+    count.size = 3;
+    count.value = k.iHave;
+    L.DomEvent.on(count, "change", () => {
+      updateKeyCount(op, k.id, count.value, cap.value).then(
+        () => {},
+        (reject) => {
+          console.log(reject);
+          notify(reject);
+        }
+      );
+    });
+
+    const capc = L.DomUtil.create("td", null, tr);
+    const cap = L.DomUtil.create("input", null, capc);
+    cap.size = 10;
+    cap.value = k.capsule;
+    L.DomEvent.on(cap, "change", () => {
+      updateKeyCount(op, k.id, count.value, cap.value).then(
+        () => {
+          notify("count updated");
+        },
+        (reject) => {
+          console.log(reject);
+          notify(reject);
+        }
+      );
+    });
+  }
+
+  const opDetail = document.getElementById("opDetail");
+  for (const k of op.keysonhand) {
+    console.log(k);
+    const tr = L.DomUtil.create("tr", null, opDetail);
+    const p = op.getPortal(k.portalId);
+    L.DomUtil.create("td", null, tr).textContent = p
+      ? p.name
+      : "[portal no longer in op]";
+    L.DomUtil.create("td", null, tr).textContent = k.gid;
+    L.DomUtil.create("td", null, tr).textContent = k.onhand;
+    L.DomUtil.create("td", null, tr).textContent = k.capsule;
+  }
 }
 
 function manage(op) {

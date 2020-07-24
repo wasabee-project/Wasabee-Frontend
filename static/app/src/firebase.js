@@ -1,3 +1,4 @@
+import { WasabeeMe } from "./me";
 import { sendTokenToWasabee } from "./server";
 import * as firebase from "firebase/app";
 import "firebase/messaging";
@@ -37,6 +38,8 @@ export function firebaseInit() {
       });
   });
 
+  const me = WasabeeMe.get();
+
   messaging.onMessage((payload) => {
     if (payload.data && payload.data.cmd) {
       logEvent("message_received", { command: payload.data.cmd });
@@ -55,7 +58,8 @@ export function firebaseInit() {
           // download op
           break;
         case "Login":
-          notify(`Teammate Login: ${payload.data.gid}`, "primary", false);
+          if (me.GoogleID != payload.data.gid)
+            notify(`Teammate Login: ${payload.data.gid}`, "primary", false);
           break;
         default:
           notify(JSON.stringify(payload), "primary", false);
@@ -129,7 +133,7 @@ function requestPermission() {
 export function logEvent(e, params = {}) {
   if (!inited) return;
 
-  params.app_version = "0.0.1";
-  params.app_name = "Wasabee-Webview";
+  params.app_version = "0.0.2";
+  params.app_name = "Wasabee-WebUI";
   firebase.analytics().logEvent(e, params);
 }

@@ -59,9 +59,12 @@
         console.log("sending analytics", event.data);
         if (event.data) {
           event.data.app_name = "Wasabee-IITC";
+          event.data.app_id = "Wasabee-IITC";
+          event.data.screen_name = event.data.action;
           event.data.app_version = "0.18";
         }
-        analytics.logEvent("iitc_event", event.data);
+        // analytics.logEvent("iitc_event", event.data);
+        analytics.logEvent("screen_view", event.data);
         break;
       default:
         console.log("unknown event from IITC to firebase subsystem", event);
@@ -76,7 +79,7 @@
   });
 
   messaging.onMessage((payload) => {
-    // console.log('Firebase message received: ', payload);
+    console.log('Firebase message received: ', payload);
     // post the message to the IITC-hosted iframe.
     window.parent.postMessage(payload, "https://intel.ingress.com");
     analytics.logEvent('message_received');

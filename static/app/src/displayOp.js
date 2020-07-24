@@ -657,7 +657,9 @@ function keys(op) {
     L.DomUtil.create("td", null, tr).textContent = p
       ? p.name
       : "[portal no longer in op]";
-    L.DomUtil.create("td", null, tr).textContent = k.gid;
+
+    const agent = op.getAgent(k.gid);
+    L.DomUtil.create("td", null, tr).textContent = agent ? agent.name : k.gid;
     L.DomUtil.create("td", null, tr).textContent = k.onhand;
     L.DomUtil.create("td", null, tr).textContent = k.capsule;
   }

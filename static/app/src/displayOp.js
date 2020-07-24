@@ -624,7 +624,9 @@ function keys(op) {
     count.value = k.iHave;
     L.DomEvent.on(count, "change", () => {
       updateKeyCount(op, k.id, count.value, cap.value).then(
-        () => {},
+        () => {
+          notify("count updated", "success", false);
+        },
         (reject) => {
           console.log(reject);
           notify(reject, "danger", true);
@@ -639,7 +641,7 @@ function keys(op) {
     L.DomEvent.on(cap, "change", () => {
       updateKeyCount(op, k.id, count.value, cap.value).then(
         () => {
-          notify("count updated", "success", false);
+          notify("capsule name updated", "success", false);
         },
         (reject) => {
           console.log(reject);

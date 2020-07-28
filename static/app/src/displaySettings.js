@@ -35,9 +35,10 @@ export function displaySettings() {
    </div>
   </div>
   <div class="card mb-2">
-   <div class="card-header">Location</div>
+   <div class="card-header">Options</div>
    <div class="card-body">
-    <label>Send Location: <input id="locCheck" type="checkbox"></label>
+    <label>Send Location: <input id="locCheck" type="checkbox"></label><br />
+    <label>Enable Anonymous Analytics: <input id="analytics" type="checkbox"></label> <span class="small dim">(this helps the developers improve Wasabee)</span>
    </div>
   </div>
   <div class="card mb-2">
@@ -58,6 +59,12 @@ export function displaySettings() {
     localStorage["sendLocation"] = locCheck.checked;
     if (locCheck.checked) startSendLoc();
     else stopSendLoc();
+  });
+
+  const analytics = document.getElementById("analytics");
+  if (localStorage["analytics"] == "true") analytics.checked = true;
+  L.DomEvent.on(analytics, "change", () => {
+    localStorage["analytics"] = analytics.checked;
   });
 
   const vstatus = document.getElementById("vstatus");

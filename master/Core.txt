@@ -1,7 +1,7 @@
 {{define "assignMarker"}}
-You have been assigned a target. Please see {{ Webroot }}{{WebAPIPath}}/draw/{{.OpID}} for details.
+You have been assigned a target. Please see {{ Webroot }}/me#operation.assignments.{{.OpID}} for details.
 {{end}}
 
 {{define "assignLink"}}
-You have been assigned a link. Please see {{ Webroot }}{{WebAPIPath}}/draw/{{.OpID}} for details.
+You have been assigned a link. Please see {{ Webroot }}/me#operation.assignments.{{.OpID}} for details.
 {{end}}

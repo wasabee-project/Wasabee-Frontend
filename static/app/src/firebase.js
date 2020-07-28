@@ -8,6 +8,7 @@ import { notify } from "./notify";
 
 let messaging = null;
 let inited = false;
+const observedLogins = new Map();
 
 export function firebaseInit() {
   try {
@@ -58,8 +59,18 @@ export function firebaseInit() {
           // download op
           break;
         case "Login":
-          if (me.GoogleID != payload.data.gid)
-            notify(`Teammate Login: ${payload.data.gid}`, "primary", false);
+          if (me.GoogleID != payload.data.gid) {
+            if (observedLogins.has(payload.data.gid)) {
+              const lastSeen = observedLogins.get(payload.data.gid);
+              if (Date.now() - lastSeen > 36000) {
+                observedLogins.set(payload.data.gid, Date.now());
+                notify(`Teammate Login: ${payload.data.gid}`, "primary", false);
+              } // else too recent, just ignore
+            } else {
+              observedLogins.set(payload.data.gid, Date.now());
+              notify(`Teammate Login: ${payload.data.gid}`, "primary", false);
+            }
+          }
           break;
         default:
           notify(JSON.stringify(payload), "primary", false);
@@ -132,6 +143,9 @@ function requestPermission() {
 
 export function logEvent(e, params = {}) {
   if (!inited) return;
+
+  // GDPR requirement
+  if (localStorage["analytics"] != "true") return;
 
   params.app_version = "0.0.2";
   params.app_name = "Wasabee-WebUI";

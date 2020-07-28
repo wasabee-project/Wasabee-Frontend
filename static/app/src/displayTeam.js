@@ -7,6 +7,9 @@ import {
   createJoinLinkPromise,
   deleteJoinLinkPromise,
   addAgentToTeam,
+  sendAnnounce,
+  rocksCfg,
+  pullRocks,
 } from "./server";
 import { notify } from "./notify";
 import WasabeeMe from "./me";
@@ -371,8 +374,8 @@ function settings(teamID) {
   <div class="card-header">enlightened.rocks Integration</div>
    <div class="card-body">
 <!-- <form action="{{WebAPIPath}}/team/{{.ID}}/rockscfg" method="get"> -->
-     <div>Rocks Community Identifier: <input type="text" name="rockscomm" id="rockscomm" /></div>
-     <div>Rocks Community API Key: <input type="text" name="rockskey" id="rockskey" /></div>
+     <div>Rocks Community Identifier: <input type="text" name="rockscomm" id="rockscomm" placeholder="afdviaren.com"/> <span class="dim small">Typically looks like "randomstring.com"</span></div>
+     <div>Rocks Community API Key: <input type="text" name="rockskey" id="rockskey" placeholder="VnNfDerpL1nKsppMerZvwaXX"  /> <span class="dim small">24 letter string</span></div>
      <div class="dim small">If you want this team to have its membership populated from an .rocks community, you will need to get the community ID and API key from the community's settings and add them here. Do not do this unless you trust the enl.rocks community.</div>
 </form>
     <button id="rockspull">Pull associated enl.rocks community members onto this team</button>
@@ -408,6 +411,14 @@ function settings(teamID) {
   const rockspull = document.getElementById("rockspull");
   const newOwner = document.getElementById("newOwner");
   const joinLink = document.getElementById("joinLink");
+  const announce = document.getElementById("announce");
+
+  L.DomEvent.on(announce, "click", () => {
+    const announceContent = document.getElementById("announceContent");
+    sendAnnounce(teamID, announceContent.value);
+    notify("Message Sent");
+    announceContent.value = "";
+  });
 
   loadTeam(teamID).then(
     (team) => {
@@ -416,16 +427,16 @@ function settings(teamID) {
       if (team.rc) rockscomm.value = team.rc;
       L.DomEvent.on(rockscomm, "change", (ev) => {
         L.DomEvent.stop(ev);
-        alert("coming soon");
+        rocksCfg(teamID, rockscomm.value, rockskey.value);
       });
       if (team.rk) rockskey.value = team.rk;
       L.DomEvent.on(rockskey, "change", (ev) => {
         L.DomEvent.stop(ev);
-        alert("coming soon");
+        rocksCfg(teamID, rockscomm.value, rockskey.value);
       });
       L.DomEvent.on(rockspull, "click", (ev) => {
         L.DomEvent.stop(ev);
-        alert("coming soon");
+        pullRocks(teamID);
       });
       L.DomEvent.on(newOwner, "change", (ev) => {
         L.DomEvent.stop(ev);

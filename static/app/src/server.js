@@ -664,3 +664,86 @@ export const updateKeyCount = function (op, portalID, count, capsule) {
     req.send(fd);
   });
 };
+
+export const sendAnnounce = function (teamID, message) {
+  return new Promise((resolve, reject) => {
+    const url = `${window.wasabeewebui.server}/api/v1/team/${teamID}/announce`;
+    const req = new XMLHttpRequest();
+
+    req.open("POST", url);
+    req.withCredentials = true;
+
+    req.onload = function () {
+      switch (req.status) {
+        case 200:
+          resolve(true);
+          break;
+        default:
+          reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
+          break;
+      }
+    };
+
+    req.onerror = function () {
+      reject(`Network Error: ${req.responseText}`);
+    };
+
+    const fd = new FormData();
+    fd.append("m", message);
+    req.send(fd);
+  });
+};
+
+export const pullRocks = function (teamID) {
+  return new Promise((resolve, reject) => {
+    const url = `${window.wasabeewebui.server}/api/v1/team/${teamID}/rocks`;
+    const req = new XMLHttpRequest();
+
+    req.open("GET", url);
+    req.withCredentials = true;
+
+    req.onload = function () {
+      switch (req.status) {
+        case 200:
+          resolve(true);
+          break;
+        default:
+          reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
+          break;
+      }
+    };
+
+    req.onerror = function () {
+      reject(`Network Error: ${req.responseText}`);
+    };
+
+    req.send();
+  });
+};
+
+export const rocksCfg = function (teamID, rockscomm, rockskey) {
+  return new Promise((resolve, reject) => {
+    const url = `${window.wasabeewebui.server}/api/v1/team/${teamID}/rockscfg?rockscomm=${rockscomm}&rockskey=${rockskey}`;
+    const req = new XMLHttpRequest();
+
+    req.open("GET", url);
+    req.withCredentials = true;
+
+    req.onload = function () {
+      switch (req.status) {
+        case 200:
+          resolve(true);
+          break;
+        default:
+          reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
+          break;
+      }
+    };
+
+    req.onerror = function () {
+      reject(`Network Error: ${req.responseText}`);
+    };
+
+    req.send();
+  });
+};

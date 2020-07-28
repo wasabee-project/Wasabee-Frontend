@@ -153,12 +153,14 @@ function buildMenu() {
       () => {
         delete localStorage["me"];
         delete localStorage["loadedOp"];
+        delete localStorage["sentToServer"];
         window.location.href = "/";
       },
       (reject) => {
         console.log(reject);
         delete localStorage["me"];
         delete localStorage["loadedOp"];
+        delete localStorage["sentToServer"];
         window.location.href = "/";
       }
     );

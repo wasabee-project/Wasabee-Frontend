@@ -1,32 +1,30 @@
 {{define "default"}}
-Please see {{ Webroot }}{{WebAPIPath}}/me/settings for details
+Please see {{ Webroot }}/me#settings for details
 {{end}}
 
 {{define "help"}}
 If everything is working correctly, you should see helpful buttons near the message input area.
 If not, try saying "/start"
-
-Please see {{ Webroot }}{{WebAPIPath}}/me/settings for details (help)
 {{end}}
 
 {{define "InitOneFail"}}
-*Please send your Location Share Key to begin verification*
-See {{ Webroot }}{{WebAPIPath}}/me/settings for details
+*Please send your Telegram token to begin verification*
+See {{ Webroot }}/me#settings for details
 {{end}}
 
 {{define "InitOneSuccess"}}
-*You have sent your Location Share Key correctly*
-Now, you need to send your verification code from {{ Webroot }}{{WebAPIPath}}/me/settings
+*You have sent Telegram token correctly*
+Now, you need to send your verification code from {{ Webroot }}/me#settings
 
 *You might need to reload the page to see the verifcation code, it will be listed in the same place as before.*
 
-See {{ Webroot }}{{WebAPIPath}}/me/settings for details
+See {{ Webroot }}/me#settings for details
 {{end}}
 
 {{define "InitTwoFail"}}
 *Verification FAILED*
 Please send your verification code without any additional content
-See {{ Webroot }}{{WebAPIPath}}/me/settings for details
+See {{ Webroot }}/me#settings for details
 {{end}}
 
 {{define "InitTwoSuccess"}}
@@ -62,8 +60,4 @@ Nearest Targets
 {{- if ne .MarkerType "OTWaypointFarmAlert"}}
 {{.Desc}}: {{.Distance}}km [Google Maps](http://maps.google.com/?q={{.Lat}},{{.Lon}}) | [Apple Maps](http://maps.apple.com/?q={{.Lat}},{{.Lon}}) | [Intel](https://intel.ingress.com/intel?ll={{.Lat}},{{.Lon}}&z=12&pll={{.Lat}},{{.Lon}}) {{.MarkerType}}{{end}}
 {{end}}
-{{end}}
-
-{{define "tmp"}}
-Testing
 {{end}}

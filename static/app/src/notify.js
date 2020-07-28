@@ -19,9 +19,11 @@ export function notify(msg, level = "primary", log = true) {
   s.textContent = "X";
   s.ariaHidden = "true";
 
-  // data-dismiss takes care of this for us
-  // L.DomEvent.on(n, "click", () => { n.alert("close"); n.alert("dispose"); });
-  //
+  // clear messages after 3 seconds
+  setTimeout(() => {
+    b.click();
+  }, 3000);
+
   if (log) {
     logEvent("exception", { description: msg, fatal: false });
   }

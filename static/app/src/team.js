@@ -35,7 +35,6 @@ export default class WasabeeTeam {
     team.fetched = Date.now();
     for (const agent of data.agents) {
       team.agents.push(WasabeeAgent.create(agent));
-      // WasabeeAgent.create takes care of caching it for us
     }
 
     // add to local cache
@@ -45,7 +44,8 @@ export default class WasabeeTeam {
   }
 
   static get(id) {
-    return teamCache.get(id);
+    if (teamCache.has(id)) return teamCache.get(id);
+    return null;
   }
 
   getAgent(id) {

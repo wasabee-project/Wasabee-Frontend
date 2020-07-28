@@ -1,4 +1,5 @@
-import { GetWasabeeServer } from "./server";
+// this is reset on each reload, but works fine for normal screen-changing
+const agentCache = new Map();
 
 export default class WasabeeAgent {
   constructor() {
@@ -39,6 +40,8 @@ export default class WasabeeAgent {
     a.squad = obj.squad;
     a.state = obj.state;
 
+    agentCache.set(a.id, a);
+
     return a;
   }
 
@@ -47,22 +50,9 @@ export default class WasabeeAgent {
     return null;
   }
 
-  formatDisplay() {
-    const server = GetWasabeeServer();
-    const display = L.DomUtil.create("a", "wasabee-agent-label");
-    if (this.Vverified || this.rocks) {
-      L.DomUtil.addClass(display, "enl");
-    }
-    if (this.blacklisted) {
-      L.DomUtil.addClass(display, "res");
-    }
-    display.href = `${server}/api/v1/agent/${this.id}?json=n`;
-    display.target = "_new";
-    L.DomEvent.on(display, "click", (ev) => {
-      window.open(display.href, this.id);
-      L.DomEvent.stop(ev);
-    });
-    display.textContent = this.name;
-    return display;
+  // an agent may be on multiple teams and have a different display name on each, this could be ugly
+  static get(id) {
+    if (agentCache.has(id)) return agentCache.get(id);
+    return null;
   }
 }

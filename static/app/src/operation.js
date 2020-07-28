@@ -3,6 +3,7 @@ import WasabeePortal from "./portal";
 import WasabeeMarker from "./marker";
 import WasabeeMe from "./me";
 import WasabeeTeam from "./team";
+import WasabeeAgent from "./agent";
 
 // this is from the IITC plugin, with minimal changes to make maintaining the two easier.
 // ALWAYS make functional changes to the IITC version then migrage those changes here
@@ -834,6 +835,10 @@ export class WasabeeOp {
   // get first team agent from agentid
   // note: agent name depends on the team
   getAgent(agentid) {
+    // try the agent cache first, then teams
+    const cachedAgent = WasabeeAgent.get(agentid);
+    if (cachedAgent) return cachedAgent;
+
     const teamset = new Set(this.teamlist.map((t) => t.teamid));
     for (const t of teamset) {
       const team = WasabeeTeam.get(t);

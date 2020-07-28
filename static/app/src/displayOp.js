@@ -15,6 +15,9 @@ import {
   deletePermPromise,
   setAssignmentStatus,
   updateKeyCount,
+  setMarkerComment,
+  setLinkComment,
+  reverseLinkDirection,
 } from "./server";
 
 export function displayOp(state) {
@@ -26,6 +29,8 @@ export function displayOp(state) {
     notify("invalid op", "danger", true);
     return;
   }
+
+  fetchUncachedTeams(op.teamlist);
 
   subnav.innerHTML = `
 <nav class="navbar navbar-expand-sm navbar-light bg-light">
@@ -95,10 +100,7 @@ export function displayOp(state) {
     L.DomEvent.stop(ev);
     loadOp(state.op)
       .then((op) => {
-        const promises = [];
-        const teamset = new Set(op.teamlist.map((t) => t.teamid));
-        for (const t of teamset) promises.push(loadTeam(t));
-        return Promise.allSettled(promises);
+        return fetchUncachedTeams(op.teamlist);
       })
       .then(() => displayOp(history.state))
       .catch(() =>
@@ -695,11 +697,12 @@ function manage(op) {
 <tr>
 <th scope="col">Order</th>
 <th scope="col">Portal</th>
+<th scope="col">&nbsp;</th>
 <th scope="col">To/Action</th>
 <th scope="col">Distance</th>
 <th scope="col">Assigned To</th>
+<th scope="col">Color</th>
 <th scope="col">Description</th>
-<th scope="col">Status</th>
 <th scope="col">Completed</th>
 </tr>
 </thead>
@@ -739,6 +742,8 @@ function manage(op) {
       const p = op.getPortal(s.portalId);
       portal.textContent = p.name;
 
+      L.DomUtil.create("td", null, row).textContent = " ";
+
       L.DomUtil.create("td", s.type, row).textContent = " " + s.type;
       L.DomUtil.create("td", null, row).textContent = " ";
       const assignedToTD = L.DomUtil.create("td", null, row);
@@ -747,17 +752,46 @@ function manage(op) {
         const agent = op.getAgent(s.assignedTo);
         if (agent) assignedToTD.textContent = agent.name;
       }
-      L.DomUtil.create("td", null, row).textContent = s.comment;
-      L.DomUtil.create("td", null, row).textContent = s.state;
+      L.DomUtil.create("td", null, row).textContent = ""; // color menu
+      const commentCell = L.DomUtil.create("td", null, row);
+      const commentField = L.DomUtil.create("input", null, commentCell);
+      commentField.size = 10;
+      commentField.value = s.comment;
+      L.DomEvent.on(commentField, "change", () => {
+        setMarkerComment(op.ID, s.ID, commentField.value);
+      });
     }
     if (s instanceof WasabeeLink) {
       const fPortal = L.DomUtil.create("td", null, row);
 
       const fp = op.getPortal(s.fromPortalId);
       fPortal.textContent = fp.name;
+
+      const reversecell = L.DomUtil.create("td", null, row);
+      const reverse = L.DomUtil.create("a", null, reversecell);
+      reverse.name = `${op.ID}-${s.ID}`;
+      reverse.href = `#${op.ID}-${s.ID}`;
+      const reverseImg = L.DomUtil.create("img", null, reverse);
+      reverseImg.src = `${window.wasabeewebui.cdnurl}/img/swap.svg`;
+      reverseImg.height = 16;
+
       const tPortal = L.DomUtil.create("td", null, row);
       const tp = op.getPortal(s.toPortalId);
       tPortal.textContent = tp.name;
+
+      L.DomEvent.on(reverse, "click", () => {
+        reverseLinkDirection(op.ID, s.ID).then(
+          () => {
+            notify("reverse succeeded");
+            op.reverseLink(s.fromPortalId, s.toPortalId);
+            manage(op);
+          },
+          (reject) => {
+            notify(reject);
+            console.log(reject);
+          }
+        );
+      });
 
       L.DomUtil.create("td", null, row).textContent = calculateDistance(fp, tp);
       const assignedToTD = L.DomUtil.create("td", null, row);
@@ -766,8 +800,16 @@ function manage(op) {
         const agent = op.getAgent(s.assignedTo);
         if (agent) assignedToTD.textContent = agent.name;
       }
-      L.DomUtil.create("td", null, row).textContent = s.comment;
-      L.DomUtil.create("td", null, row).textContent = s.state;
+
+      L.DomUtil.create("td", null, row).textContent = "color menu";
+
+      const commentCell = L.DomUtil.create("td", null, row);
+      const commentField = L.DomUtil.create("input", null, commentCell);
+      commentField.size = 10;
+      commentField.value = s.comment;
+      L.DomEvent.on(commentField, "change", () => {
+        setLinkComment(op.ID, s.ID, commentField.value);
+      });
     }
     const completedCell = L.DomUtil.create("td", null, row);
     const completedCheck = L.DomUtil.create("input", null, completedCell);
@@ -870,4 +912,14 @@ function calculateDistance(from, to) {
 
 function fourthroot(a) {
   return Math.pow(Math.E, Math.log(a) / 4.0);
+}
+
+function fetchUncachedTeams(teamlist) {
+  const promises = [];
+  const teamset = new Set(teamlist.map((t) => t.teamid));
+  for (const t of teamset) {
+    const cached = WasabeeTeam.get(t);
+    if (cached == null) promises.push(loadTeam(t));
+  }
+  return Promise.allSettled(promises);
 }

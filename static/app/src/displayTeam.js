@@ -436,7 +436,19 @@ function settings(teamID) {
       });
       L.DomEvent.on(rockspull, "click", (ev) => {
         L.DomEvent.stop(ev);
-        pullRocks(teamID);
+        rockspull.textContent = "pulling... please wait";
+        rockspull.disabled = true;
+        pullRocks(teamID).then(
+          () => {
+            notify("Rocks Community fetched");
+            rockspull.textContent = "done";
+          },
+          (reject) => {
+            notify(reject);
+            console.log(reject);
+            rockspull.textContent = reject;
+          }
+        );
       });
       L.DomEvent.on(newOwner, "change", (ev) => {
         L.DomEvent.stop(ev);

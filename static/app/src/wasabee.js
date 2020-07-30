@@ -20,26 +20,27 @@ import { displayTeam } from "./displayTeam";
 import polyfill from "./polyfill";
 
 async function wasabeeMain() {
-  // opIdLength: 40,
-  // auto-detect server based on URL
-  // look in localStorage and update server config if the user has selected a different server
   window.wasabeewebui = {};
 
   try {
     window.wasabeewebui = await loadConfig();
+    firebaseInit();
   } catch (e) {
     notify("unable to load config: " + e, "danger", true);
     console.log(e);
     return;
   }
-  firebaseInit();
+
+  // TODO: off-line mode that just uses the data in localStorage
+  // for when you are doing an op and have low/no signal
 
   try {
-    const meraw = await loadMe();
-    const me = new WasabeeMe(meraw);
+    const json = await loadMe();
+    const me = new WasabeeMe(json);
     if (me.GoogleID) {
       me.store();
       startSendLoc();
+      // this loads every available op into local storage; every enabled team into cache
       await syncOps(me.Ops);
       buildMenu();
       chooseScreen(null);
@@ -50,6 +51,7 @@ async function wasabeeMain() {
   } catch (e) {
     console.log(e);
     notify(e);
+    return;
   }
   runFirebaseStart();
 
@@ -80,11 +82,6 @@ async function wasabeeMain() {
     }
     return true;
   };
-
-  // TODO: off-line mode that just uses the data in localStorage
-  // for when you are doing an op and have low/no signal
-
-  // get /me, if not possible, request login
 }
 
 function buildMenu() {
@@ -200,26 +197,25 @@ function chooseScreen(state) {
   }
 }
 
-function loadMeAndOps() {
+async function loadMeAndOps() {
+  console.log("loadMeAndOps");
   clearOpsStorage();
-  return new Promise(function (resolve, reject) {
-    loadMe(true)
-      .then((json) => {
-        const nme = new WasabeeMe(json);
-        if (nme.GoogleID) {
-          nme.store();
-          syncOps(nme.Ops).then(resolve);
-        } else {
-          console.log(json);
-          reject("bad data?");
-        }
-      })
-      .catch((error) => {
-        notify(error, "danger", true);
-        console.log(error);
-        reject(error);
-      });
-  });
+
+  try {
+    const json = await loadMe(true);
+    const nme = new WasabeeMe(json);
+    if (nme && nme.GoogleID) {
+      nme.store();
+      // loads all available ops and teams
+      await syncOps(nme.Ops);
+    } else {
+      console.log(json);
+      throw new Error("invalid data from /me");
+    }
+  } catch (e) {
+    notify(e, "danger", true);
+    console.log(e);
+  }
 }
 
 function teamList() {
@@ -280,10 +276,8 @@ function teamList() {
     L.DomEvent.on(stateCheck, "change", (ev) => {
       L.DomEvent.stop(ev);
       const s = stateCheck.checked ? "On" : "Off";
-      // this is not the way to do promise chaining, but I couldn't get it to work so this is good enough for now
       setTeamState(t.ID, s).then(() => {
         if (!stateCheck.checked) {
-          clearOpsStorage();
           logEvent("leave_group");
         } else {
           logEvent("join_group");
@@ -301,9 +295,7 @@ function teamList() {
       b.textContent = "Leave";
       L.DomEvent.on(b, "click", (ev) => {
         L.DomEvent.stop(ev);
-        // XXX use real promise chainng
         leaveTeam(t.ID).then(() => {
-          //clearOpsStorage();
           logEvent("leave_group");
           loadMeAndOps().then(() => teamList());
         });

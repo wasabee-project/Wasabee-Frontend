@@ -186,22 +186,42 @@ export const loadConfig = function () {
   });
 };
 
-export function syncOps(ops) {
-  // will never reject
-  return new Promise(function (resolve) {
-    const promises = new Array();
-    const opsID = new Set(ops.map((o) => o.ID));
-    for (const o of opsID) promises.push(loadOp(o));
-    Promise.allSettled(promises).then((results) => {
-      for (const r of results) {
-        if (r.status != "fulfilled") {
-          console.log(r);
-          notify("Op load failed, please refresh", "warning", true);
-        }
+export async function syncOps(ops) {
+  const promises = new Array();
+  const opsID = new Set(ops.map((o) => o.ID));
+  for (const o of opsID) promises.push(loadOp(o));
+
+  try {
+    const results = await Promise.allSettled(promises);
+    for (const r of results) {
+      if (r.status != "fulfilled") {
+        console.log(r);
+        notify("Op load failed, please refresh", "warning", true);
       }
-      resolve(true);
-    });
-  });
+    }
+  } catch (e) {
+    console.log(e);
+    notify(e, "warning", true);
+    return;
+  }
+
+  // pre-cache team (and agent) data
+  // we could do this in the results loop above, but this gives better error handling
+  const teamSet = new Set();
+  const teamPromises = new Array();
+  for (const o of opsID) {
+    const op = new WasabeeOp(localStorage[o]);
+    for (const t of op.teamlist) teamSet.add(t.teamid);
+  }
+  for (const t of teamSet) teamPromises.push(loadTeam(t));
+  try {
+    await Promise.allSettled(teamPromises);
+    // ignore errors, disabled teams give a 401 that we can safely ignore
+  } catch (e) {
+    console.log(e);
+    notify(e, "warning", true);
+    return;
+  }
 }
 
 export function startSendLoc() {
@@ -288,6 +308,7 @@ export function loadTeam(teamID) {
     req.open("GET", url, true);
     req.withCredentials = true;
 
+    // XXX server does not yet support If-Modified-Since on teams (07/29/2020)
     const localTeam = WasabeeTeam.get(teamID);
     if (localTeam != null && localTeam.fetched) {
       req.setRequestHeader("If-Modified-Since", localTeam.fetched);

@@ -10,6 +10,8 @@ import {
   sendAnnounce,
   rocksCfg,
   pullRocks,
+  renameTeam,
+  deleteTeam,
 } from "./server";
 import { notify } from "./notify";
 import WasabeeMe from "./me";
@@ -368,12 +370,18 @@ function settings(teamID) {
 <h1 id="teamName"></h1>
  <div class="card mb-2">
   <div class="card-header">Join Link</div>
-   <div class="card-body" id="joinLink"></div>
+  <div class="card-body" id="joinLink"></div>
+ </div>
+ <div class="card mb-2">
+  <div class="card-header">Admin Functions</div>
+  <div class="card-body">
+    <div><label>Rename Team <input type="text" id="rename"></label></div> 
+    <div><hr/><label>Delete this team </label><button id="delete">Delete</button></div> 
   </div>
+ </div>
  <div class="card mb-2">
   <div class="card-header">enlightened.rocks Integration</div>
    <div class="card-body">
-<!-- <form action="{{WebAPIPath}}/team/{{.ID}}/rockscfg" method="get"> -->
      <div>Rocks Community Identifier: <input type="text" name="rockscomm" id="rockscomm" placeholder="afdviaren.com"/> <span class="dim small">Typically looks like "randomstring.com"</span></div>
      <div>Rocks Community API Key: <input type="text" name="rockskey" id="rockskey" placeholder="VnNfDerpL1nKsppMerZvwaXX"  /> <span class="dim small">24 letter string</span></div>
      <div class="dim small">If you want this team to have its membership populated from an .rocks community, you will need to get the community ID and API key from the community's settings and add them here. Do not do this unless you trust the enl.rocks community.</div>
@@ -412,6 +420,8 @@ function settings(teamID) {
   const newOwner = document.getElementById("newOwner");
   const joinLink = document.getElementById("joinLink");
   const announce = document.getElementById("announce");
+  const deleteButton = document.getElementById("delete");
+  const rename = document.getElementById("rename");
 
   L.DomEvent.on(announce, "click", () => {
     const announceContent = document.getElementById("announceContent");
@@ -420,49 +430,93 @@ function settings(teamID) {
     announceContent.value = "";
   });
 
+  L.DomEvent.on(newOwner, "change", (ev) => {
+    L.DomEvent.stop(ev);
+    changeTeamOwnerPromise(teamID, newOwner.value).then(
+      () => {
+        list(teamID);
+      },
+      (reject) => {
+        newOwner.value = "";
+        console.log(reject);
+        notify(reject, "danger", true);
+      }
+    );
+  });
+
+  L.DomEvent.on(rockspull, "click", (ev) => {
+    L.DomEvent.stop(ev);
+    rockspull.textContent = "pulling... please wait";
+    rockspull.disabled = true;
+    pullRocks(teamID).then(
+      () => {
+        notify("Rocks Community fetched", "success");
+        rockspull.textContent = "done";
+      },
+      (reject) => {
+        notify(reject, "danger");
+        console.log(reject);
+        rockspull.textContent = reject;
+      }
+    );
+  });
+
+  L.DomEvent.on(rockscomm, "change", (ev) => {
+    L.DomEvent.stop(ev);
+    rocksCfg(teamID, rockscomm.value, rockskey.value).then(
+      () => {},
+      (reject) => {
+        console.log(reject);
+        notify(reject, "danger");
+      }
+    );
+  });
+
+  L.DomEvent.on(rockskey, "change", (ev) => {
+    L.DomEvent.stop(ev);
+    rocksCfg(teamID, rockscomm.value, rockskey.value).then(
+      () => {},
+      (reject) => {
+        console.log(reject);
+        notify(reject, "danger");
+      }
+    );
+  });
+
+  L.DomEvent.on(rename, "change", (ev) => {
+    L.DomEvent.stop(ev);
+    renameTeam(teamID, rename.value).then(
+      () => {
+        settings(teamID);
+      },
+      (reject) => {
+        console.log(reject);
+        notify(reject, "danger");
+      }
+    );
+  });
+
+  L.DomEvent.on(deleteButton, "click", (ev) => {
+    L.DomEvent.stop(ev);
+    deleteTeam(teamID).then(
+      () => {
+        window.location.assign("/me");
+      },
+      (reject) => {
+        console.log(reject);
+        notify(reject, "danger");
+      }
+    );
+  });
+
   loadTeam(teamID).then(
     (team) => {
       teamName.textContent = team.name;
       teamid.textContent = team.id;
+
       if (team.rc) rockscomm.value = team.rc;
-      L.DomEvent.on(rockscomm, "change", (ev) => {
-        L.DomEvent.stop(ev);
-        rocksCfg(teamID, rockscomm.value, rockskey.value);
-      });
       if (team.rk) rockskey.value = team.rk;
-      L.DomEvent.on(rockskey, "change", (ev) => {
-        L.DomEvent.stop(ev);
-        rocksCfg(teamID, rockscomm.value, rockskey.value);
-      });
-      L.DomEvent.on(rockspull, "click", (ev) => {
-        L.DomEvent.stop(ev);
-        rockspull.textContent = "pulling... please wait";
-        rockspull.disabled = true;
-        pullRocks(teamID).then(
-          () => {
-            notify("Rocks Community fetched");
-            rockspull.textContent = "done";
-          },
-          (reject) => {
-            notify(reject);
-            console.log(reject);
-            rockspull.textContent = reject;
-          }
-        );
-      });
-      L.DomEvent.on(newOwner, "change", (ev) => {
-        L.DomEvent.stop(ev);
-        changeTeamOwnerPromise(team.id, newOwner.value).then(
-          () => {
-            list(teamID);
-          },
-          (reject) => {
-            newOwner.value = "";
-            console.log(reject);
-            notify(reject, "danger", true);
-          }
-        );
-      });
+
       // join link
       if (team.jlt) {
         joinLink.innerHTML = `<a href="/api/v1/team/${team.id}/join/${team.jlt}">copy this link</a> to share with agents`;

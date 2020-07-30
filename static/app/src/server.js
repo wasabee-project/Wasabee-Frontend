@@ -880,3 +880,58 @@ export const createNewTeam = function (name) {
     req.send();
   });
 };
+export const renameTeam = function (teamID, teamname) {
+  return new Promise((resolve, reject) => {
+    const url = `${window.wasabeewebui.server}/api/v1/team/${teamID}/rename`;
+    const req = new XMLHttpRequest();
+
+    req.open("PUT", url);
+    req.withCredentials = true;
+
+    req.onload = function () {
+      switch (req.status) {
+        case 200:
+          resolve(true);
+          break;
+        default:
+          reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
+          break;
+      }
+    };
+
+    req.onerror = function () {
+      reject(`Network Error: ${req.responseText}`);
+    };
+
+    const fd = new FormData();
+    fd.append("teamname", teamname);
+    req.send(fd);
+  });
+};
+
+export const deleteTeam = function (teamID) {
+  return new Promise((resolve, reject) => {
+    const url = `${window.wasabeewebui.server}/api/v1/team/${teamID}`;
+    const req = new XMLHttpRequest();
+
+    req.open("DELETE", url);
+    req.withCredentials = true;
+
+    req.onload = function () {
+      switch (req.status) {
+        case 200:
+          resolve(true);
+          break;
+        default:
+          reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
+          break;
+      }
+    };
+
+    req.onerror = function () {
+      reject(`Network Error: ${req.responseText}`);
+    };
+
+    req.send();
+  });
+};

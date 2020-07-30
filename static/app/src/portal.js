@@ -36,7 +36,7 @@ export default class WasabeePortal {
     if (typeof obj == "string") obj = JSON.parse(obj);
     if (!obj || !obj.id) {
       console.log("can't create WasabeePortal from this");
-      return;
+      return null;
     }
     const wp = new WasabeePortal(
       obj.id,

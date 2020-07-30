@@ -19,47 +19,39 @@ import { displayOp } from "./displayOp";
 import { displayTeam } from "./displayTeam";
 import polyfill from "./polyfill";
 
-export function wasabeeMain() {
+async function wasabeeMain() {
   // opIdLength: 40,
   // auto-detect server based on URL
   // look in localStorage and update server config if the user has selected a different server
   window.wasabeewebui = {};
 
-  loadConfig().then(
-    (config) => {
-      window.wasabeewebui = config;
-      firebaseInit();
-      loadMe().then(
-        (resolve) => {
-          // run init logic here
-          runFirebaseStart();
+  try {
+    window.wasabeewebui = await loadConfig();
+  } catch (e) {
+    notify("unable to load config: " + e, "danger", true);
+    console.log(e);
+    return;
+  }
+  firebaseInit();
 
-          const me = new WasabeeMe(resolve);
-          if (me.GoogleID) {
-            me.store();
-            startSendLoc();
-            syncOps(me.Ops).then(() => {
-              buildMenu();
-              chooseScreen(null);
-            });
-          } else {
-            console.log(me);
-            notify("refresh required", "warning", true);
-          }
-        },
-        (reject) => {
-          // redirect to /login and try again
-          console.log(reject);
-          notify(reject);
-          // window.location.href = "/login";
-        }
-      );
-    },
-    (reject) => {
-      notify("unable to load config: " + reject, "danger", true);
-      console.log(reject);
+  try {
+    const meraw = await loadMe();
+    const me = new WasabeeMe(meraw);
+    if (me.GoogleID) {
+      me.store();
+      startSendLoc();
+      await syncOps(me.Ops);
+      buildMenu();
+      chooseScreen(null);
+    } else {
+      console.log(me);
+      notify("refresh required", "warning", true);
     }
-  );
+  } catch (e) {
+    console.log(e);
+    notify(e);
+  }
+  runFirebaseStart();
 
   // for debugging only, we listen to firebase directly and don't need the service worker
   window.addEventListener("message", (event) => {
@@ -82,13 +74,11 @@ export function wasabeeMain() {
 
   // for some reason too many history events get registered, breaking back-button functionality
   window.onpopstate = (event) => {
+    console.log("popstate", event);
     if (event.state != null) {
-      console.log("popstate", event);
-      history.go(-1);
       chooseScreen(event.state);
-      // L.DomEvent.stop(event);
-      return true;
     }
+    return true;
   };
 
   // TODO: off-line mode that just uses the data in localStorage

@@ -47,6 +47,13 @@ export function displaySettings() {
     <div id="telegramContent"></div>
    </div>
   </div>
+  <div class="card mb-2">
+   <div class="card-header">One Time Token</div>
+   <div class="card-body">
+    <div id="ott"></div>
+    <div class="small dim">Use this to log into Wasabee-IITC if Google Oauth2 and Webview both fail</div>
+   </div>
+  </div>
  </div>
 </div>
 </div>`;
@@ -86,12 +93,16 @@ export function displaySettings() {
       tg.innerHTML = `<div>Telegram ID: ${me.Telegram.ID} (verified)</div>`;
     } else {
       if (me.Telegram.Authtoken) {
-        tg.innerHTML = `Tell the bot (<a href="tg://resolve?domain=${window.wasabeewebui.botname}">@${window.wasabeewebui.botname}</a>) <a href="https://telegram.me/${window.wasabeewebui.botname}?start=${me.Telegram.Authtoken}">${me.Telegram.Authtoken}</a> to conclude verification.`;
+        tg.innerHTML = `Step 2: Tell the bot (<a href="tg://resolve?domain=${window.wasabeewebui.botname}">@${window.wasabeewebui.botname}</a>) <a href="https://telegram.me/${window.wasabeewebui.botname}?start=${me.Telegram.Authtoken}">${me.Telegram.Authtoken}</a> to conclude verification.`;
       } else {
-        tg.innerHTML = `Tell the bot (<a href="tg://resolve?domain=${window.wasabeewebui.botname}">@${window.wasabeewebui.botname}</a>) <a href="https://telegram.me/${window.wasabeewebui.botname}?start=${me.LocationKey}">${me.LocationKey}</a> to start the verification process.`;
+        tg.innerHTML = `Step 1: Tell the bot (<a href="tg://resolve?domain=${window.wasabeewebui.botname}">@${window.wasabeewebui.botname}</a>) <a href="https://telegram.me/${window.wasabeewebui.botname}?start=${me.LocationKey}">${me.LocationKey}</a> to start the verification process. If you have sent this to the bot and this step still shows here, log out and back in.`;
+        // XXX add refresh button with FORCE option set on fetching /me
       }
     }
   } else {
     tg.innerHTML = `Tell the bot (<a href="tg://resolve?domain=${window.wasabeewebui.botname}">@${window.wasabeewebui.botname}</a>) <a href="https://telegram.me/${window.wasabeewebui.botname}?start=${me.LocationKey}">${me.LocationKey}</a> to start the verification process.`;
   }
+
+  const ott = document.getElementById("ott");
+  ott.textContent = me.LocationKey;
 }

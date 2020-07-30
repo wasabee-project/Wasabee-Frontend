@@ -148,7 +148,7 @@ function checklist(op, assignmentsOnly = false) {
   const subscreen = assignmentsOnly ? "assignments" : "checklist";
   history.pushState(
     { screen: "operation", op: op.ID, subscreen: subscreen },
-    "op ${subscreen}",
+    `op ${subscreen}`,
     `#operation.${subscreen}.${op.ID}`
   );
   logEvent("screen_view", { screen_name: `op ${subscreen}` });

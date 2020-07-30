@@ -10,6 +10,7 @@ import {
   leaveTeam,
   startSendLoc,
   stopSendLoc,
+  createNewTeam,
 } from "./server";
 import WasabeeOp from "./operation";
 import WasabeeMe from "./me";
@@ -235,17 +236,38 @@ function teamList() {
 
   content.innerHTML = `
 <div class="container"><div class="row"><div class="col">
-<h1>Teams <a id="teamRefresh">↻</a></h1>
+<h1>Teams <a href="#teams" id="teamRefresh">↻</a></h1>
 <table class="table table-striped">
 <thead class="thead"><tr><th scope="col">Team</th><th scope="col">State</th><th scope="col"></th><th scope="col">Ops</th></tr></thead>
 <tbody id="teams"></tbody>
 </table>
+</div></div>
+<div class="row"><div class="col">
+<label>New Team: <input type="text" id="newTeamName" placeholder="New Team"></label><button id="newTeamButton">New Team</button>
 </div></div></div>`;
 
   const teamRefreshNav = document.getElementById("teamRefresh");
   L.DomEvent.on(teamRefreshNav, "click", (ev) => {
     L.DomEvent.stop(ev);
     loadMeAndOps().then(() => teamList());
+  });
+
+  const newTeamButton = document.getElementById("newTeamButton");
+  L.DomEvent.on(newTeamButton, "click", async (ev) => {
+    L.DomEvent.stop(ev);
+    const newTeamName = document.getElementById("newTeamName");
+    if (!newTeamName.value) {
+      notify("specify new team name");
+      return;
+    }
+    try {
+      await createNewTeam(newTeamName.value);
+      await loadMeAndOps();
+      teamList();
+    } catch (e) {
+      notify(e, "warning", true);
+      console.log(e);
+    }
   });
 
   const tbody = document.getElementById("teams");
@@ -344,15 +366,15 @@ function opsList() {
   // bootstrap layout
   content.innerHTML = `
 <div class="container"><div class="row"><div class="col">
-<h1>Operations <a id="opsRefresh">↻</a></h1>
+<h1>Operations <a href="#operations" id="opsRefresh">↻</a></h1>
 <table class="table table-striped">
 <thead class="thead"><tr><th scope="col">Operation</th><th scope="col">Comment</th><th scope="col">Teams</th></tr></thead>
 <tbody id="ops"></tbody>
 </table>
 </div></div></div>`;
 
-  const teamRefreshNav = document.getElementById("opsRefresh");
-  L.DomEvent.on(teamRefreshNav, "click", (ev) => {
+  const opsRefreshNav = document.getElementById("opsRefresh");
+  L.DomEvent.on(opsRefreshNav, "click", (ev) => {
     L.DomEvent.stop(ev);
     loadMeAndOps().then(() => opsList());
   });

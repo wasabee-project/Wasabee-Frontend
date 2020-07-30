@@ -853,3 +853,30 @@ export const setLinkComment = function (opID, linkID, desc) {
     req.send(fd);
   });
 };
+
+export const createNewTeam = function (name) {
+  return new Promise((resolve, reject) => {
+    const url = `${window.wasabeewebui.server}/api/v1/team/new?name=${name}`;
+    const req = new XMLHttpRequest();
+
+    req.open("GET", url);
+    req.withCredentials = true;
+
+    req.onload = function () {
+      switch (req.status) {
+        case 200:
+          resolve(true);
+          break;
+        default:
+          reject(Error(`${req.status}: ${req.statusText} ${req.responseText}`));
+          break;
+      }
+    };
+
+    req.onerror = function () {
+      reject(`Network Error: ${req.responseText}`);
+    };
+
+    req.send();
+  });
+};

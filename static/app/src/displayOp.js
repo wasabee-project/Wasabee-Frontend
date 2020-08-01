@@ -701,7 +701,6 @@ function manage(op) {
 <th scope="col">To/Action</th>
 <th scope="col">Distance</th>
 <th scope="col">Assigned To</th>
-<th scope="col">Color</th>
 <th scope="col">Description</th>
 <th scope="col">Completed</th>
 </tr>
@@ -752,7 +751,7 @@ function manage(op) {
         const agent = op.getAgent(s.assignedTo);
         if (agent) assignedToTD.textContent = agent.name;
       }
-      L.DomUtil.create("td", null, row).textContent = ""; // color menu
+
       const commentCell = L.DomUtil.create("td", null, row);
       const commentField = L.DomUtil.create("input", null, commentCell);
       commentField.size = 10;
@@ -800,8 +799,6 @@ function manage(op) {
         const agent = op.getAgent(s.assignedTo);
         if (agent) assignedToTD.textContent = agent.name;
       }
-
-      L.DomUtil.create("td", null, row).textContent = "color menu";
 
       const commentCell = L.DomUtil.create("td", null, row);
       const commentField = L.DomUtil.create("input", null, commentCell);

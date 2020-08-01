@@ -18,6 +18,7 @@ import { displaySettings } from "./displaySettings";
 import { notify } from "./notify";
 import { displayOp } from "./displayOp";
 import { displayTeam } from "./displayTeam";
+import { displayHelp } from "./displayHelp";
 import polyfill from "./polyfill";
 
 async function wasabeeMain() {
@@ -90,41 +91,55 @@ function buildMenu() {
   const nb = document.getElementById("navbar-collapse");
   const ul = L.DomUtil.create("ul", "navbar-nav mr-auto", nb);
 
+  const menus = new Set();
+
   const teamsLi = L.DomUtil.create("li", "nav-item", ul);
   const teamsA = L.DomUtil.create("a", "nav-link", teamsLi);
   teamsA.textContent = "Teams";
   teamsA.href = "#teams";
+  menus.add(teamsLi);
 
   const opsLi = L.DomUtil.create("li", "nav-item", ul);
   const opsA = L.DomUtil.create("a", "nav-link", opsLi);
   opsA.textContent = "Operations";
   opsA.href = "#operations";
+  menus.add(opsLi);
 
   const settingsLi = L.DomUtil.create("li", "nav-item", ul);
   const settingsA = L.DomUtil.create("a", "nav-link", settingsLi);
   settingsA.textContent = "Settings";
   settingsA.href = "#settings";
+  menus.add(settingsLi);
+
+  const helpLi = L.DomUtil.create("li", "nav-item", ul);
+  const helpA = L.DomUtil.create("a", "nav-link", helpLi);
+  helpA.textContent = "Help";
+  helpA.href = "#help";
+  menus.add(helpLi);
 
   L.DomEvent.on(opsA, "click", (ev) => {
     L.DomEvent.stop(ev);
-    L.DomUtil.removeClass(teamsLi, "active");
+    for (const m of menus) L.DomUtil.removeClass(m, "active");
     L.DomUtil.addClass(opsLi, "active");
-    L.DomUtil.removeClass(settingsLi, "active");
     opsList();
   });
   L.DomEvent.on(teamsA, "click", (ev) => {
     L.DomEvent.stop(ev);
+    for (const m of menus) L.DomUtil.removeClass(m, "active");
     L.DomUtil.addClass(teamsLi, "active");
-    L.DomUtil.removeClass(opsLi, "active");
-    L.DomUtil.removeClass(settingsLi, "active");
     teamList();
   });
   L.DomEvent.on(settingsA, "click", (ev) => {
     L.DomEvent.stop(ev);
-    L.DomUtil.removeClass(teamsLi, "active");
-    L.DomUtil.removeClass(opsLi, "active");
+    for (const m of menus) L.DomUtil.removeClass(m, "active");
     L.DomUtil.addClass(settingsLi, "active");
     displaySettings();
+  });
+  L.DomEvent.on(helpA, "click", (ev) => {
+    L.DomEvent.stop(ev);
+    for (const m of menus) L.DomUtil.removeClass(m, "active");
+    L.DomUtil.addClass(helpLi, "active");
+    displayHelp();
   });
 
   const logoutLi = L.DomUtil.create("li", "nav-item", ul);

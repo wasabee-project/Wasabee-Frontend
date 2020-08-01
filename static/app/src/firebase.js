@@ -7,8 +7,6 @@ import "firebase/auth";
 import { notify } from "./notify";
 
 let messaging = null;
-let inited = false;
-const observedLogins = new Map();
 
 export function firebaseInit() {
   try {
@@ -16,12 +14,14 @@ export function firebaseInit() {
     firebase.analytics();
     messaging = firebase.messaging();
     messaging.usePublicVapidKey(window.wasabeewebui.publicVapidKey);
-    inited = true;
+    window.wasabeewebui.fbinited = true;
+    window.wasabeewebui.observedLogins = new Map();
   } catch (e) {
     notify(
       "Unable to start firebase, real-time notifications will not work",
       "warning"
     );
+    window.wasabeewebui.fbinited = false;
     console.log(e);
     return;
   }
@@ -45,11 +45,8 @@ export function firebaseInit() {
     if (payload.data && payload.data.cmd) {
       logEvent("message_received", { command: payload.data.cmd });
       switch (payload.data.cmd) {
-        // {"Quit", "Generic Message", "Agent Location Change", "Map Change", "Marker Status Change", "Marker Assignment Change", "Link Status Change",
-        //  "Link Assignment Change", "Subscribe"}
         case "Agent Location Change":
-          console.log(payload);
-          // if on the matching team's map, update. otherwise ignore
+          console.log("agent location change: ", payload);
           break;
         case "Generic Message":
           notify(JSON.stringify(payload), "primary", false);
@@ -60,14 +57,22 @@ export function firebaseInit() {
           break;
         case "Login":
           if (me.GoogleID != payload.data.gid) {
-            if (observedLogins.has(payload.data.gid)) {
-              const lastSeen = observedLogins.get(payload.data.gid);
+            if (window.wasabeewebui.observedLogins.has(payload.data.gid)) {
+              const lastSeen = window.wasabeewebui.observedLogins.get(
+                payload.data.gid
+              );
               if (Date.now() - lastSeen > 36000) {
-                observedLogins.set(payload.data.gid, Date.now());
+                window.wasabeewebui.observedLogins.set(
+                  payload.data.gid,
+                  Date.now()
+                );
                 notify(`Teammate Login: ${payload.data.gid}`, "primary", false);
               } // else too recent, just ignore
             } else {
-              observedLogins.set(payload.data.gid, Date.now());
+              window.wasabeewebui.observedLogins.set(
+                payload.data.gid,
+                Date.now()
+              );
               notify(`Teammate Login: ${payload.data.gid}`, "primary", false);
             }
           }
@@ -142,7 +147,7 @@ function requestPermission() {
 }
 
 export function logEvent(e, params = {}) {
-  if (!inited) return;
+  if (!window.wasabeewebui.fbinited) return;
 
   // GDPR requirement
   if (localStorage["analytics"] != "true") return;

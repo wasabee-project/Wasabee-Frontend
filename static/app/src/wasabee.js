@@ -43,7 +43,7 @@ async function wasabeeMain() {
       me.store();
       startSendLoc();
       // this loads every available op into local storage; every enabled team into cache
-      await syncOps(me.Ops);
+      await syncOps(me.Ops, me.Teams);
       buildMenu();
       chooseScreen(null);
     } else {
@@ -223,7 +223,7 @@ async function loadMeAndOps() {
     if (nme && nme.GoogleID) {
       nme.store();
       // loads all available ops and teams
-      await syncOps(nme.Ops);
+      await syncOps(nme.Ops, nme.Teams);
     } else {
       console.log(json);
       throw new Error("invalid data from /me");

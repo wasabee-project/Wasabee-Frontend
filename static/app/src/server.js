@@ -186,7 +186,7 @@ export const loadConfig = function () {
   });
 };
 
-export async function syncOps(ops) {
+export async function syncOps(ops, meteams) {
   const promises = new Array();
   const opsID = new Set(ops.map((o) => o.ID));
   for (const o of opsID) promises.push(loadOp(o));
@@ -211,12 +211,15 @@ export async function syncOps(ops) {
   const teamPromises = new Array();
   for (const o of opsID) {
     const op = new WasabeeOp(localStorage[o]);
-    for (const t of op.teamlist) teamSet.add(t.teamid);
+    for (const t of op.teamlist) {
+      for (const mt of meteams) {
+        if (mt.ID == t && mt.State == "On") teamSet.add(t.teamid);
+      }
+    }
   }
   for (const t of teamSet) teamPromises.push(loadTeam(t));
   try {
     await Promise.allSettled(teamPromises);
-    // ignore errors, disabled teams give a 401 that we can safely ignore
   } catch (e) {
     console.log(e);
     notify(e, "warning", true);

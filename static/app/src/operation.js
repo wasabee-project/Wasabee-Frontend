@@ -51,7 +51,10 @@ export class WasabeeOp {
     this._coordsToOpportals = new Map();
 
     if (opportals) for (const p of opportals) this._idToOpportals.set(p.id, p);
-    this.buildCoordsLookupTable();
+    //this.buildCoordsLookupTable();
+
+    this.cleanAnchorList();
+    this.cleanPortalList();
   }
 
   // CHANGED from IITC plugin

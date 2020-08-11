@@ -55,8 +55,8 @@ export function displayTeam(state) {
 
   let owned = false;
   const me = WasabeeMe.get();
-  for (const t of me.OwnedTeams) {
-    if (t.ID == state.team) {
+  for (const t of me.Teams) {
+    if (t.ID == state.team && t.Owner == me.GoogleID) {
       owned = true;
       break;
     }

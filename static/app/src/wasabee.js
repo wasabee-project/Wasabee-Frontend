@@ -246,8 +246,11 @@ function teamList() {
 
   const me = WasabeeMe.get();
 
+  // use a set instead of a map
   const owned = new Map();
-  for (const o of me.OwnedTeams) owned.set(o.ID, true);
+  for (const o of me.Teams) {
+    if (o.Owner == me.GoogleID) owned.set(o.ID, true);
+  }
 
   content.innerHTML = `
 <div class="container"><div class="row"><div class="col">

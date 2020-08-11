@@ -26,12 +26,13 @@ export class WasabeeMe {
       this.Telegram.Authtoken = obj.Telegram.Authtoken;
     }
 
+    /*
     this.OwnedTeams = Array();
     if (obj.OwnedTeams && obj.OwnedTeams.length > 0) {
       for (const team of obj.OwnedTeams) {
         this.OwnedTeams.push(team);
       }
-    }
+    } */
 
     this.Teams = Array();
     if (obj.Teams !== null) {

@@ -1,5 +1,8 @@
-{{define "assignMarker"}}
-You have been assigned a target. Please see {{ Webroot }}/me#operation.assignments.{{.OpID}} for details.
+{{define "target"}}
+[{{.Name}}](https://intel.ingress.com/intel?ll={{.Lat}},{{.Lon}}&z=12&pll={{.Lat}},{{.Lon}})
+[Google Maps](http://maps.google.com/?q={{.Lat}},{{.Lon}}) | [Apple Maps](http://maps.apple.com/?q={{.Lat}},{{.Lon}})
+{{.Type}}
+From: {{.Sender}}
 {{end}}
 
 {{define "assignLink"}}

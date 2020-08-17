@@ -60,8 +60,7 @@
         analytics.logEvent("login", event.data);
 	break;
       case "analytics":
-        console.log("sending analytics", event.data);
-        // analytics.logEvent("iitc_event", event.data);
+        // console.log("sending analytics", event.data);
         event.data.screen_name = event.data.action;
         analytics.logEvent("screen_view", event.data);
         break;
@@ -81,7 +80,7 @@
 
   // Messages coming in from Firebase to IITC -- this relays them
   messaging.onMessage((payload) => {
-    console.log('Firebase message received: ', payload);
+    // console.log('Firebase message received: ', payload.data);
     // post the message to the IITC-hosted iframe.
     window.parent.postMessage(payload, "https://intel.ingress.com");
 

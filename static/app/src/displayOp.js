@@ -9,7 +9,6 @@ import Sortable from "sortablejs";
 import "leaflet.geodesic";
 import { logEvent } from "./firebase";
 import {
-  teamPromise,
   opPromise,
   addPermPromise,
   deletePermPromise,
@@ -931,7 +930,7 @@ function fetchUncachedTeams(teamlist) {
   const teamset = new Set(teamlist.map((t) => t.teamid));
   for (const t of teamset) {
     const cached = WasabeeTeam.get(t);
-    if (cached == null) promises.push(teamPromise(t));
+    if (cached == null) promises.push(WasabeeTeam.waitGet(t));
   }
   return Promise.allSettled(promises);
 }

@@ -1,22 +1,10 @@
 import WasabeeAgent from "./agent";
+import { teamPromise } from "./server";
 
-// simple cache that reset on page reload
-const teamCache = new Map();
+const teamcache = new Map();
 
 export default class WasabeeTeam {
-  constructor() {
-    this.name = null;
-    this.id = null;
-    this.agents = [];
-    this.fetched = null;
-    this.jst = null;
-    this.rc = null;
-    this.rk = null;
-  }
-
-  static create(data) {
-    // all consumers curently send JSON, but for API consistency
-    // support both obj and JSON
+  constructor(data) {
     if (typeof data == "string") {
       try {
         data = JSON.parse(data);
@@ -26,31 +14,41 @@ export default class WasabeeTeam {
       }
     }
 
-    const team = new WasabeeTeam();
-    team.id = data.id;
-    team.name = data.name;
-    team.rc = data.rc;
-    team.rk = data.rk;
-    team.jlt = data.jlt;
-    team.fetched = Date.now();
+    this.agents = new Array();
+    this.id = data.id;
+    this.name = data.name;
+    this.fetched = Date.now();
+
+    // convert to WasabeeAgents and push them into the agent cache
     for (const agent of data.agents) {
-      team.agents.push(WasabeeAgent.create(agent));
+      this.agents.push(new WasabeeAgent(agent));
     }
 
-    // add to local cache
-    teamCache.set(team.id, team);
-
-    return team;
+    // push into team cache
+    teamcache.set(this.id, this);
   }
 
-  static get(id) {
-    if (teamCache.has(id)) return teamCache.get(id);
+  static cacheGet(teamID) {
+    if (teamcache.has(teamID)) {
+      return teamcache.get(teamID);
+    }
     return null;
   }
 
-  getAgent(id) {
-    for (const agent of this.agents) {
-      if (agent.id == id) return agent;
+  static async waitGet(teamID, maxAgeSeconds = 10) {
+    if (maxAgeSeconds > 0 && teamcache.has(teamID)) {
+      const t = teamcache.get(teamID);
+      if (t.fetch > Date.now() - 1000 * maxAgeSeconds) {
+        console.log("returning team from cache");
+        return t;
+      }
+    }
+
+    try {
+      const t = await teamPromise(teamID);
+      return new WasabeeTeam(t);
+    } catch (e) {
+      console.log(e);
     }
     return null;
   }

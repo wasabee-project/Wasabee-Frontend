@@ -1,5 +1,5 @@
+import WasabeeTeam from "./team";
 import {
-  teamPromise,
   removeAgentFromTeamPromise,
   setAgentTeamSquadPromise,
   setDisplayName,
@@ -104,7 +104,7 @@ export function displayTeam(state) {
   }
 }
 
-function list(teamID) {
+async function list(teamID) {
   history.pushState(
     { screen: "team", team: teamID, subscreen: "list" },
     "team list",
@@ -136,31 +136,29 @@ function list(teamID) {
   const teamName = document.getElementById("teamName");
   const teamTable = document.getElementById("teamTable");
 
-  teamPromise(teamID).then(
-    (team) => {
-      teamName.textContent = team.name;
-      for (const a of team.agents) {
-        let state = "";
-        if (a.state)
-          state = `<img src="${window.wasabeewebui.cdnurl}/img/checkmark.png" alt="has team enabled">`;
-        const row = `
+  try {
+    const team = await WasabeeTeam.waitGet(teamID);
+    teamName.textContent = team.name;
+    for (const a of team.agents) {
+      let state = "";
+      if (a.state)
+        state = `<img src="${window.wasabeewebui.cdnurl}/img/checkmark.png" alt="has team enabled">`;
+      const row = `
 <tr>
 <td><img src="${a.pic}" height="50" width="50"></td>
 <td>${a.name}</td>
 <td>${state}</td>
 <td>${a.squad}</td>
 </tr>`;
-        teamTable.insertAdjacentHTML("beforeend", row);
-      }
-    },
-    (reject) => {
-      console.log(reject);
-      notify(reject, "danger", true);
+      teamTable.insertAdjacentHTML("beforeend", row);
     }
-  );
+  } catch (e) {
+    console.log(e);
+    notify(e, "danger", true);
+  }
 }
 
-function map(teamID) {
+async function map(teamID) {
   history.pushState(
     { screen: "team", team: teamID, subscreen: "map" },
     "team map",
@@ -188,45 +186,43 @@ function map(teamID) {
   const teamName = document.getElementById("teamName");
   // const mapDiv = document.getElementById("map");
 
-  teamPromise(teamID).then(
-    (team) => {
-      const lls = new Array();
-      teamName.textContent = team.name;
-      for (const a of team.agents) {
-        if (a.lat) {
-          const m = L.marker([a.lat, a.lng], {
-            title: a.name,
-            icon: L.icon({
-              iconUrl: a.pic,
-              shadowUrl: null,
-              iconSize: L.point(41, 41),
-              iconAnchor: L.point(25, 41),
-              popupAnchor: L.point(-1, -48),
-            }),
-            id: a.id,
-          });
+  try {
+    const team = await WasabeeTeam.waitGet(teamID);
+    const lls = new Array();
+    teamName.textContent = team.name;
+    for (const a of team.agents) {
+      if (a.lat) {
+        const m = L.marker([a.lat, a.lng], {
+          title: a.name,
+          icon: L.icon({
+            iconUrl: a.pic,
+            shadowUrl: null,
+            iconSize: L.point(41, 41),
+            iconAnchor: L.point(25, 41),
+            popupAnchor: L.point(-1, -48),
+          }),
+          id: a.id,
+        });
 
-          m.bindPopup(a.name);
-          m.addTo(map);
-          lls.push([a.lat, a.lng]);
-        }
+        m.bindPopup(a.name);
+        m.addTo(map);
+        lls.push([a.lat, a.lng]);
       }
-      // zoom to agents
-      if (lls.length == 0) map.fitWorld();
-      if (lls.length == 1) map.setView(lls[0], 13);
-      if (lls.length > 1) {
-        const bounds = L.latLngBounds(lls);
-        map.fitBounds(bounds);
-      }
-    },
-    (reject) => {
-      notify(reject, "danger", true);
-      console.log(reject);
     }
-  );
+    // zoom to agents
+    if (lls.length == 0) map.fitWorld();
+    if (lls.length == 1) map.setView(lls[0], 13);
+    if (lls.length > 1) {
+      const bounds = L.latLngBounds(lls);
+      map.fitBounds(bounds);
+    }
+  } catch (e) {
+    notify(e, "danger", true);
+    console.log(e);
+  }
 }
 
-function manage(teamID) {
+async function manage(teamID) {
   history.pushState(
     { screen: "team", team: teamID, subscreen: "manage" },
     "team manage",
@@ -279,18 +275,18 @@ function manage(teamID) {
     );
   });
 
-  teamPromise(teamID).then(
-    (team) => {
-      teamName.textContent = team.name;
-      for (const a of team.agents) {
-        let state = "";
-        if (a.state)
-          state = `<img src="${window.wasabeewebui.cdnurl}/img/checkmark.png" alt="has team enabled">`;
-        let remove = "";
-        if (!team.RockCommunity) {
-          remove = `<button id="${teamID}.${a.id}.remove">Remove</button>`;
-        }
-        const row = `
+  try {
+    const team = await WasabeeTeam.waitGet(teamID);
+    teamName.textContent = team.name;
+    for (const a of team.agents) {
+      let state = "";
+      if (a.state)
+        state = `<img src="${window.wasabeewebui.cdnurl}/img/checkmark.png" alt="has team enabled">`;
+      let remove = "";
+      if (!team.RockCommunity) {
+        remove = `<button id="${teamID}.${a.id}.remove">Remove</button>`;
+      }
+      const row = `
 <tr>
 <td><img src="${a.pic}" height="50" width="50"></td>
 <td>${a.name}</td>
@@ -299,62 +295,60 @@ function manage(teamID) {
 <td><input type="text" value="${a.name}" id="${teamID}.${a.id}.displayname" /></td>
 <td>${remove}</td>
 </tr>`;
-        teamTable.insertAdjacentHTML("beforeend", row);
-      }
-      for (const a of team.agents) {
-        const remove = document.getElementById(`${teamID}.${a.id}.remove`);
-        L.DomEvent.on(remove, "click", (ev) => {
-          L.DomEvent.stop(ev);
-          removeAgentFromTeamPromise(teamID, a.id).then(
-            () => {
-              manage(teamID);
-            },
-            (reject) => {
-              notify(reject, "danger", true);
-              console.log(reject);
-            }
-          );
-        });
-
-        const squad = document.getElementById(`${teamID}.${a.id}.squad`);
-        L.DomEvent.on(squad, "change", (ev) => {
-          L.DomEvent.stop(ev);
-          setAgentTeamSquadPromise(teamID, a.id, squad.value).then(
-            () => {
-              manage(teamID);
-            },
-            (reject) => {
-              notify(reject, "danger", true);
-              console.log(reject);
-            }
-          );
-        });
-
-        const displayname = document.getElementById(
-          `${teamID}.${a.id}.displayname`
-        );
-        L.DomEvent.on(displayname, "change", (ev) => {
-          L.DomEvent.stop(ev);
-          setDisplayName(teamID, a.id, displayname.value).then(
-            () => {
-              manage(teamID);
-            },
-            (reject) => {
-              notify(reject, "danger", true);
-              console.log(reject);
-            }
-          );
-        });
-      }
-    },
-    (reject) => {
-      notify(reject, "danger", true);
-      console.log(reject);
+      teamTable.insertAdjacentHTML("beforeend", row);
     }
-  );
+    for (const a of team.agents) {
+      const remove = document.getElementById(`${teamID}.${a.id}.remove`);
+      L.DomEvent.on(remove, "click", (ev) => {
+        L.DomEvent.stop(ev);
+        removeAgentFromTeamPromise(teamID, a.id).then(
+          () => {
+            manage(teamID);
+          },
+          (reject) => {
+            notify(reject, "danger", true);
+            console.log(reject);
+          }
+        );
+      });
+
+      const squad = document.getElementById(`${teamID}.${a.id}.squad`);
+      L.DomEvent.on(squad, "change", (ev) => {
+        L.DomEvent.stop(ev);
+        setAgentTeamSquadPromise(teamID, a.id, squad.value).then(
+          () => {
+            manage(teamID);
+          },
+          (reject) => {
+            notify(reject, "danger", true);
+            console.log(reject);
+          }
+        );
+      });
+
+      const displayname = document.getElementById(
+        `${teamID}.${a.id}.displayname`
+      );
+      L.DomEvent.on(displayname, "change", (ev) => {
+        L.DomEvent.stop(ev);
+        setDisplayName(teamID, a.id, displayname.value).then(
+          () => {
+            manage(teamID);
+          },
+          (reject) => {
+            notify(reject, "danger", true);
+            console.log(reject);
+          }
+        );
+      });
+    }
+  } catch (e) {
+    notify(e, "danger", true);
+    console.log(e);
+  }
 }
 
-function settings(teamID) {
+async function settings(teamID) {
   history.pushState(
     { screen: "team", team: teamID, subscreen: "settings" },
     "team settings",
@@ -509,58 +503,56 @@ function settings(teamID) {
     );
   });
 
-  teamPromise(teamID).then(
-    (team) => {
-      teamName.textContent = team.name;
-      teamid.textContent = team.id;
+  try {
+    const team = await WasabeeTeam.waitGet(teamID);
+    teamName.textContent = team.name;
+    teamid.textContent = team.id;
 
-      if (team.rc) rockscomm.value = team.rc;
-      if (team.rk) rockskey.value = team.rk;
+    if (team.rc) rockscomm.value = team.rc;
+    if (team.rk) rockskey.value = team.rk;
 
-      // join link
-      if (team.jlt) {
-        joinLink.innerHTML = `<a href="/api/v1/team/${team.id}/join/${team.jlt}">copy this link</a> to share with agents`;
-        const dbutton = L.DomUtil.create("button", null, joinLink);
-        dbutton.textContent = "remove";
-        L.DomEvent.on(dbutton, "click", () => {
-          deleteJoinLinkPromise(team.id).then(
-            () => {
-              joinLink.textContent = "deleted";
-            },
-            (reject) => {
-              console.log(reject);
-              notify(reject, "danger", true);
+    // join link
+    if (team.jlt) {
+      joinLink.innerHTML = `<a href="/api/v1/team/${team.id}/join/${team.jlt}">copy this link</a> to share with agents`;
+      const dbutton = L.DomUtil.create("button", null, joinLink);
+      dbutton.textContent = "remove";
+      L.DomEvent.on(dbutton, "click", () => {
+        deleteJoinLinkPromise(team.id).then(
+          () => {
+            joinLink.textContent = "deleted";
+          },
+          (reject) => {
+            console.log(reject);
+            notify(reject, "danger", true);
+          }
+        );
+      });
+    } else {
+      const generate = L.DomUtil.create("button", null, joinLink);
+      generate.textContent = "Generate Join Link";
+      L.DomEvent.on(generate, "click", (ev) => {
+        L.DomEvent.stop(ev);
+        createJoinLinkPromise(team.id).then(
+          (resolve) => {
+            try {
+              const k = JSON.parse(resolve);
+              notify("Join link created: " + k.Key, "success", false);
+              joinLink.innerHTML = `<a href="/api/v1/team/${team.id}/join/${k.Key}">copy this link</a> to share with agents`;
+            } catch (e) {
+              console.log(e);
+              notify(e, "danger", true);
             }
-          );
-        });
-      } else {
-        const generate = L.DomUtil.create("button", null, joinLink);
-        generate.textContent = "Generate Join Link";
-        L.DomEvent.on(generate, "click", (ev) => {
-          L.DomEvent.stop(ev);
-          createJoinLinkPromise(team.id).then(
-            (resolve) => {
-              try {
-                const k = JSON.parse(resolve);
-                notify("Join link created: " + k.Key, "success", false);
-                joinLink.innerHTML = `<a href="/api/v1/team/${team.id}/join/${k.Key}">copy this link</a> to share with agents`;
-              } catch (e) {
-                console.log(e);
-                notify(e, "danger", true);
-              }
-            },
-            (reject) => {
-              joinLink.textContent = "unable to create link";
-              console.log(reject);
-              notify(reject, "danger", true);
-            }
-          );
-        });
-      }
-    },
-    (reject) => {
-      console.log(reject);
-      notify(reject, "danger", true);
+          },
+          (reject) => {
+            joinLink.textContent = "unable to create link";
+            console.log(reject);
+            notify(reject, "danger", true);
+          }
+        );
+      });
     }
-  );
+  } catch (e) {
+    console.log(e);
+    notify(e, "danger", true);
+  }
 }

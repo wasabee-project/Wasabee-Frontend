@@ -64,6 +64,9 @@
         event.data.screen_name = event.data.action;
         analytics.logEvent("screen_view", event.data);
         break;
+      case "wasabeeLogout":
+        setTokenSentToServer(false);
+        analytics.logEvent("logout", event.data);
       default:
         console.log("unknown event from IITC to firebase subsystem", event);
       }

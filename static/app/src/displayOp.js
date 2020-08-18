@@ -29,6 +29,7 @@ export function displayOp(state) {
     return;
   }
 
+  // don't await since we don't need the data yet
   fetchUncachedTeams(op.teamlist);
 
   subnav.innerHTML = `
@@ -272,7 +273,7 @@ function map(op) {
     "op map",
     `#operation.map.${op.ID}`
   );
-  logEvent("screen_view", { screen_name: "op setting" });
+  logEvent("screen_view", { screen_name: "op map" });
 
   const me = WasabeeMe.cacheGet();
 
@@ -458,7 +459,7 @@ function permissions(op) {
   const opTable = document.getElementById("opTable");
 
   for (const t of op.teamlist) {
-    const team = WasabeeTeam.get(t.teamid);
+    const team = WasabeeTeam.cacheGet(t.teamid);
     const name = team ? team.name : t.teamid;
     const role = t.role;
 
@@ -475,7 +476,7 @@ function permissions(op) {
         await deletePermPromise(op.ID, t.teamid, t.role);
         const raw = await opPromise(op.ID);
         const refreshed = new WasabeeOp(raw);
-        manage(refreshed);
+        permissions(refreshed);
       } catch (e) {
         console.log(e);
         notify(e);
@@ -510,7 +511,7 @@ function permissions(op) {
           try {
             const raw = await opPromise(op.ID);
             const refreshed = new WasabeeOp(raw);
-            manage(refreshed);
+            permissions(refreshed);
           } catch (e) {
             console.log(e);
             notify(e);
@@ -522,7 +523,7 @@ function permissions(op) {
         await addPermPromise(op.ID, teamID, role);
         const raw = await opPromise(op.ID);
         const refreshed = new WasabeeOp(raw);
-        manage(refreshed);
+        permissions(refreshed);
       } catch (e) {
         console.log(e);
         notify(e);
@@ -644,7 +645,7 @@ function keys(op) {
     count.value = k.iHave;
     L.DomEvent.on(count, "change", async () => {
       try {
-        await opKeyPromise(op, k.id, count.value, cap.value);
+        await opKeyPromise(op.ID, k.id, count.value, cap.value);
         notify("count updated", "success", false);
       } catch (e) {
         console.log(e);
@@ -658,7 +659,7 @@ function keys(op) {
     cap.value = k.capsule;
     L.DomEvent.on(cap, "change", async () => {
       try {
-        await opKeyPromise(op, k.id, count.value, cap.value);
+        await opKeyPromise(op.ID, k.id, count.value, cap.value);
         notify("capsule name updated", "success", false);
       } catch (e) {
         console.log(e);
@@ -669,7 +670,6 @@ function keys(op) {
 
   const opDetail = document.getElementById("opDetail");
   for (const k of op.keysonhand) {
-    console.log(k);
     const tr = L.DomUtil.create("tr", null, opDetail);
     const p = op.getPortal(k.portalId);
     L.DomUtil.create("td", null, tr).textContent = p
@@ -929,8 +929,9 @@ function fetchUncachedTeams(teamlist) {
   const promises = [];
   const teamset = new Set(teamlist.map((t) => t.teamid));
   for (const t of teamset) {
-    const cached = WasabeeTeam.get(t);
-    if (cached == null) promises.push(WasabeeTeam.waitGet(t));
+    // cached teams resolve instantly, the others are pulled
+    // long cache time since this is just for the name
+    promises.push(WasabeeTeam.waitGet(t, 86400));
   }
   return Promise.allSettled(promises);
 }

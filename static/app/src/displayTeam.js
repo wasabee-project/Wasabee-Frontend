@@ -505,6 +505,7 @@ async function settings(teamID) {
 
   try {
     const team = await WasabeeTeam.waitGet(teamID);
+    console.log(team);
     teamName.textContent = team.name;
     teamid.textContent = team.id;
 

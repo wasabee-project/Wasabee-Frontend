@@ -18,6 +18,9 @@ export default class WasabeeTeam {
     this.id = data.id;
     this.name = data.name;
     this.fetched = Date.now();
+    this.rc = data.rc;
+    this.rk = data.rk;
+    this.jlt = data.jlt;
 
     // convert to WasabeeAgents and push them into the agent cache
     for (const agent of data.agents) {
@@ -38,8 +41,7 @@ export default class WasabeeTeam {
   static async waitGet(teamID, maxAgeSeconds = 10) {
     if (maxAgeSeconds > 0 && teamcache.has(teamID)) {
       const t = teamcache.get(teamID);
-      if (t.fetch > Date.now() - 1000 * maxAgeSeconds) {
-        console.log("returning team from cache");
+      if (t.fetched > Date.now() - 1000 * maxAgeSeconds) {
         return t;
       }
     }
@@ -49,7 +51,8 @@ export default class WasabeeTeam {
       return new WasabeeTeam(t);
     } catch (e) {
       console.log(e);
+      throw e;
     }
-    return null;
+    // return null;
   }
 }

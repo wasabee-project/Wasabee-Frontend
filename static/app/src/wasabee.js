@@ -3,15 +3,14 @@ import L from "leaflet";
 import { firebaseInit, runFirebaseStart, logEvent } from "./firebase";
 import {
   loadConfig,
-  loadMe,
-  loadLogout,
-  syncOps,
-  setTeamState,
-  leaveTeam,
-  startSendLoc,
-  stopSendLoc,
-  createNewTeam,
+  teamPromise,
+  logoutPromise,
+  SetTeamState,
+  leaveTeamPromise,
+  newTeamPromise,
+  opPromise,
 } from "./server";
+import { startSendLoc, stopSendLoc } from "./loc";
 import WasabeeOp from "./operation";
 import WasabeeMe from "./me";
 import { displaySettings } from "./displaySettings";
@@ -25,7 +24,8 @@ async function wasabeeMain() {
   window.wasabeewebui = {};
 
   try {
-    window.wasabeewebui = await loadConfig();
+    const raw = await loadConfig();
+    window.wasabeewebui = JSON.parse(raw);
     firebaseInit();
   } catch (e) {
     notify("unable to load config: " + e, "danger", true);
@@ -37,8 +37,7 @@ async function wasabeeMain() {
   // for when you are doing an op and have low/no signal
 
   try {
-    const json = await loadMe();
-    const me = new WasabeeMe(json);
+    const me = await WasabeeMe.waitGet();
     if (me.GoogleID) {
       me.store();
       startSendLoc();
@@ -152,7 +151,7 @@ function buildMenu() {
     clearOpsStorage();
     logEvent("logout");
     history.pushState({ screen: "logout" }, "logout", "#logout");
-    loadLogout().then(
+    logoutPromise().then(
       () => {
         delete localStorage["me"];
         delete localStorage["loadedOp"];
@@ -214,18 +213,16 @@ function chooseScreen(state) {
 }
 
 async function loadMeAndOps() {
-  console.log("loadMeAndOps");
   clearOpsStorage();
 
   try {
-    const json = await loadMe(true);
-    const nme = new WasabeeMe(json);
+    const nme = await WasabeeMe.waitGet(true);
     if (nme && nme.GoogleID) {
       nme.store();
       // loads all available ops and teams
       await syncOps(nme.Ops, nme.Teams);
     } else {
-      console.log(json);
+      console.log(nme);
       throw new Error("invalid data from /me");
     }
   } catch (e) {
@@ -244,7 +241,7 @@ function teamList() {
   const content = document.getElementById("wasabeeContent");
   while (content.lastChild) content.removeChild(content.lastChild);
 
-  const me = WasabeeMe.get();
+  const me = WasabeeMe.cacheGet();
 
   // use a set instead of a map
   const owned = new Map();
@@ -279,7 +276,7 @@ function teamList() {
       return;
     }
     try {
-      await createNewTeam(newTeamName.value);
+      await newTeamPromise(newTeamName.value);
       await loadMeAndOps();
       teamList();
     } catch (e) {
@@ -313,18 +310,23 @@ function teamList() {
     const stateCheck = L.DomUtil.create("input", "form-check-input", state);
     stateCheck.type = "checkbox";
     if (t.State == "On") stateCheck.checked = true;
-    L.DomEvent.on(stateCheck, "change", (ev) => {
+    L.DomEvent.on(stateCheck, "change", async (ev) => {
       L.DomEvent.stop(ev);
       const s = stateCheck.checked ? "On" : "Off";
-      setTeamState(t.ID, s).then(() => {
+      try {
+        await SetTeamState(t.ID, s);
         if (!stateCheck.checked) {
           logEvent("leave_group");
         } else {
           logEvent("join_group");
         }
 
-        loadMeAndOps().then(() => teamList());
-      });
+        await loadMeAndOps();
+        teamList();
+      } catch (e) {
+        console.log(e);
+        notify(e, "warning");
+      }
     });
 
     const own = L.DomUtil.create("td", null, row);
@@ -333,12 +335,17 @@ function teamList() {
     } else {
       const b = L.DomUtil.create("button", "button", own);
       b.textContent = "Leave";
-      L.DomEvent.on(b, "click", (ev) => {
+      L.DomEvent.on(b, "click", async (ev) => {
         L.DomEvent.stop(ev);
-        leaveTeam(t.ID).then(() => {
+        try {
+          await leaveTeamPromise(t.ID);
           logEvent("leave_group");
-          loadMeAndOps().then(() => teamList());
-        });
+          await loadMeAndOps();
+          teamList();
+        } catch (e) {
+          console.log(e);
+          notify(e, "warning");
+        }
       });
     }
 
@@ -374,7 +381,7 @@ function opsList() {
   const content = document.getElementById("wasabeeContent");
   while (content.lastChild) content.removeChild(content.lastChild);
 
-  const me = WasabeeMe.get();
+  const me = WasabeeMe.cacheGet();
 
   const teamMap = new Map();
   for (const t of me.Teams) {
@@ -441,6 +448,51 @@ function clearOpsStorage() {
   const lsk = Object.keys(localStorage);
   for (const id of lsk) {
     if (id.length == 40) delete localStorage[id];
+  }
+}
+
+async function syncOps(ops, meteams) {
+  const promises = new Array();
+  const opsID = new Set(ops.map((o) => o.ID));
+  for (const o of opsID) promises.push(opPromise(o));
+
+  try {
+    const results = await Promise.allSettled(promises);
+    for (const r of results) {
+      if (r.status != "fulfilled") {
+        console.log(r);
+        notify("Op load failed, please refresh", "warning", true);
+      }
+      r.value.store();
+    }
+  } catch (e) {
+    console.log(e);
+    notify(e, "warning", true);
+    // return;
+  }
+
+  // pre-cache team (and agent) data
+  // we could do this in the results loop above, but this gives better error handling
+  const teamSet = new Set();
+  const teamPromises = new Array();
+  for (const o of opsID) {
+    const raw = localStorage[o];
+    if (!raw || raw.length == 0) continue;
+    const op = new WasabeeOp(raw);
+    if (op == null) continue;
+    for (const t of op.teamlist) {
+      for (const mt of meteams) {
+        if (mt.ID == t && mt.State == "On") teamSet.add(t.teamid);
+      }
+    }
+  }
+  for (const t of teamSet) teamPromises.push(teamPromise(t));
+  try {
+    await Promise.allSettled(teamPromises);
+  } catch (e) {
+    console.log(e);
+    notify(e, "warning", true);
+    return;
   }
 }
 

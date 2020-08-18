@@ -1,17 +1,17 @@
 import {
-  loadTeam,
-  removeAgentFromTeam,
-  setSquad,
+  teamPromise,
+  removeAgentFromTeamPromise,
+  setAgentTeamSquadPromise,
   setDisplayName,
   changeTeamOwnerPromise,
   createJoinLinkPromise,
   deleteJoinLinkPromise,
-  addAgentToTeam,
+  addAgentToTeamPromise,
   sendAnnounce,
-  rocksCfg,
+  rocksPromise,
   pullRocks,
-  renameTeam,
-  deleteTeam,
+  renameTeamPromise,
+  deleteTeamPromise,
 } from "./server";
 import { notify } from "./notify";
 import WasabeeMe from "./me";
@@ -54,7 +54,7 @@ export function displayTeam(state) {
   });
 
   let owned = false;
-  const me = WasabeeMe.get();
+  const me = WasabeeMe.cacheGet();
   for (const t of me.Teams) {
     if (t.ID == state.team && t.Owner == me.GoogleID) {
       owned = true;
@@ -136,7 +136,7 @@ function list(teamID) {
   const teamName = document.getElementById("teamName");
   const teamTable = document.getElementById("teamTable");
 
-  loadTeam(teamID).then(
+  teamPromise(teamID).then(
     (team) => {
       teamName.textContent = team.name;
       for (const a of team.agents) {
@@ -188,7 +188,7 @@ function map(teamID) {
   const teamName = document.getElementById("teamName");
   // const mapDiv = document.getElementById("map");
 
-  loadTeam(teamID).then(
+  teamPromise(teamID).then(
     (team) => {
       const lls = new Array();
       teamName.textContent = team.name;
@@ -267,7 +267,7 @@ function manage(teamID) {
   const addAgentButton = document.getElementById("addAgentButton");
 
   L.DomEvent.on(addAgentButton, "click", () => {
-    addAgentToTeam(teamID, addAgent.value).then(
+    addAgentToTeamPromise(teamID, addAgent.value).then(
       () => {
         // just reload the screen
         manage(teamID);
@@ -279,7 +279,7 @@ function manage(teamID) {
     );
   });
 
-  loadTeam(teamID).then(
+  teamPromise(teamID).then(
     (team) => {
       teamName.textContent = team.name;
       for (const a of team.agents) {
@@ -305,7 +305,7 @@ function manage(teamID) {
         const remove = document.getElementById(`${teamID}.${a.id}.remove`);
         L.DomEvent.on(remove, "click", (ev) => {
           L.DomEvent.stop(ev);
-          removeAgentFromTeam(teamID, a.id).then(
+          removeAgentFromTeamPromise(teamID, a.id).then(
             () => {
               manage(teamID);
             },
@@ -319,7 +319,7 @@ function manage(teamID) {
         const squad = document.getElementById(`${teamID}.${a.id}.squad`);
         L.DomEvent.on(squad, "change", (ev) => {
           L.DomEvent.stop(ev);
-          setSquad(teamID, a.id, squad.value).then(
+          setAgentTeamSquadPromise(teamID, a.id, squad.value).then(
             () => {
               manage(teamID);
             },
@@ -463,7 +463,7 @@ function settings(teamID) {
 
   L.DomEvent.on(rockscomm, "change", (ev) => {
     L.DomEvent.stop(ev);
-    rocksCfg(teamID, rockscomm.value, rockskey.value).then(
+    rocksPromise(teamID, rockscomm.value, rockskey.value).then(
       () => {},
       (reject) => {
         console.log(reject);
@@ -474,7 +474,7 @@ function settings(teamID) {
 
   L.DomEvent.on(rockskey, "change", (ev) => {
     L.DomEvent.stop(ev);
-    rocksCfg(teamID, rockscomm.value, rockskey.value).then(
+    rocksPromise(teamID, rockscomm.value, rockskey.value).then(
       () => {},
       (reject) => {
         console.log(reject);
@@ -485,7 +485,7 @@ function settings(teamID) {
 
   L.DomEvent.on(rename, "change", (ev) => {
     L.DomEvent.stop(ev);
-    renameTeam(teamID, rename.value).then(
+    renameTeamPromise(teamID, rename.value).then(
       () => {
         settings(teamID);
       },
@@ -498,7 +498,7 @@ function settings(teamID) {
 
   L.DomEvent.on(deleteButton, "click", (ev) => {
     L.DomEvent.stop(ev);
-    deleteTeam(teamID).then(
+    deleteTeamPromise(teamID).then(
       () => {
         window.location.assign("/me");
       },
@@ -509,7 +509,7 @@ function settings(teamID) {
     );
   });
 
-  loadTeam(teamID).then(
+  teamPromise(teamID).then(
     (team) => {
       teamName.textContent = team.name;
       teamid.textContent = team.id;

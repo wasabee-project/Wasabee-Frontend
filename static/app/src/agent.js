@@ -1,48 +1,35 @@
-// this is reset on each reload, but works fine for normal screen-changing
+import { agentPromise } from "./server";
+
 const agentCache = new Map();
 
 export default class WasabeeAgent {
-  constructor() {
-    this.id = null;
-    this.name = null;
-    this.lat = 0;
-    this.lng = 0;
-    this.date = null;
-    this.pic = null;
-    this.cansendto = false;
-    this.Vverified = false;
-    this.blacklisted = false;
-    this.rocks = false;
-    this.squad = null;
-    this.state = null;
-  }
-
-  static create(obj) {
+  constructor(obj) {
     if (typeof obj == "string") {
       try {
         obj = JSON.parse(obj);
       } catch (e) {
         console.log(e);
-        return null;
+        obj = {};
       }
     }
-    const a = new WasabeeAgent();
-    a.id = obj.id;
-    a.name = obj.name;
-    a.lat = obj.lat;
-    a.lng = obj.lng;
-    a.date = obj.date;
-    a.pic = obj.pic;
-    a.cansendto = obj.cansendto;
-    a.Vverified = obj.Vverified;
-    a.blacklisted = obj.blacklisted;
-    a.rocks = obj.rocks;
-    a.squad = obj.squad;
-    a.state = obj.state;
 
-    agentCache.set(a.id, a);
+    this.id = obj.id;
+    this.name = obj.name; // XXX gets messy in the cache if team display name is set
+    this.lat = obj.lat ? obj.lat : 0;
+    this.lng = obj.lng ? obj.lng : 0;
+    this.date = obj.date ? obj.date : null;
+    this.pic = obj.pic ? obj.pic : null;
+    this.cansendto = obj.cansendto ? obj.cansendto : false;
+    this.Vverified = obj.Vverified ? obj.Vverified : false;
+    this.blacklisted = obj.blacklisted ? obj.blacklisted : false;
+    this.rocks = obj.rocks ? obj.rocks : false;
 
-    return a;
+    // squad and state are meaningless in the cache since you can never know which team set them
+    this.squad = obj.squad ? obj.squad : null;
+    this.state = obj.state;
+
+    // push the new data into the agent cache
+    agentCache.set(this.id, this);
   }
 
   get latLng() {
@@ -50,9 +37,25 @@ export default class WasabeeAgent {
     return null;
   }
 
-  // an agent may be on multiple teams and have a different display name on each, this could be ugly
-  static get(id) {
-    if (agentCache.has(id)) return agentCache.get(id);
+  static cacheGet(gid) {
+    if (agentCache.has(gid)) {
+      return agentCache.get(gid);
+    }
+    return null;
+  }
+
+  static async waitGet(gid) {
+    if (agentCache.has(gid)) {
+      return agentCache.get(gid);
+    }
+
+    try {
+      const result = await agentPromise(gid);
+      const newagent = new WasabeeAgent(result);
+      return newagent;
+    } catch (e) {
+      console.log(e);
+    }
     return null;
   }
 }

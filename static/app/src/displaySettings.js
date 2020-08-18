@@ -1,12 +1,12 @@
 import WasabeeMe from "./me";
-import { startSendLoc, stopSendLoc } from "./server";
+import { startSendLoc, stopSendLoc } from "./loc";
 import { logEvent } from "./firebase";
 
 export function displaySettings() {
   logEvent("screen_view", { screen_name: "settings" });
   history.pushState({ screen: "settings" }, "settings", "#settings");
 
-  const me = WasabeeMe.get();
+  const me = WasabeeMe.cacheGet();
   const subnav = document.getElementById("wasabeeSubnav");
   while (subnav.lastChild) subnav.removeChild(subnav.lastChild);
   const content = document.getElementById("wasabeeContent");

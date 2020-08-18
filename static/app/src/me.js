@@ -1,5 +1,8 @@
 // very different from IITC version
+import { mePromise } from "./server";
+
 const AGENT_INFO_KEY = "me";
+
 export class WasabeeMe {
   constructor(json) {
     let obj = null;
@@ -69,8 +72,32 @@ export class WasabeeMe {
     delete localStorage[AGENT_INFO_KEY];
   }
 
-  static get() {
-    return new WasabeeMe(localStorage[AGENT_INFO_KEY]);
+  static cacheGet() {
+    const raw = localStorage[AGENT_INFO_KEY];
+    if (raw == null) return null;
+    return new WasabeeMe(raw);
+  }
+
+  static async waitGet(force = false) {
+    if (!force) {
+      const lsme = localStorage[AGENT_INFO_KEY];
+      if (lsme) {
+        const maxCacheAge = Date.now() - 1000 * 60 * 60;
+        const l = new WasabeeMe(lsme);
+        if (l.fetched && l.fetched > maxCacheAge) {
+          return l;
+        }
+      }
+    }
+
+    try {
+      const raw = await mePromise();
+      const me = new WasabeeMe(raw);
+      return me;
+    } catch (e) {
+      console.log(e);
+    }
+    return null;
   }
 }
 

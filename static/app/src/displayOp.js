@@ -9,12 +9,12 @@ import Sortable from "sortablejs";
 import "leaflet.geodesic";
 import { logEvent } from "./firebase";
 import {
-  loadTeam,
-  loadOp,
+  teamPromise,
+  opPromise,
   addPermPromise,
   deletePermPromise,
   setAssignmentStatus,
-  updateKeyCount,
+  opKeyPromise,
   setMarkerComment,
   setLinkComment,
   reverseLinkDirection,
@@ -66,7 +66,7 @@ export function displayOp(state) {
     });
   }
 
-  const me = WasabeeMe.get();
+  const me = WasabeeMe.cacheGet();
 
   let owner = me.GoogleID == op.creator;
 
@@ -96,20 +96,20 @@ export function displayOp(state) {
   const m = `<li class="nav-item"><a class="nav-link" id="opRefresh">↻</a></li>`;
   opNavbar.insertAdjacentHTML("beforeend", m);
   const opRefreshNav = document.getElementById("opRefresh");
-  L.DomEvent.on(opRefreshNav, "click", (ev) => {
+  L.DomEvent.on(opRefreshNav, "click", async (ev) => {
     L.DomEvent.stop(ev);
-    loadOp(state.op)
-      .then((op) => {
-        return fetchUncachedTeams(op.teamlist);
-      })
-      .then(() => displayOp(history.state))
-      .catch(() =>
-        notify(
-          "Op load failed, please refresh from operations list",
-          "warning",
-          true
-        )
+    try {
+      const raw = await opPromise(state.op);
+      const op = new WasabeeOp(raw);
+      await fetchUncachedTeams(op.teamlist);
+      displayOp(history.state);
+    } catch (e) {
+      notify(
+        "Op load failed, please refresh from operations list",
+        "warning",
+        true
       );
+    }
   });
 
   switch (state.subscreen) {
@@ -153,7 +153,7 @@ function checklist(op, assignmentsOnly = false) {
   );
   logEvent("screen_view", { screen_name: `op ${subscreen}` });
 
-  const me = WasabeeMe.get();
+  const me = WasabeeMe.cacheGet();
 
   const content = document.getElementById("wasabeeContent");
   while (content.lastChild) content.removeChild(content.lastChild);
@@ -275,7 +275,7 @@ function map(op) {
   );
   logEvent("screen_view", { screen_name: "op setting" });
 
-  const me = WasabeeMe.get();
+  const me = WasabeeMe.cacheGet();
 
   const content = document.getElementById("wasabeeContent");
   while (content.lastChild) content.removeChild(content.lastChild);
@@ -430,7 +430,7 @@ function permissions(op) {
   );
   logEvent("screen_view", { screen_name: "op permissions" });
 
-  const me = WasabeeMe.get();
+  const me = WasabeeMe.cacheGet();
 
   const content = document.getElementById("wasabeeContent");
   while (content.lastChild) content.removeChild(content.lastChild);
@@ -470,11 +470,17 @@ function permissions(op) {
     const tdRm = L.DomUtil.create("td", null, row);
     const removeButton = L.DomUtil.create("button", null, tdRm);
     removeButton.textContent = "Remove";
-    L.DomEvent.on(removeButton, "click", (ev) => {
+    L.DomEvent.on(removeButton, "click", async (ev) => {
       L.DomEvent.stop(ev);
-      deletePermPromise(op.ID, t.teamid, t.role)
-        .then(() => loadOp(op.ID))
-        .then((op) => manage(op));
+      try {
+        await deletePermPromise(op.ID, t.teamid, t.role);
+        const raw = await opPromise(op.ID);
+        const refreshed = new WasabeeOp(raw);
+        manage(refreshed);
+      } catch (e) {
+        console.log(e);
+        notify(e);
+      }
     });
   }
 
@@ -494,7 +500,7 @@ function permissions(op) {
 
   if (me.Teams.length > 0) {
     const addButton = document.getElementById("addButton");
-    L.DomEvent.on(addButton, "click", (ev) => {
+    L.DomEvent.on(addButton, "click", async (ev) => {
       L.DomEvent.stop(ev);
       const teamID = addTeamSelect.value;
       const role = addRoleSelect.value;
@@ -502,13 +508,26 @@ function permissions(op) {
       // avoid duplicate
       for (const t of op.teamlist) {
         if (t.teamid == teamID && t.role == role) {
-          loadOp(op.ID).then((op) => manage(op));
+          try {
+            const raw = await opPromise(op.ID);
+            const refreshed = new WasabeeOp(raw);
+            manage(refreshed);
+          } catch (e) {
+            console.log(e);
+            notify(e);
+          }
           return;
         }
       }
-      addPermPromise(op.ID, teamID, role)
-        .then(() => loadOp(op.ID))
-        .then((op) => manage(op));
+      try {
+        await addPermPromise(op.ID, teamID, role);
+        const raw = await opPromise(op.ID);
+        const refreshed = new WasabeeOp(raw);
+        manage(refreshed);
+      } catch (e) {
+        console.log(e);
+        notify(e);
+      }
     });
   }
 }
@@ -521,7 +540,7 @@ function keys(op) {
   );
   logEvent("screen_view", { screen_name: "op keys" });
 
-  const me = WasabeeMe.get();
+  const me = WasabeeMe.cacheGet();
   const content = document.getElementById("wasabeeContent");
   while (content.lastChild) content.removeChild(content.lastChild);
 
@@ -624,32 +643,28 @@ function keys(op) {
     const count = L.DomUtil.create("input", null, cc);
     count.size = 3;
     count.value = k.iHave;
-    L.DomEvent.on(count, "change", () => {
-      updateKeyCount(op, k.id, count.value, cap.value).then(
-        () => {
-          notify("count updated", "success", false);
-        },
-        (reject) => {
-          console.log(reject);
-          notify(reject, "danger", true);
-        }
-      );
+    L.DomEvent.on(count, "change", async () => {
+      try {
+        await opKeyPromise(op, k.id, count.value, cap.value);
+        notify("count updated", "success", false);
+      } catch (e) {
+        console.log(e);
+        notify(e, "danger", true);
+      }
     });
 
     const capc = L.DomUtil.create("td", null, tr);
     const cap = L.DomUtil.create("input", null, capc);
     cap.size = 10;
     cap.value = k.capsule;
-    L.DomEvent.on(cap, "change", () => {
-      updateKeyCount(op, k.id, count.value, cap.value).then(
-        () => {
-          notify("capsule name updated", "success", false);
-        },
-        (reject) => {
-          console.log(reject);
-          notify(reject, "danger", true);
-        }
-      );
+    L.DomEvent.on(cap, "change", async () => {
+      try {
+        await opKeyPromise(op, k.id, count.value, cap.value);
+        notify("capsule name updated", "success", false);
+      } catch (e) {
+        console.log(e);
+        notify(e, "danger", true);
+      }
     });
   }
 
@@ -677,7 +692,7 @@ function manage(op) {
   );
   logEvent("screen_view", { screen_name: "op manage" });
 
-  // const me = WasabeeMe.get();
+  // const me = WasabeeMe.cacheGet();
 
   const content = document.getElementById("wasabeeContent");
   while (content.lastChild) content.removeChild(content.lastChild);
@@ -916,7 +931,7 @@ function fetchUncachedTeams(teamlist) {
   const teamset = new Set(teamlist.map((t) => t.teamid));
   for (const t of teamset) {
     const cached = WasabeeTeam.get(t);
-    if (cached == null) promises.push(loadTeam(t));
+    if (cached == null) promises.push(teamPromise(t));
   }
   return Promise.allSettled(promises);
 }

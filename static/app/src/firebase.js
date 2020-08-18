@@ -39,7 +39,7 @@ export function firebaseInit() {
       });
   });
 
-  const me = WasabeeMe.get();
+  const me = WasabeeMe.cacheGet();
 
   messaging.onMessage((payload) => {
     if (payload.data && payload.data.cmd) {

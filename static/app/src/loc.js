@@ -1,4 +1,5 @@
 import { locationPromise } from "./server";
+import { notify } from "./notify";
 
 export function startSendLoc() {
   if (localStorage["sendLocation"] != "true") return;

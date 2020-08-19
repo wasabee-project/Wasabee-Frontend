@@ -461,8 +461,8 @@ function genericGet(url) {
 }
 
 export function GetWasabeeServer() {
-  // for IITC
-  if (window.iitcLoaded) {
+  // Wasabee-IITC, use the configured server
+  if (window.plugin.wasabee) {
     let server =
       localStorage[window.plugin.wasabee.static.constants.SERVER_BASE_KEY];
     if (server == null) {
@@ -473,7 +473,7 @@ export function GetWasabeeServer() {
     }
     return server;
   }
-  // WebUI doesn't need to specify the server
+  // Wasabee-WebUI doesn't need to specify the server
   return "";
 }
 

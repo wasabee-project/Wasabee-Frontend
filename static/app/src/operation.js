@@ -14,18 +14,19 @@ const DEFAULT_OPERATION_COLOR = "groupa";
 
 export class WasabeeOp {
   // CHANGED from IITC plugin
-  constructor(json) {
-    if (!json) {
+  constructor(obj) {
+    if (!obj) {
       console.log("attempted to create an empty operation");
       return;
     }
-    let obj = null;
-    try {
-      obj = JSON.parse(json);
-    } catch (e) {
-      console.log(json);
-      console.log("invalid operation");
-      return;
+    if (typeof obj == "string") {
+      try {
+        obj = JSON.parse(obj);
+      } catch (e) {
+        console.log(obj);
+        console.log("invalid operation");
+        return;
+      }
     }
 
     this.ID = obj.ID;

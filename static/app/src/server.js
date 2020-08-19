@@ -327,7 +327,7 @@ async function genericPut(url, formData, contentType = "multipart/form-data") {
       redirect: "manual",
       referrerPolicy: "origin",
       headers: { "Content-Type": contentType },
-      data: formData,
+      body: formData,
     });
 
     let err = null;
@@ -363,7 +363,7 @@ async function genericPost(url, formData, contentType = "multipart/form-data") {
       redirect: "manual",
       referrerPolicy: "origin",
       headers: { "Content-Type": contentType },
-      data: formData,
+      body: formData,
     });
 
     let err = null;

@@ -220,8 +220,6 @@ export function opKeyPromise(opID, portalID, onhand, capsule) {
   const fd = new FormData();
   fd.append("onhand", onhand);
   fd.append("capsule", capsule);
-  console.log(fd.getAll("onhand"));
-  console.log(fd.getAll("capsule"));
   return genericPost(`/api/v1/draw/${opID}/portal/${portalID}/keyonhand`, fd);
 }
 

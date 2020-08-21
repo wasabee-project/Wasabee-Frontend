@@ -31,19 +31,34 @@
   const analytics = firebase.analytics();
 
   const messaging = firebase.messaging();
+  const auth = firebase.auth();
   messaging.usePublicVapidKey('BEB7mMFzF4way3Scjrwt62mWvpQcPnSm2_8iJaxokgzt9DqZqqidQ1phjuqHciVvcVVK5uJtJw3Bg1Kt8Nw2-hk');
-  // requestPermission();
-  runit();
+  setupMessaging();
 
-  messaging.onTokenRefresh(() => {
-    messaging.getToken().then((refreshedToken) => {
+  messaging.onTokenRefresh(async () => {
+    try {
+      refreshedToken = await messaging.getToken();
       console.log('Token refreshed.');
       setTokenSentToServer(false);
-      sendTokenToServer(refreshedToken);
-    }).catch((err) => {
-      console.log('Unable to retrieve refreshed token ', err);
-    });
+      await sendTokenToServer(refreshedToken);
+    } catch(e) {
+      console.log('Unable to retrieve refreshed token ', e);
+    }
   });
+
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      // console.log(user);
+      console.log("firebase auth login: ", user.uid);
+      return;
+    } 
+    console.log("firebase auth logout");
+    delete localStorage["customToken"]
+  });
+
+  /* auth.onIdTokenChanged((user) => {
+    console.log("firebase auth noted token change");
+  }); */
 
   window.addEventListener("message", (event) => {
     if (! event.data) event.data = {};
@@ -57,8 +72,8 @@
       // this is used to trigger sending the firebase tokens to wasabee server
       // if they have not already been sent (e.g. first login)
       case "wasabeeLogin":
-        runit();
-	signin();
+	customToken();
+        setupMessaging();
         analytics.logEvent("login", event.data);
 	break;
       case "analytics":
@@ -94,21 +109,26 @@
     );
   });
 
-  async function signin() {
+  async function customToken() {
     try {
-      token = await getCustomTokenFromServer();
-      localStorage["customToken"] = token;
-
-      firebase.auth().signInWithCustomToken(token).catch(function(error) {
-        console.log(error.message);
-      });
+      localStorage["customToken"] = await getCustomTokenFromServer();
+      console.log("using custom firebase token");
     } catch (e) {
+      delete localStorage["customToken"];
       console.log(e);
+    }
+
+    if (localStorage["customToken"]) {
+      auth.signInWithCustomToken(localStorage["customToken"]).catch(function(error) {
+        console.log(error.message);
+        delete localStorage["customToken"];
+      });
     }
   }
 
-  function runit() {
-    messaging.getToken().then((currentToken) => {
+  async function setupMessaging() {
+    try {
+      currentToken = await messaging.getToken();
       if (currentToken) {
         sendTokenToServer(currentToken);
       } else {
@@ -116,22 +136,24 @@
         setTokenSentToServer(false);
 	requestPermission();
       }
-    }).catch((err) => {
-      console.log('An error occurred while retrieving token. ', err);
+    } catch(e) {
+      console.log('An error occurred while retrieving token. ', e);
       setTokenSentToServer(false);
-    });
+    };
   }
 
-  function sendTokenToServer(currentToken) {
-    if (!isTokenSentToServer()) {
-      console.log('Sending token to server...');
-      sendTokenToWasabee(currentToken).then(() => {
-        setTokenSentToServer(true);
-      }).catch((error) => {
-        console.warn("Unable to send Firebase token to the server. (User not logged in?)", error);
-      });
-    } else {
+  async function sendTokenToServer(currentToken) {
+    if (isTokenSentToServer()) {
       console.log("Token already sent to server");
+      return;
+    }
+
+    try {
+      console.log("Sending token to server...");
+      await sendTokenToWasabee(currentToken);
+      setTokenSentToServer(true);
+    } catch(e) {
+      console.warn("Unable to send Firebase token to the server. (User not logged in?)", error);
     }
   }
 
@@ -143,16 +165,19 @@
     window.localStorage.setItem('sentToServer', sent ? '1' : '0');
   }
 
-  function requestPermission() {
+  async function requestPermission() {
     console.log('Requesting permission...');
-    Notification.requestPermission().then((permission) => {
+    try {
+      permission = await Notification.requestPermission();
       if (permission === 'granted') {
         console.log('Notification permission granted.');
-        runit(); // yes, recurse
+        setupMessaging(); // yes, recurse
       } else {
         console.log('Unable to get permission to notify.');
       }
-    });
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   function getCustomTokenFromServer() {

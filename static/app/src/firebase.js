@@ -1,5 +1,5 @@
 import { WasabeeMe } from "./me";
-import { sendTokenToWasabee } from "./server";
+import { sendTokenToWasabee, getCustomTokenFromServer } from "./server";
 import * as firebase from "firebase/app";
 import "firebase/messaging";
 import "firebase/analytics";
@@ -8,7 +8,7 @@ import { notify } from "./notify";
 
 let messaging = null;
 
-export function firebaseInit() {
+export async function firebaseInit() {
   try {
     firebase.initializeApp(window.wasabeewebui.firebaseConfig);
     firebase.analytics();
@@ -16,6 +16,16 @@ export function firebaseInit() {
     messaging.usePublicVapidKey(window.wasabeewebui.publicVapidKey);
     window.wasabeewebui.fbinited = true;
     window.wasabeewebui.observedLogins = new Map();
+
+    const token = await getCustomTokenFromServer();
+    localStorage["customToken"] = token;
+
+    firebase
+      .auth()
+      .signInWithCustomToken(token)
+      .catch((e) => {
+        console.log(e.message);
+      });
   } catch (e) {
     notify(
       "Unable to start firebase, real-time notifications will not work",

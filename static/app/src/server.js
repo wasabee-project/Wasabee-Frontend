@@ -499,6 +499,10 @@ export function sendTokenToWasabee(token) {
   return genericPost(`/api/v1/me/firebase`, token);
 }
 
+export function getCustomTokenFromServer() {
+  return genericGet(`/api/v1/me/firebase`);
+}
+
 export function loadConfig() {
   return genericGet(`/static/wasabee-webui-config.json`);
 }

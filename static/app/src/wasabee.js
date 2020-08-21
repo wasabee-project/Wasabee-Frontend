@@ -26,7 +26,7 @@ async function wasabeeMain() {
   try {
     const raw = await loadConfig();
     window.wasabeewebui = JSON.parse(raw);
-    firebaseInit();
+    await firebaseInit();
   } catch (e) {
     notify("unable to load config: " + e, "danger", true);
     console.log(e);

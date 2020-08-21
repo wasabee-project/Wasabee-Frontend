@@ -263,7 +263,7 @@ async function manage(teamID) {
   const addAgentButton = document.getElementById("addAgentButton");
 
   L.DomEvent.on(addAgentButton, "click", () => {
-    addAgentToTeamPromise(teamID, addAgent.value).then(
+    addAgentToTeamPromise(addAgent.value, teamID).then(
       () => {
         // just reload the screen
         manage(teamID);
@@ -301,7 +301,7 @@ async function manage(teamID) {
       const remove = document.getElementById(`${teamID}.${a.id}.remove`);
       L.DomEvent.on(remove, "click", (ev) => {
         L.DomEvent.stop(ev);
-        removeAgentFromTeamPromise(teamID, a.id).then(
+        removeAgentFromTeamPromise(a.id, teamID).then(
           () => {
             manage(teamID);
           },

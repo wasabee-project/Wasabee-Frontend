@@ -16,19 +16,9 @@ export async function firebaseInit() {
     messaging.usePublicVapidKey(window.wasabeewebui.publicVapidKey);
     window.wasabeewebui.fbinited = true;
     window.wasabeewebui.observedLogins = new Map();
-
-    const token = await getCustomTokenFromServer();
-    localStorage["customToken"] = token;
-
-    firebase
-      .auth()
-      .signInWithCustomToken(token)
-      .catch((e) => {
-        console.log(e.message);
-      });
   } catch (e) {
     notify(
-      "Unable to start firebase, real-time notifications will not work",
+      "Unable to start Firebase messaging, real-time notifications will not work",
       "warning"
     );
     window.wasabeewebui.fbinited = false;
@@ -36,16 +26,39 @@ export async function firebaseInit() {
     return;
   }
 
+  const auth = firebase.auth();
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      console.log("Firebase auth login: ", user.uid);
+      return;
+    }
+    console.log("Firebase auth logout");
+    delete localStorage["customToken"];
+  });
+
+  if (localStorage["customToken"] == null) {
+    try {
+      localStorage["customToken"] = await getCustomTokenFromServer();
+      auth.signInWithCustomToken(localStorage["customToken"]);
+    } catch (e) {
+      console.log(e.message);
+      delete localStorage["customToken"];
+    }
+  }
+
   messaging.onTokenRefresh(() => {
     messaging
       .getToken()
       .then((refreshedToken) => {
-        console.log("Token refreshed.");
+        console.log("Firebase messaging token refreshed.");
         setTokenSentToServer(false);
         sendTokenToServer(refreshedToken);
       })
       .catch((err) => {
-        console.log("Unable to retrieve refreshed token ", err);
+        console.log(
+          "Unable to retrieve refreshed Firebase messaging token ",
+          err
+        );
       });
   });
 
@@ -111,7 +124,7 @@ export function runFirebaseStart() {
       }
     })
     .catch((err) => {
-      console.log("An error occurred while retrieving token. ", err);
+      console.log("An error occurred while retrieving messaging token. ", err);
       setTokenSentToServer(false);
     });
 }
@@ -125,13 +138,13 @@ function sendTokenToServer(currentToken) {
       })
       .catch((error) => {
         console.warn(
-          "Unable to send Firebase token to the server. (User not logged in?)",
+          "Unable to send Firebase messaging token to the server. (User not logged in?)",
           error
         );
       });
   } else {
     console.log(
-      "Firebase Token already sent to server so won't send it again unless it changes"
+      "Firebase messaging token already sent to server so won't send it again unless it changes"
     );
   }
 }

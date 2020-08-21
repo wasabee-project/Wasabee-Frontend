@@ -315,7 +315,7 @@ async function manage(teamID) {
       const squad = document.getElementById(`${teamID}.${a.id}.squad`);
       L.DomEvent.on(squad, "change", (ev) => {
         L.DomEvent.stop(ev);
-        setAgentTeamSquadPromise(teamID, a.id, squad.value).then(
+        setAgentTeamSquadPromise(a.id, teamID, squad.value).then(
           () => {
             manage(teamID);
           },

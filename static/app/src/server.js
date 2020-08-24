@@ -321,18 +321,21 @@ export function oneTimeToken(token) {
   return genericPost(url, fd);
 }
 
-async function genericPut(url, formData, contentType = "multipart/form-data") {
+async function genericPut(url, formData, contentType) {
   try {
-    const response = await fetch(GetWasabeeServer() + url, {
+    const construct = {
       method: "PUT",
       mode: "cors",
       cache: "default",
       credentials: "include",
       redirect: "manual",
       referrerPolicy: "origin",
-      headers: { "Content-Type": contentType },
       body: formData,
-    });
+    };
+    if (contentType != null) {
+      construct.headers = { "Content-Type": contentType };
+    }
+    const response = await fetch(GetWasabeeServer() + url, construct);
 
     let err = null;
     switch (response.status) {
@@ -546,6 +549,12 @@ export function pullRocks(teamID) {
 
 export function reverseLinkDirection(opID, linkID) {
   return genericGet(`/api/v1/draw/${opID}/link/${linkID}/swap`);
+}
+
+export function setOpInfo(opID, info) {
+  const fd = new FormData();
+  fd.append("info", info);
+  return genericPost(`/api/v1/draw/${opID}/info`, fd);
 }
 
 export function setMarkerComment(opID, markerID, comment) {

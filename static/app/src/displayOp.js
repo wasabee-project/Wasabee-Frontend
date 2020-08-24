@@ -3,6 +3,7 @@ import WasabeeLink from "./link";
 import WasabeeTeam from "./team";
 import WasabeeMe from "./me";
 import WasabeeMarker from "./marker";
+import WasabeeAgent from "./agent";
 import { notify } from "./notify";
 // import Sortable, { MultiDrag, Swap} from 'sortablejs';
 import Sortable from "sortablejs";
@@ -19,6 +20,8 @@ import {
   reverseLinkDirection,
   SetMarkerState,
   setOpInfo,
+  assignMarkerPromise,
+  assignLinkPromise,
 } from "./server";
 
 export function displayOp(state) {
@@ -787,11 +790,8 @@ function manage(op) {
       L.DomUtil.create("td", s.type, row).textContent = " " + s.type;
       L.DomUtil.create("td", null, row).textContent = " ";
       const assignedToTD = L.DomUtil.create("td", null, row);
-      assignedToTD.textContent = s.assignedTo;
-      if (s.assignedTo) {
-        const agent = op.getAgent(s.assignedTo);
-        if (agent) assignedToTD.textContent = agent.name;
-      }
+      const menu = assignMenu(op, s);
+      assignedToTD.appendChild(menu);
 
       const commentCell = L.DomUtil.create("td", null, row);
       const commentField = L.DomUtil.create("input", null, commentCell);
@@ -835,11 +835,8 @@ function manage(op) {
 
       L.DomUtil.create("td", null, row).textContent = calculateDistance(fp, tp);
       const assignedToTD = L.DomUtil.create("td", null, row);
-      assignedToTD.textContent = s.assignedTo;
-      if (s.assignedTo) {
-        const agent = op.getAgent(s.assignedTo);
-        if (agent) assignedToTD.textContent = agent.name;
-      }
+      const menu = assignMenu(op, s);
+      assignedToTD.appendChild(menu);
 
       const commentCell = L.DomUtil.create("td", null, row);
       const commentField = L.DomUtil.create("input", null, commentCell);
@@ -853,18 +850,16 @@ function manage(op) {
     const completedCheck = L.DomUtil.create("input", null, completedCell);
     completedCheck.type = "checkbox";
     completedCheck.disabled = false;
-    L.DomEvent.on(completedCheck, "change", (ev) => {
+    L.DomEvent.on(completedCheck, "change", async (ev) => {
       L.DomEvent.stop(ev);
-      setAssignmentStatus(op, s, completedCheck.checked).then(
-        () => {
-          s.completed = completedCheck.checked;
-          op.update();
-        },
-        (reject) => {
-          notify(reject, "danger", true);
-          console.log(reject);
-        }
-      );
+      try {
+        await setAssignmentStatus(op, s, completedCheck.checked);
+        s.completed = completedCheck.checked;
+        op.update();
+      } catch (e) {
+        notify(e, "danger", true);
+        console.log(e);
+      }
     });
 
     // XXX we need to make a WasabeeLink.completed getter for both IITC and WebUI
@@ -914,6 +909,48 @@ function manage(op) {
       },
     },
   });
+}
+
+function assignMenu(op, target) {
+  const teamset = new Set(op.teamlist.map((t) => t.teamid));
+  const agentset = new Set();
+  for (const t of teamset) {
+    const team = WasabeeTeam.cacheGet(t);
+    if (team == null) continue;
+    for (const a of team.agents) {
+      agentset.add(a.id);
+    }
+  }
+
+  const select = L.DomUtil.create("select");
+  const unset = L.DomUtil.create("option", null, select);
+  unset.textContent = "Unassigned";
+  unset.value = "";
+
+  for (const a of agentset) {
+    const o = L.DomUtil.create("option", null, select);
+    const agent = WasabeeAgent.cacheGet(a);
+    o.textContent = agent.name;
+    o.value = a;
+    if (target.assignedTo == a) o.selected = true;
+  }
+
+  L.DomEvent.on(select, "change", async (ev) => {
+    L.DomEvent.stop(ev);
+    try {
+      if (target instanceof WasabeeMarker) {
+        await assignMarkerPromise(op.ID, target.ID, select.value);
+      } else {
+        await assignLinkPromise(op.ID, target.ID, select.value);
+      }
+      op.update();
+      notify("assignment registered", "success");
+    } catch (e) {
+      console.log(e);
+      notify(e, "danger");
+    }
+  });
+  return select;
 }
 
 function calculateDistance(from, to) {

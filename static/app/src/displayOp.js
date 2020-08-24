@@ -17,6 +17,8 @@ import {
   setMarkerComment,
   setLinkComment,
   reverseLinkDirection,
+  SetMarkerState,
+  setOpInfo,
 } from "./server";
 
 export function displayOp(state) {
@@ -214,6 +216,26 @@ function checklist(op, assignmentsOnly = false) {
       if (s.assignedTo) {
         const agent = op.getAgent(s.assignedTo);
         if (agent) assignedToTD.textContent = agent.name;
+        if (
+          !(s.state == "acknowledged" || s.state == "completed") &&
+          s.assignedTo == me.GoogleID
+        ) {
+          const ackButton = L.DomUtil.create("button", null, assignedToTD);
+          ackButton.textContent = "ack";
+          L.DomEvent.on(ackButton, "click", async (ev) => {
+            L.DomEvent.stop(ev);
+            try {
+              console.log("setting marker acknowledge");
+              await SetMarkerState(op.ID, s.ID, "acknowledged");
+              notify("acknowledged", "success");
+              ackButton.style.display = "none";
+              op.update();
+            } catch (e) {
+              console.log(e);
+              notify(e, "danger", true);
+            }
+          });
+        }
       }
       L.DomUtil.create("td", null, row).textContent = s.comment;
     }
@@ -730,11 +752,16 @@ function manage(op) {
 
   const opSteps = document.getElementById("opSteps");
   const opComment = document.getElementById("opComment");
-  L.DomEvent.on(opComment, "change", () => {
-    console.log("changing op comment");
-    // XXX push change to server
-    op.comment = opComment.value;
-    op.Save();
+  L.DomEvent.on(opComment, "change", async () => {
+    try {
+      await setOpInfo(op.ID, opComment.value);
+      notify("op info updated", "success");
+      op.comment = opComment.value;
+      op.update();
+    } catch (e) {
+      console.log(e);
+      notify(e, "danger");
+    }
   });
 
   const steps = op.markers.concat(op.links);

@@ -59,7 +59,7 @@ export default class WasabeeMarker {
       iconTypes[this.type] +
       "_" +
       state +
-      ".png"
+      ".svg"
     );
   }
 }

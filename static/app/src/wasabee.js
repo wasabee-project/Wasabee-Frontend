@@ -461,7 +461,7 @@ async function syncOps(ops, meteams) {
     for (const r of results) {
       if (r.status != "fulfilled") {
         console.log(r);
-        notify("Op load failed, please refresh", "warning", true);
+        throw new Error("Op load failed, please refresh");
       }
       r.value.store();
     }

@@ -10,5 +10,7 @@ export function removeOperation(opID) {
 }
 
 export function getOperationByID(opID) {
-  return new WasabeeOp(localStorage[opID]);
+  const raw = localStorage[opID];
+  if (raw == null) return null;
+  return new WasabeeOp(raw);
 }

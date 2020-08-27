@@ -3,7 +3,6 @@ import L from "leaflet";
 import { firebaseInit, runFirebaseStart, logEvent } from "./firebase";
 import {
   loadConfig,
-  teamPromise,
   logoutPromise,
   SetTeamState,
   leaveTeamPromise,
@@ -12,6 +11,7 @@ import {
 } from "./server";
 import { startSendLoc, stopSendLoc } from "./loc";
 import WasabeeOp from "./operation";
+import WasabeeTeam from "./team";
 import WasabeeMe from "./me";
 import { displaySettings } from "./displaySettings";
 import { notify } from "./notify";
@@ -37,18 +37,10 @@ async function wasabeeMain() {
   // for when you are doing an op and have low/no signal
 
   try {
-    const me = await WasabeeMe.waitGet();
-    if (me.GoogleID) {
-      me.store();
-      startSendLoc();
-      // this loads every available op into local storage; every enabled team into cache
-      await syncOps(me.Ops, me.Teams);
-      buildMenu();
-      chooseScreen(null);
-    } else {
-      console.log(me);
-      notify("refresh required", "warning", true);
-    }
+    await loadMeAndOps();
+    startSendLoc();
+    buildMenu();
+    chooseScreen(null);
   } catch (e) {
     console.log(e);
     notify(e);
@@ -145,27 +137,22 @@ function buildMenu() {
   const logoutA = L.DomUtil.create("a", "nav-link", logoutLi);
   logoutA.textContent = "Log Out";
   logoutA.href = "#logout";
-  L.DomEvent.on(logoutA, "click", (ev) => {
+  L.DomEvent.on(logoutA, "click", async (ev) => {
     L.DomEvent.stop(ev);
     // clear all ops
     clearOpsStorage();
     logEvent("logout");
     history.pushState({ screen: "logout" }, "logout", "#logout");
-    logoutPromise().then(
-      () => {
-        delete localStorage["me"];
-        delete localStorage["loadedOp"];
-        delete localStorage["sentToServer"];
-        window.location.href = "/";
-      },
-      (reject) => {
-        console.log(reject);
-        delete localStorage["me"];
-        delete localStorage["loadedOp"];
-        delete localStorage["sentToServer"];
-        window.location.href = "/";
-      }
-    );
+    try {
+      await logoutPromise();
+    } catch (e) {
+      console.log(e);
+      notify(e, "warning", true);
+    }
+    delete localStorage["me"];
+    delete localStorage["loadedOp"];
+    delete localStorage["sentToServer"];
+    window.location.href = "/";
   });
 }
 
@@ -228,6 +215,7 @@ async function loadMeAndOps() {
   } catch (e) {
     notify(e, "danger", true);
     console.log(e);
+    throw e;
   }
 }
 
@@ -262,9 +250,15 @@ function teamList() {
 </div></div></div>`;
 
   const teamRefreshNav = document.getElementById("teamRefresh");
-  L.DomEvent.on(teamRefreshNav, "click", (ev) => {
+  L.DomEvent.on(teamRefreshNav, "click", async (ev) => {
     L.DomEvent.stop(ev);
-    loadMeAndOps().then(() => teamList());
+    try {
+      await loadMeAndOps();
+      teamList();
+    } catch (e) {
+      notify(e, "warning", true);
+      console.log(e);
+    }
   });
 
   const newTeamButton = document.getElementById("newTeamButton");
@@ -399,9 +393,15 @@ function opsList() {
 </div></div></div>`;
 
   const opsRefreshNav = document.getElementById("opsRefresh");
-  L.DomEvent.on(opsRefreshNav, "click", (ev) => {
+  L.DomEvent.on(opsRefreshNav, "click", async (ev) => {
     L.DomEvent.stop(ev);
-    loadMeAndOps().then(() => opsList());
+    try {
+      await loadMeAndOps();
+      opsList();
+    } catch (e) {
+      console.log(e);
+      notify(e, "warning", true);
+    }
   });
 
   const tbody = document.getElementById("ops");
@@ -452,6 +452,7 @@ function clearOpsStorage() {
 }
 
 async function syncOps(ops, meteams) {
+  const teamSet = new Set();
   const promises = new Array();
   const opsID = new Set(ops.map((o) => o.ID));
   for (const o of opsID) promises.push(opPromise(o));
@@ -464,6 +465,11 @@ async function syncOps(ops, meteams) {
         throw new Error("Op load failed, please refresh");
       }
       r.value.store();
+      for (const t of r.value.teamlist) {
+        for (const mt of meteams) {
+          if (mt.ID == t.teamid && mt.State == "On") teamSet.add(t.teamid);
+        }
+      }
     }
   } catch (e) {
     console.log(e);
@@ -471,24 +477,11 @@ async function syncOps(ops, meteams) {
     // return;
   }
 
-  // pre-cache team (and agent) data
-  // we could do this in the results loop above, but this gives better error handling
-  const teamSet = new Set();
   const teamPromises = new Array();
-  for (const o of opsID) {
-    const raw = localStorage[o];
-    if (!raw || raw.length == 0) continue;
-    const op = new WasabeeOp(raw);
-    if (op == null) continue;
-    for (const t of op.teamlist) {
-      for (const mt of meteams) {
-        if (mt.ID == t && mt.State == "On") teamSet.add(t.teamid);
-      }
-    }
-  }
-  for (const t of teamSet) teamPromises.push(teamPromise(t));
+  for (const t of teamSet) teamPromises.push(WasabeeTeam.waitGet(t, 300));
   try {
     await Promise.allSettled(teamPromises);
+    // no need to evaluate since WasabeeTeam.waitGet did all the work
   } catch (e) {
     console.log(e);
     notify(e, "warning", true);

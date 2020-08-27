@@ -394,11 +394,10 @@ function map(op) {
     ];
 
     const newlink = new L.Geodesic(latLngs, {
-      weight: 3,
+      weight: 2,
       opacity: 0.75,
-      color: "green",
+      color: toColor(l.color),
     });
-    // console.log(newlink);
 
     if (l.assignedTo == me.GoogleID) {
       newlink.addTo(assignmentsLayer);
@@ -998,4 +997,25 @@ function fetchUncachedTeams(teamlist) {
     promises.push(WasabeeTeam.waitGet(t, 86400));
   }
   return Promise.allSettled(promises);
+}
+
+function toColor(groupName) {
+  switch (groupName) {
+    case "main":
+      return "#f00";
+    case "groupa":
+      return "#f60";
+    case "groupb":
+      return "#f90";
+    case "groupc":
+      return "#b90";
+    case "groupd":
+      return "#b2c";
+    case "groupe":
+      return "#3cc";
+    case "groupf":
+      return "#f5f";
+    default:
+      return "green";
+  }
 }

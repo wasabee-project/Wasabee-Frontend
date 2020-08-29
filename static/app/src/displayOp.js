@@ -12,7 +12,7 @@ import { logEvent } from "./firebase";
 import {
   opPromise,
   addPermPromise,
-  deletePermPromise,
+  delPermPromise,
   setAssignmentStatus,
   opKeyPromise,
   setMarkerComment,
@@ -497,7 +497,7 @@ function permissions(op) {
     L.DomEvent.on(removeButton, "click", async (ev) => {
       L.DomEvent.stop(ev);
       try {
-        await deletePermPromise(op.ID, t.teamid, t.role);
+        await delPermPromise(op.ID, t.teamid, t.role);
         const raw = await opPromise(op.ID);
         const refreshed = new WasabeeOp(raw);
         permissions(refreshed);
@@ -994,7 +994,7 @@ function fetchUncachedTeams(teamlist) {
   for (const t of teamset) {
     // cached teams resolve instantly, the others are pulled
     // long cache time since this is just for the name
-    promises.push(WasabeeTeam.waitGet(t, 86400));
+    promises.push(WasabeeTeam.waitGet(t, 600));
   }
   return Promise.allSettled(promises);
 }

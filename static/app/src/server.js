@@ -252,10 +252,11 @@ export function logoutPromise() {
 }
 
 // adds a permission to an op; return value is status code
-export function addPermPromise(opID, teamID, role) {
+export function addPermPromise(opID, teamID, role, zone) {
   const fd = new FormData();
   fd.append("team", teamID);
   fd.append("role", role);
+  fd.append("zone", zone);
   return genericPost(`/api/v1/draw/${opID}/perms`, fd);
 }
 

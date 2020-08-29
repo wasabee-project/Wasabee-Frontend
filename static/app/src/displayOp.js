@@ -104,8 +104,9 @@ export function displayOp(state) {
   L.DomEvent.on(opRefreshNav, "click", async (ev) => {
     L.DomEvent.stop(ev);
     try {
-      const raw = await opPromise(state.op);
-      const op = new WasabeeOp(raw);
+      const op = await opPromise(state.op);
+      // const op = new WasabeeOp(raw);
+      op.store();
       await fetchUncachedTeams(op.teamlist);
       displayOp(history.state);
     } catch (e) {
@@ -184,6 +185,7 @@ function checklist(op, assignmentsOnly = false) {
 <th scope="col">Distance</th>
 <th scope="col">Assigned To</th>
 <th scope="col">Description</th>
+<th scope="col">Zone</th>
 <th scope="col">Completed</th>
 </tr>
 </thead>
@@ -259,6 +261,9 @@ function checklist(op, assignmentsOnly = false) {
       }
       L.DomUtil.create("td", null, row).textContent = s.comment;
     }
+
+    const zoneCell = L.DomUtil.create("td", null, row);
+    zoneCell.textContent = s.zone;
 
     // on this screen, agents can only adjust the state of tasks assigned to them
     const completedCell = L.DomUtil.create("td", null, row);
@@ -467,6 +472,7 @@ function permissions(op) {
 <tr>
 <th scope="col">Team</th>
 <th scope="col">Permission</th>
+<th scope="col">Zone</th>
 <th scope="col">&nbsp;</th>
 </tr>
 </thead>
@@ -474,7 +480,7 @@ function permissions(op) {
 </tbody>
 </table>
 <label>Add Team:
-  <select id="addTeamSelect"></select><select id="addRoleSelect"></select>
+  <select id="addTeamSelect"></select><select id="addRoleSelect"></select><select id="addZoneSelect"></select>
 </label>
 <button id="addButton">Add</button>
 </div></div></div>
@@ -490,6 +496,7 @@ function permissions(op) {
     const row = L.DomUtil.create("tr", null, opTable);
     L.DomUtil.create("td", null, row).textContent = name;
     L.DomUtil.create("td", null, row).textContent = role;
+    L.DomUtil.create("td", null, row).textContent = t.zone;
 
     const tdRm = L.DomUtil.create("td", null, row);
     const removeButton = L.DomUtil.create("button", null, tdRm);
@@ -498,8 +505,9 @@ function permissions(op) {
       L.DomEvent.stop(ev);
       try {
         await delPermPromise(op.ID, t.teamid, t.role);
-        const raw = await opPromise(op.ID);
-        const refreshed = new WasabeeOp(raw);
+        const refreshed = await opPromise(op.ID);
+        // const refreshed = new WasabeeOp(raw);
+        refreshed.store();
         permissions(refreshed);
       } catch (e) {
         console.log(e);
@@ -521,6 +529,30 @@ function permissions(op) {
     read.value = role;
     read.textContent = role;
   }
+  L.DomEvent.on(addRoleSelect, "change", (ev) => {
+    L.DomEvent.stop(ev);
+    if (addRoleSelect.value == "read") {
+      addZoneSelect.disabled = false;
+    } else {
+      addZoneSelect.disabled = true;
+    }
+  });
+
+  const addZoneSelect = document.getElementById("addZoneSelect");
+  for (const zone of [
+    "All",
+    "Alpha",
+    "Beta",
+    "Gamma",
+    "Delta",
+    "Epsilon",
+    "Zeta",
+    "Eta",
+  ]) {
+    const z = L.DomUtil.create("option", null, addZoneSelect);
+    z.value = zone;
+    z.textContent = zone;
+  }
 
   if (me.Teams.length > 0) {
     const addButton = document.getElementById("addButton");
@@ -528,13 +560,15 @@ function permissions(op) {
       L.DomEvent.stop(ev);
       const teamID = addTeamSelect.value;
       const role = addRoleSelect.value;
+      const zone = addZoneSelect.value;
 
       // avoid duplicate
       for (const t of op.teamlist) {
-        if (t.teamid == teamID && t.role == role) {
+        if (t.teamid == teamID && t.role == role && t.zone == zone) {
           try {
-            const raw = await opPromise(op.ID);
-            const refreshed = new WasabeeOp(raw);
+            const refreshed = await opPromise(op.ID);
+            // const refreshed = new WasabeeOp(raw);
+            refreshed.store();
             permissions(refreshed);
           } catch (e) {
             console.log(e);
@@ -544,9 +578,10 @@ function permissions(op) {
         }
       }
       try {
-        await addPermPromise(op.ID, teamID, role);
-        const raw = await opPromise(op.ID);
-        const refreshed = new WasabeeOp(raw);
+        await addPermPromise(op.ID, teamID, role, zone);
+        const refreshed = await opPromise(op.ID);
+        // const refreshed = new WasabeeOp(raw);
+        refreshed.store();
         permissions(refreshed);
       } catch (e) {
         console.log(e);

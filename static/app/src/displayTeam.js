@@ -123,7 +123,7 @@ async function list(teamID) {
 <tr>
 <th scope="col">&nbsp;</th>
 <th scope="col">Agent</th>
-<th scope="col">Enabled</th>
+<th scope="col">Sharing Location</th>
 <th scope="col">Squad</th>
 </tr>
 </thead>
@@ -245,7 +245,7 @@ async function manage(teamID) {
 <tr>
 <th scope="col">&nbsp;</th>
 <th scope="col">Agent</th>
-<th scope="col">Enabled</th>
+<th scope="col">Sharing Location</th>
 <th scope="col">Squad</th>
 <th scope="col">Display Name</th>
 <th scope="col">&nbsp;</th>
@@ -281,7 +281,7 @@ async function manage(teamID) {
     for (const a of team.agents) {
       let state = "";
       if (a.state)
-        state = `<img src="${window.wasabeewebui.cdnurl}/img/checkmark.png" alt="has team enabled">`;
+        state = `<img src="${window.wasabeewebui.cdnurl}/img/checkmark.png" alt="sharing location with this team">`;
       let remove = "";
       if (!team.RockCommunity) {
         remove = `<button id="${teamID}.${a.id}.remove">Remove</button>`;

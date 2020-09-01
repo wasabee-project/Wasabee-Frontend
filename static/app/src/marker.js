@@ -8,7 +8,7 @@ export default class WasabeeMarker {
     this.completedBy = null;
     this.assignedTo = null;
     this.order = 0;
-    this.zone = "All";
+    this.zone = 1;
   }
 
   get opOrder() {
@@ -30,7 +30,7 @@ export default class WasabeeMarker {
     marker.completedBy = obj.completedBy ? obj.completedBy : null;
     marker.assignedTo = obj.assignedTo ? obj.assignedTo : null;
     marker.order = obj.order ? obj.order : 0;
-    marker.zone = obj.zone ? obj.zone : "All";
+    marker.zone = obj.zone ? obj.zone : 1;
     return marker;
   }
 

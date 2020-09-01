@@ -47,6 +47,7 @@ export class WasabeeOp {
     this.blockers = this.convertBlockersToObjs(obj.blockers);
     if (!this.blockers) this.blockers = new Array();
     this.keysonhand = obj.keysonhand ? obj.keysonhand : Array();
+    this.zones = obj.zones ? obj.zones : Array();
 
     this._idToOpportals = new Map();
     this._coordsToOpportals = new Map();
@@ -56,6 +57,11 @@ export class WasabeeOp {
 
     this.cleanAnchorList();
     this.cleanPortalList();
+
+    // should not be necessary, but be safe for now
+    if (this.zones.length == 0) {
+      this.zones.push({ id: 1, name: "Primary" });
+    }
   }
 
   // CHANGED from IITC plugin
@@ -82,6 +88,7 @@ export class WasabeeOp {
       localchanged: this.localchanged,
       blockers: this.blockers,
       keysonhand: this.keysonhand,
+      zones: this.zones,
     };
   }
 
@@ -774,7 +781,7 @@ export class WasabeeOp {
     for (const t of this.teamlist) {
       if (t.role == "write") {
         for (const m of me.Teams) {
-          if (t.teamid == m.ID && m.State == "On") return true;
+          if (t.teamid == m.ID) return true;
         }
       }
     }

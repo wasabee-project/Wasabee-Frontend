@@ -241,7 +241,7 @@ function teamList() {
 <div class="container"><div class="row"><div class="col">
 <h1>Teams <a href="#teams" id="teamRefresh">↻</a></h1>
 <table class="table table-striped">
-<thead class="thead"><tr><th scope="col">Team</th><th scope="col">State</th><th scope="col"></th><th scope="col">Ops</th></tr></thead>
+<thead class="thead"><tr><th scope="col">Team</th><th scope="col">Share Location</th><th scope="col"></th><th scope="col">Ops</th></tr></thead>
 <tbody id="teams"></tbody>
 </table>
 </div></div>
@@ -467,7 +467,7 @@ async function syncOps(ops, meteams) {
       r.value.store();
       for (const t of r.value.teamlist) {
         for (const mt of meteams) {
-          if (mt.ID == t.teamid && mt.State == "On") teamSet.add(t.teamid);
+          if (mt.ID == t.teamid) teamSet.add(t.teamid);
         }
       }
     }
@@ -477,8 +477,12 @@ async function syncOps(ops, meteams) {
     // return;
   }
 
+  const me = WasabeeMe.cacheGet();
+  const meTeams = new Set(me.Teams.map((t) => t.ID));
   const teamPromises = new Array();
-  for (const t of teamSet) teamPromises.push(WasabeeTeam.waitGet(t, 300));
+  for (const t of teamSet) {
+    if (meTeams.has(t)) teamPromises.push(WasabeeTeam.waitGet(t, 300));
+  }
   try {
     await Promise.allSettled(teamPromises);
     // no need to evaluate since WasabeeTeam.waitGet did all the work

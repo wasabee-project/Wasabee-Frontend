@@ -19,6 +19,8 @@ import {
   setLinkComment,
   reverseLinkDirection,
   SetMarkerState,
+  setMarkerZone,
+  setLinkZone,
   setOpInfo,
   assignMarkerPromise,
   assignLinkPromise,
@@ -263,7 +265,7 @@ function checklist(op, assignmentsOnly = false) {
     }
 
     const zoneCell = L.DomUtil.create("td", null, row);
-    zoneCell.textContent = s.zone;
+    zoneCell.textContent = getZoneName(op, s.zone);
 
     // on this screen, agents can only adjust the state of tasks assigned to them
     const completedCell = L.DomUtil.create("td", null, row);
@@ -496,7 +498,7 @@ function permissions(op) {
     const row = L.DomUtil.create("tr", null, opTable);
     L.DomUtil.create("td", null, row).textContent = name;
     L.DomUtil.create("td", null, row).textContent = role;
-    L.DomUtil.create("td", null, row).textContent = t.zone;
+    L.DomUtil.create("td", null, row).textContent = getZoneName(op, t.zone);
 
     const tdRm = L.DomUtil.create("td", null, row);
     const removeButton = L.DomUtil.create("button", null, tdRm);
@@ -518,7 +520,6 @@ function permissions(op) {
 
   const addTeamSelect = document.getElementById("addTeamSelect");
   for (const t of me.Teams) {
-    if (t.State != "On") continue;
     const o = L.DomUtil.create("option", null, addTeamSelect);
     o.value = t.ID;
     o.textContent = t.Name;
@@ -539,19 +540,13 @@ function permissions(op) {
   });
 
   const addZoneSelect = document.getElementById("addZoneSelect");
-  for (const zone of [
-    "All",
-    "Alpha",
-    "Beta",
-    "Gamma",
-    "Delta",
-    "Epsilon",
-    "Zeta",
-    "Eta",
-  ]) {
+  const zall = L.DomUtil.create("option", null, addZoneSelect);
+  zall.value = 0;
+  zall.textContent = "All";
+  for (const zone of op.zones) {
     const z = L.DomUtil.create("option", null, addZoneSelect);
-    z.value = zone;
-    z.textContent = zone;
+    z.value = zone.id;
+    z.textContent = zone.name;
   }
 
   if (me.Teams.length > 0) {
@@ -565,18 +560,11 @@ function permissions(op) {
       // avoid duplicate
       for (const t of op.teamlist) {
         if (t.teamid == teamID && t.role == role && t.zone == zone) {
-          try {
-            const refreshed = await opPromise(op.ID);
-            // const refreshed = new WasabeeOp(raw);
-            refreshed.store();
-            permissions(refreshed);
-          } catch (e) {
-            console.log(e);
-            notify(e);
-          }
+          notify("op already had that exact permission set", "warning");
           return;
         }
       }
+
       try {
         await addPermPromise(op.ID, teamID, role, zone);
         const refreshed = await opPromise(op.ID);
@@ -773,6 +761,7 @@ function manage(op) {
 <th scope="col">&nbsp;</th>
 <th scope="col">To/Action</th>
 <th scope="col">Distance</th>
+<th scope="col">Zone</th>
 <th scope="col">Assigned To</th>
 <th scope="col">Description</th>
 <th scope="col">Completed</th>
@@ -823,6 +812,10 @@ function manage(op) {
 
       L.DomUtil.create("td", s.type, row).textContent = " " + s.type;
       L.DomUtil.create("td", null, row).textContent = " ";
+      const zCell = L.DomUtil.create("td", null, row);
+      const zMenu = getZoneMenu(op, s);
+      zCell.appendChild(zMenu);
+
       const assignedToTD = L.DomUtil.create("td", null, row);
       const menu = assignMenu(op, s);
       assignedToTD.appendChild(menu);
@@ -868,6 +861,10 @@ function manage(op) {
       });
 
       L.DomUtil.create("td", null, row).textContent = calculateDistance(fp, tp);
+      const zCell = L.DomUtil.create("td", null, row);
+      const zMenu = getZoneMenu(op, s);
+      zCell.appendChild(zMenu);
+
       const assignedToTD = L.DomUtil.create("td", null, row);
       const menu = assignMenu(op, s);
       assignedToTD.appendChild(menu);
@@ -1053,4 +1050,38 @@ function toColor(groupName) {
     default:
       return "green";
   }
+}
+
+function getZoneName(op, zoneID) {
+  for (const z of op.zones) {
+    if (z.id == zoneID) return z.name;
+  }
+  return "*";
+}
+
+function getZoneMenu(op, obj) {
+  const select = L.DomUtil.create("select", null);
+  for (const z of op.zones) {
+    const i = L.DomUtil.create("option", null, select);
+    i.value = z.id;
+    i.textContent = z.name;
+    if (z.id == obj.zone) i.selected = true;
+  }
+  L.DomEvent.on(select, "change", async (ev) => {
+    L.DomEvent.stop(ev);
+    console.log(op.ID, obj.ID, select.value);
+    try {
+      if (obj instanceof WasabeeMarker)
+        await setMarkerZone(op.ID, obj.ID, select.value);
+
+      if (obj instanceof WasabeeLink)
+        await setLinkZone(op.ID, obj.ID, select.value);
+      op.update();
+      notify("zone registered", "success");
+    } catch (e) {
+      notify("zone set failed");
+      console.log(e);
+    }
+  });
+  return select;
 }

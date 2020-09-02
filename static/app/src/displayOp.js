@@ -216,7 +216,7 @@ function checklist(op, assignmentsOnly = false) {
       const p = op.getPortal(s.portalId);
       portal.textContent = p.name;
 
-      L.DomUtil.create("td", s.type, row).textContent = " " + s.type;
+      L.DomUtil.create("td", s.type, row).textContent = " " + s.friendlyType;
       L.DomUtil.create("td", null, row).textContent = " ";
       const assignedToTD = L.DomUtil.create("td", null, row);
       assignedToTD.textContent = s.assignedTo;
@@ -810,7 +810,7 @@ function manage(op) {
 
       L.DomUtil.create("td", null, row).textContent = " ";
 
-      L.DomUtil.create("td", s.type, row).textContent = " " + s.type;
+      L.DomUtil.create("td", s.type, row).textContent = " " + s.friendlyType;
       L.DomUtil.create("td", null, row).textContent = " ";
       const zCell = L.DomUtil.create("td", null, row);
       const zMenu = getZoneMenu(op, s);

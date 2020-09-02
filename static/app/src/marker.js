@@ -9,6 +9,22 @@ export default class WasabeeMarker {
     this.assignedTo = null;
     this.order = 0;
     this.zone = 1;
+
+    this.iconTypes = {
+      CapturePortalMarker: "capture",
+      LetDecayPortalAlert: "decay",
+      ExcludeMarker: "exclude",
+      DestroyPortalAlert: "destroy",
+      FarmPortalMarker: "farm",
+      GotoPortalMarker: "goto",
+      GetKeyPortalMarker: "key",
+      CreateLinkAlert: "link",
+      MeetAgentPortalMarker: "meetagent",
+      OtherPortalAlert: "other",
+      RechargePortalAlert: "recharge",
+      UpgradePortalAlert: "upgrade",
+      UseVirusPortalAlert: "virus",
+    };
   }
 
   get opOrder() {
@@ -17,6 +33,10 @@ export default class WasabeeMarker {
 
   set opOrder(o) {
     this.order = Number.parseInt(o, 10);
+  }
+
+  get friendlyType() {
+    return this.iconTypes[this.type];
   }
 
   // because this is how WasabeeOp does it...
@@ -35,22 +55,6 @@ export default class WasabeeMarker {
   }
 
   get icon() {
-    const iconTypes = {
-      CapturePortalMarker: "capture",
-      LetDecayPortalAlert: "decay",
-      ExcludeMarker: "exclude",
-      DestroyPortalAlert: "destroy",
-      FarmPortalMarker: "farm",
-      GotoPortalMarker: "goto",
-      GetKeyPortalMarker: "key",
-      CreateLinkAlert: "link",
-      MeetAgentPortalMarker: "meetagent",
-      OtherPortalAlert: "other",
-      RechargePortalAlert: "recharge",
-      UpgradePortalAlert: "upgrade",
-      UseVirusPortalAlert: "virus",
-    };
-
     // at some point we are going to get consistent
     var state = this.state;
     if (this.state == "completed") state = "done";
@@ -58,7 +62,7 @@ export default class WasabeeMarker {
     return (
       window.wasabeewebui.cdnurl +
       "/img/markers/wasabee_markers_" +
-      iconTypes[this.type] +
+      this.iconTypes[this.type] +
       "_" +
       state +
       ".svg"

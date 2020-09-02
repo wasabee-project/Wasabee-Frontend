@@ -11,11 +11,11 @@
   "author": "Wasabee Project",
   "license": "ISC",
   "devDependencies": {
-    "eslint": "^7.5.0",
+    "eslint": "^7.8.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-loader": "^4.0.2",
     "eslint-plugin-prettier": "^3.1.4",
-    "jquery-sortablejs": "^1.0.1",
+    "jquery-sortablejs": "^1.6.1",
     "prettier": "^2.0.5",
     "prettier-webpack-plugin": "^1.2.0",
     "sortablejs": "^1.10.2",

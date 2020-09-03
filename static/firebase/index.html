@@ -83,6 +83,9 @@
               event.data.screen_name = event.data.action;
               analytics.logEvent("screen_view", event.data);
               break;
+            case "exception":
+              analytics.logEvent("exception", event.data);
+              break;
             case "wasabeeLogout":
               messaging.deleteToken(); // await
               setTokenSentToServer(false);

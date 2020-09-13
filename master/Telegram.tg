@@ -39,10 +39,10 @@ Your telegram account is now verified and can receive updates and submit locatio
 {{end}}
 
 {{define "Teammates"}}
-Nearest Known Teammates
+<b>Nearest Known Teammates</b>
 {{range .Agent}}
-{{.Name}}: {{.Distance}}km ({{.Date}})
-[Google Maps](http://maps.google.com/?q={{.Lat}},{{.Lon}}) [Apple Maps](http://maps.apple.com/?q={{.Lat}},{{.Lon}})
+<b>{{.Name}}:</b> {{.Distance}}km (<i>{{.Date}}</i>)
+<a href="http://maps.google.com/?q={{.Lat}},{{.Lon}}">Google Maps</a> | <a href="http://maps.apple.com/?q={{.Lat}},{{.Lon}}">Apple Maps</a>
 {{end}}
 {{end}}
 

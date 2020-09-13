@@ -1,14 +1,14 @@
 {{define "target"}}
-[{{.Name}}](https://intel.ingress.com/intel?ll={{.Lat}},{{.Lon}}&z=12&pll={{.Lat}},{{.Lon}})
-[Google Maps](http://maps.google.com/?q={{.Lat}},{{.Lon}}) | [Apple Maps](http://maps.apple.com/?q={{.Lat}},{{.Lon}})
+<a href="https://intel.ingress.com/intel?ll={{.Lat}},{{.Lon}}&z=12&pll={{.Lat}},{{.Lon}}">{{.Name}}</a>
+<a href="http://maps.google.com/?q={{.Lat}},{{.Lon}}">Google Maps</a> | <a href="http://maps.apple.com/?q={{.Lat}},{{.Lon}}">Apple Maps</a>
 {{.Type}}
 Sender: {{.Sender}}
 {{end}}
 
 {{define "assignLink"}}
-From: [{{.From.Name}}](https://intel.ingress.com/intel?ll={{.From.Lat}},{{.From.Lon}}&z=12&pll={{.From.Lat}},{{.From.Lon}})
-[Google Maps](http://maps.google.com/?q={{.From.Lat}},{{.From.Lon}}) | [Apple Maps](http://maps.apple.com/?q={{.From.Lat}},{{.From.Lon}})
-To: [{{.To.Name}}](https://intel.ingress.com/intel?ll={{.To.Lat}},{{.To.Lon}}&z=12&pll={{.To.Lat}},{{.To.Lon}})
-[Google Maps](http://maps.google.com/?q={{.To.Lat}},{{.To.Lon}}) | [Apple Maps](http://maps.apple.com/?q={{.To.Lat}},{{.To.Lon}})
+From: <a href="https://intel.ingress.com/intel?ll={{.From.Lat}},{{.From.Lon}}&z=12&pll={{.From.Lat}},{{.From.Lon}}">{{.From.Name}}</a>
+<a href="http://maps.google.com/?q={{.From.Lat}},{{.From.Lon}}">Google Maps</a> | <a href="http://maps.apple.com/?q={{.From.Lat}},{{.From.Lon}}">Apple Maps</a>
+To: <a href="https://intel.ingress.com/intel?ll={{.To.Lat}},{{.To.Lon}}&z=12&pll={{.To.Lat}},{{.To.Lon}}">{{.To.Name}}</a>
+<a href="http://maps.google.com/?q={{.Lat}},{{.Lon}}">Google Maps</a> | <a href="http://maps.apple.com/?q={{.Lat}},{{.Lon}}">Apple Maps</a>
 Sender: {{.Sender}}
 {{end}}

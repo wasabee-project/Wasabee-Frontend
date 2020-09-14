@@ -21,8 +21,6 @@ import { displayHelp } from "./displayHelp";
 import polyfill from "./polyfill";
 
 async function wasabeeMain() {
-  window.wasabeewebui = {};
-
   try {
     const raw = await loadConfig();
     window.wasabeewebui = JSON.parse(raw);
@@ -32,6 +30,7 @@ async function wasabeeMain() {
     console.log(e);
     return;
   }
+  window.wasabeewebui._updateList = new Map();
 
   // TODO: off-line mode that just uses the data in localStorage
   // for when you are doing an op and have low/no signal

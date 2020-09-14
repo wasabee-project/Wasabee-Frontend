@@ -33,9 +33,11 @@ export async function uploadOpPromise() {
 }
 
 // sends a changed op to the server
+// not called by WebUI so window.plugin.wasabee can be used
 export function updateOpPromise(operation) {
   // let the server know how to process assignments etc
-  operation.mode = window.plugin.wasabee.static.constants.MODE_KEY;
+  operation.mode =
+    localStorage[window.plugin.wasabee.static.constants.MODE_KEY];
   operation.cleanAll();
   const json = JSON.stringify(operation);
   delete operation.mode;
@@ -67,7 +69,8 @@ export async function opPromise(opID) {
   if (localop != null && localop.fetched) ims = localop.fetched;
 
   try {
-    const response = await fetch(GetWasabeeServer() + `/api/v1/draw/${opID}`, {
+    const server = GetWasabeeServer();
+    const response = await fetch(server + `/api/v1/draw/${opID}`, {
       method: "GET",
       mode: "cors",
       cache: "default",
@@ -84,10 +87,12 @@ export async function opPromise(opID) {
         raw = await response.json();
         newop = new WasabeeOp(raw);
         newop.localchanged = false;
+        newop.server = server;
         return Promise.resolve(newop);
       case 304: // If-Modified-Since replied NotModified
         console.log("server copy is older/unmodified, keeping local copy");
         localop.localchanged = true;
+        localop.server = server;
         return Promise.resolve(localop);
       case 401:
         WasabeeMe.purge();
@@ -341,9 +346,15 @@ async function genericPut(url, formData, contentType) {
     let err = null;
     switch (response.status) {
       case 200:
-        // returns a promise to the content
-        // I think all the PUTS return a JSON "OK"
-        return response.text();
+        try {
+          const text = await response.text();
+          const obj = JSON.parse(text);
+          if (obj.updateID) GetUpdateList().set(obj.updateID, Date.now());
+          // returns a promise to the content
+          return Promise.resolve(text);
+        } catch (e) {
+          return Promise.reject(e);
+        }
       // break;
       case 401:
         WasabeeMe.purge();
@@ -380,8 +391,15 @@ async function genericPost(url, formData, contentType) {
     let err = null;
     switch (response.status) {
       case 200:
-        // returns a promise to the content
-        return response.text();
+        try {
+          const text = await response.text();
+          const obj = JSON.parse(text);
+          if (obj.updateID) GetUpdateList().set(obj.updateID, Date.now());
+          // returns a promise to the content
+          return Promise.resolve(text);
+        } catch (e) {
+          return Promise.reject(e);
+        }
       // break;
       case 401:
         WasabeeMe.purge();
@@ -418,8 +436,15 @@ async function genericDelete(url, formData, contentType) {
     let err = null;
     switch (response.status) {
       case 200:
-        // returns a promise to the content
-        return response.text();
+        try {
+          const text = await response.text();
+          const obj = JSON.parse(text);
+          if (obj.updateID) GetUpdateList().set(obj.updateID, Date.now());
+          // returns a promise to the content
+          return Promise.resolve(text);
+        } catch (e) {
+          return Promise.reject(e);
+        }
       // break;
       case 401:
         WasabeeMe.purge();
@@ -451,9 +476,15 @@ async function genericGet(url) {
     let err = null;
     switch (response.status) {
       case 200:
-        // returns a promise to the content
-        return response.text();
-      // break;
+        try {
+          const text = await response.text();
+          const obj = JSON.parse(text);
+          if (obj.updateID) GetUpdateList().set(obj.updateID, Date.now());
+          // returns a promise to the content
+          return Promise.resolve(text);
+        } catch (e) {
+          return Promise.reject(e);
+        }
       case 401:
         WasabeeMe.purge();
         err = await response.json();
@@ -489,6 +520,13 @@ export function GetWasabeeServer() {
   }
   // Wasabee-WebUI doesn't need to specify the server
   return "";
+}
+
+export function GetUpdateList() {
+  if (window.plugin && window.plugin.wasabee) {
+    return window.plugin.wasabee._updateList;
+  }
+  return window.wasabeewebui._updateList;
 }
 
 export function SetWasabeeServer(server) {

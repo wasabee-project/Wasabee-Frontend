@@ -417,7 +417,7 @@ function map(op) {
     const marker = L.marker(targetPortal.latLng, {
       title: targetPortal.name,
       icon: L.icon({
-        iconUrl: `${window.wasabeewebui.cdnurl}/img/markers/marker_layer_groupa.png`,
+        iconUrl: `${window.wasabeewebui.cdnurl}/img/markers/anchor_lime.svg`,
         shadowUrl: null,
         iconSize: L.point(24, 40),
         iconAnchor: L.point(12, 40),
@@ -1021,6 +1021,7 @@ function fourthroot(a) {
 }
 
 function fetchUncachedTeams(teamlist) {
+  if (teamlist == null) return;
   const promises = [];
   const teamset = new Set(teamlist.map((t) => t.teamid));
   for (const t of teamset) {

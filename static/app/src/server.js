@@ -33,7 +33,6 @@ export async function uploadOpPromise() {
 }
 
 // sends a changed op to the server
-// not called by WebUI so window.plugin.wasabee can be used
 export function updateOpPromise(operation) {
   // let the server know how to process assignments etc
   operation.mode =
@@ -90,7 +89,7 @@ export async function opPromise(opID) {
         newop.server = server;
         return Promise.resolve(newop);
       case 304: // If-Modified-Since replied NotModified
-        console.log("server copy is older/unmodified, keeping local copy");
+        console.warn("server copy is older/unmodified, keeping local copy");
         localop.localchanged = true;
         localop.server = server;
         return Promise.resolve(localop);
@@ -111,7 +110,7 @@ export async function opPromise(opID) {
         return Promise.reject(response.statusText, raw);
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
     return Promise.reject(e);
   }
 }
@@ -123,8 +122,8 @@ export async function mePromise() {
     const response = await genericGet("/me?json=y");
     return response;
   } catch (e) {
-    console.log(e);
-    return e;
+    console.error(e);
+    return e.toString();
   }
 }
 
@@ -353,7 +352,8 @@ async function genericPut(url, formData, contentType) {
           // returns a promise to the content
           return Promise.resolve(text);
         } catch (e) {
-          return Promise.reject(e);
+          console.error(e);
+          return Promise.reject(e.toString());
         }
       // break;
       case 401:
@@ -367,8 +367,8 @@ async function genericPut(url, formData, contentType) {
       // break;
     }
   } catch (e) {
-    console.log(e);
-    return Promise.reject(e);
+    console.error(e);
+    return Promise.reject(e.toString());
   }
 }
 
@@ -398,7 +398,8 @@ async function genericPost(url, formData, contentType) {
           // returns a promise to the content
           return Promise.resolve(text);
         } catch (e) {
-          return Promise.reject(e);
+          console.error(e);
+          return Promise.reject(e.toString());
         }
       // break;
       case 401:
@@ -412,8 +413,8 @@ async function genericPost(url, formData, contentType) {
       // break;
     }
   } catch (e) {
-    console.log(e);
-    return Promise.reject(e);
+    console.error(e);
+    return Promise.reject(e.toString());
   }
 }
 
@@ -443,7 +444,8 @@ async function genericDelete(url, formData, contentType) {
           // returns a promise to the content
           return Promise.resolve(text);
         } catch (e) {
-          return Promise.reject(e);
+          console.error(e);
+          return Promise.reject(e.toString());
         }
       // break;
       case 401:
@@ -457,8 +459,8 @@ async function genericDelete(url, formData, contentType) {
       // break;
     }
   } catch (e) {
-    console.log(e);
-    return Promise.reject(e);
+    console.error(e);
+    return Promise.reject(e.toString());
   }
 }
 
@@ -483,7 +485,8 @@ async function genericGet(url) {
           // returns a promise to the content
           return Promise.resolve(text);
         } catch (e) {
-          return Promise.reject(e);
+          console.error(e);
+          return Promise.reject(e.toString());
         }
       case 401:
         WasabeeMe.purge();
@@ -500,8 +503,8 @@ async function genericGet(url) {
       // break;
     }
   } catch (e) {
-    console.log(e);
-    return Promise.reject(e);
+    console.error(e);
+    return Promise.reject(e.toString());
   }
 }
 

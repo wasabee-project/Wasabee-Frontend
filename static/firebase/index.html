@@ -40,21 +40,20 @@
       messaging.onTokenRefresh(async () => {
         try {
           refreshedToken = await messaging.getToken();
-          console.log("Token refreshed.");
+          console.debug("Token refreshed.");
           setTokenSentToServer(false);
           await sendTokenToServer(refreshedToken);
         } catch (e) {
-          console.log("Unable to retrieve refreshed token ", e);
+          console.error("Unable to retrieve refreshed token ", e);
         }
       });
 
       auth.onAuthStateChanged((user) => {
         if (user) {
-          // console.log(user);
-          console.log("firebase auth login: ", user.uid);
+          console.debug("firebase auth login: ", user.uid);
           return;
         }
-        console.log("firebase auth logout");
+        console.debug("firebase auth logout");
         delete localStorage["customToken"];
       });
 
@@ -66,7 +65,6 @@
         if (!event.data) event.data = {};
         event.data.app_name = "Wasabee-IITC";
         event.data.app_version = "0.18";
-        // event.data.app_id = "Wasabee-IITC";
 
         // Messages coming from IITC
         if (event.origin == "https://intel.ingress.com") {
@@ -79,7 +77,6 @@
               analytics.logEvent("login", event.data);
               break;
             case "analytics":
-              // console.log("sending analytics", event.data);
               event.data.screen_name = event.data.action;
               analytics.logEvent("screen_view", event.data);
               break;
@@ -92,7 +89,7 @@
               delete localStorage["customToken"];
               analytics.logEvent("logout", event.data);
             default:
-              console.log(
+              console.error(
                 "unknown event from IITC to firebase subsystem",
                 event
               );
@@ -101,7 +98,7 @@
         }
 
         // Messages coming from the Service Worker. Forward it along to IITC.
-        console.log("service worker message received: ", event.data);
+        console.debug("service worker message received: ", event.data);
         window.parent.postMessage(event.data, "https://intel.ingress.com");
 
         event.data.source = "service-worker";
@@ -124,17 +121,17 @@
       async function customToken() {
         try {
           localStorage["customToken"] = await getCustomTokenFromServer();
-          console.log("using custom firebase token");
+          console.debug("using custom firebase token");
         } catch (e) {
           delete localStorage["customToken"];
-          console.log(e);
+          console.error(e);
         }
 
         if (localStorage["customToken"]) {
           auth
             .signInWithCustomToken(localStorage["customToken"])
             .catch(function (error) {
-              console.log(error.message);
+              console.error(error.message);
               delete localStorage["customToken"];
             });
         }
@@ -146,26 +143,22 @@
           if (currentToken) {
             sendTokenToServer(currentToken);
           } else {
-            console.log(
+            console.debug(
               "No Instance ID token available. Requesting permission to generate one."
             );
             setTokenSentToServer(false);
             requestPermission();
           }
         } catch (e) {
-          console.log("An error occurred while retrieving token. ", e);
+          console.warn("An error occurred while retrieving token. ", e);
           setTokenSentToServer(false);
         }
       }
 
       async function sendTokenToServer(currentToken) {
-        if (isTokenSentToServer()) {
-          console.log("Token already sent to server");
-          return;
-        }
+        if (isTokenSentToServer()) return;
 
         try {
-          console.log("Sending token to server...");
           await sendTokenToWasabee(currentToken);
           setTokenSentToServer(true);
         } catch (e) {
@@ -185,17 +178,16 @@
       }
 
       async function requestPermission() {
-        console.log("Requesting permission...");
         try {
           permission = await Notification.requestPermission();
           if (permission === "granted") {
-            console.log("Notification permission granted.");
+            console.debug("Notification permission granted.");
             setupMessaging(); // yes, recurse
           } else {
-            console.log("Unable to get permission to notify.");
+            console.warn("Unable to get permission to notify.");
           }
         } catch (e) {
-          console.log(e);
+          console.warn(e);
         }
       }
 
@@ -231,7 +223,7 @@
 
           req.onload = function () {
             if (req.status === 200) {
-              console.log("Firebase token sent to Wasabee server");
+              console.debug("Firebase token sent to Wasabee server");
               resolve();
             } else {
               reject(Error(req.statusText));

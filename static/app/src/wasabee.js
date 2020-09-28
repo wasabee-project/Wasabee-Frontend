@@ -5,6 +5,9 @@ import {
   loadConfig,
   logoutPromise,
   SetTeamState,
+  SetTeamShareWD,
+  SetTeamLoadWD,
+  deleteTeamPromise,
   leaveTeamPromise,
   newTeamPromise,
   opPromise,
@@ -240,7 +243,16 @@ function teamList() {
 <div class="container"><div class="row"><div class="col">
 <h1>Teams <a href="#teams" id="teamRefresh">↻</a></h1>
 <table class="table table-striped">
-<thead class="thead"><tr><th scope="col">Team</th><th scope="col">Share Location</th><th scope="col"></th><th scope="col">Ops</th></tr></thead>
+<thead class="thead">
+ <tr>
+  <th scope="col">Team</th>
+  <th scope="col">Share Location</th>
+  <th scope="col">Share WD Keys</th>
+  <th scope="col">Load WD Keys</th>
+  <th scope="col"></th>
+  <th scope="col">Ops</th>
+ </tr>
+</thead>
 <tbody id="teams"></tbody>
 </table>
 </div></div>
@@ -283,7 +295,7 @@ function teamList() {
   if (me.Teams.length == 0) {
     tbody.innerHTML = `
 <tr>
-<td colspan="4">You are not on any teams, have your operator add you with this GoogleID: ${me.GoogleID}</td>
+<td colspan="6">You are not on any teams, have your operator add you with this GoogleID: ${me.GoogleID}</td>
 </tr>
 `;
   }
@@ -322,9 +334,58 @@ function teamList() {
       }
     });
 
+    const sharewd = L.DomUtil.create("td", null, row);
+    const sharewdCheck = L.DomUtil.create("input", "form-check-input", sharewd);
+    sharewdCheck.type = "checkbox";
+    if (t.ShareWD == "On") sharewdCheck.checked = true;
+    L.DomEvent.on(sharewdCheck, "change", async (ev) => {
+      L.DomEvent.stop(ev);
+      const s = sharewdCheck.checked ? "On" : "Off";
+      try {
+        await SetTeamShareWD(t.ID, s);
+        notify("share wd set", "success");
+        // await loadMeAndOps();
+        // teamList();
+      } catch (e) {
+        console.log(e);
+        notify(e, "warning");
+      }
+    });
+
+    const loadwd = L.DomUtil.create("td", null, row);
+    const loadwdCheck = L.DomUtil.create("input", "form-check-input", loadwd);
+    loadwdCheck.type = "checkbox";
+    if (t.LoadWD == "On") loadwdCheck.checked = true;
+    L.DomEvent.on(loadwdCheck, "change", async (ev) => {
+      L.DomEvent.stop(ev);
+      const s = loadwdCheck.checked ? "On" : "Off";
+      try {
+        await SetTeamLoadWD(t.ID, s);
+        notify("load wd set", "success");
+        // await loadMeAndOps();
+        // teamList();
+      } catch (e) {
+        console.log(e);
+        notify(e, "warning");
+      }
+    });
+
     const own = L.DomUtil.create("td", null, row);
     if (owned.has(t.ID)) {
-      own.textContent = "owner";
+      const b = L.DomUtil.create("button", "button", own);
+      b.textContent = "Delete";
+      L.DomEvent.on(b, "click", async (ev) => {
+        L.DomEvent.stop(ev);
+        try {
+          await deleteTeamPromise(t.ID);
+          logEvent("leave_group");
+          await loadMeAndOps();
+          teamList();
+        } catch (e) {
+          console.log(e);
+          notify(e, "warning");
+        }
+      });
     } else {
       const b = L.DomUtil.create("button", "button", own);
       b.textContent = "Leave";

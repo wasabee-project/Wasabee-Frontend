@@ -1021,7 +1021,7 @@ function fourthroot(a) {
 }
 
 function fetchUncachedTeams(teamlist) {
-  if (teamlist == null) return;
+  if (teamlist == null) return [];
   const promises = [];
   const teamset = new Set(teamlist.map((t) => t.teamid));
   for (const t of teamset) {

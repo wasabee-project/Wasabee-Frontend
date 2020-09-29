@@ -27,6 +27,7 @@ export default class WasabeeAgent {
     // squad and state are meaningless in the cache since you can never know which team set them
     this.squad = obj.squad ? obj.squad : null;
     this.state = obj.state;
+    this.ShareWD = obj.ShareWD;
 
     // push the new data into the agent cache
     agentCache.set(this.id, this);

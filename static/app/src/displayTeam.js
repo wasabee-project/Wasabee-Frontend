@@ -124,6 +124,7 @@ async function list(teamID) {
 <th scope="col">&nbsp;</th>
 <th scope="col">Agent</th>
 <th scope="col">Sharing Location</th>
+<th scope="col">Sharing WD Keys</th>
 <th scope="col">Squad</th>
 </tr>
 </thead>
@@ -142,12 +143,16 @@ async function list(teamID) {
     for (const a of team.agents) {
       let state = "";
       if (a.state)
-        state = `<img src="${window.wasabeewebui.cdnurl}/img/checkmark.png" alt="has team enabled">`;
+        state = `<img src="${window.wasabeewebui.cdnurl}/img/checkmark.png" alt="sharing location">`;
+      let keys = "";
+      if (a.ShareWD)
+        keys = `<img src="${window.wasabeewebui.cdnurl}/img/checkmark.png" alt="sharing wd keys">`;
       const row = `
 <tr>
 <td><img src="${a.pic}" height="50" width="50"></td>
 <td>${a.name}</td>
 <td>${state}</td>
+<td>${keys}</td>
 <td>${a.squad}</td>
 </tr>`;
       teamTable.insertAdjacentHTML("beforeend", row);

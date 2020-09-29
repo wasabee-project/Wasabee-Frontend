@@ -10,6 +10,7 @@ import {
   deleteTeamPromise,
   leaveTeamPromise,
   newTeamPromise,
+  deleteOpPromise,
   opPromise,
 } from "./server";
 import { startSendLoc, stopSendLoc } from "./loc";
@@ -447,7 +448,7 @@ function opsList() {
 <div class="container"><div class="row"><div class="col">
 <h1>Operations <a href="#operations" id="opsRefresh">↻</a></h1>
 <table class="table table-striped">
-<thead class="thead"><tr><th scope="col">Operation</th><th scope="col">Comment</th><th scope="col">Teams</th></tr></thead>
+<thead class="thead"><tr><th scope="col">Operation</th><th scope="col">Comment</th><th scope="col">Teams</th><th>Commands</th></tr></thead>
 <tbody id="ops"></tbody>
 </table>
 </div></div></div>`;
@@ -495,11 +496,26 @@ function opsList() {
           L.DomEvent.stop(ev);
           displayTeam({ screen: "team", team: t.teamid, subscreen: "list" });
         });
-      } else {
-        const span = L.DomUtil.create("span", null, teams);
-        span.textContent = `Unknown Team: ${t.teamid}`;
       }
+      // else { const span = L.DomUtil.create("span", null, teams); span.textContent = `Not on team: ${t.teamid}`; }
       L.DomUtil.create("br", null, teams);
+    }
+
+    const commands = L.DomUtil.create("td", null, row);
+    if (op.creator == me.GoogleID) {
+      const b = L.DomUtil.create("button", null, commands);
+      b.textContent = "Delete";
+      L.DomEvent.on(b, "click", async (ev) => {
+        L.DomEvent.stop(ev);
+        try {
+          await deleteOpPromise(op.ID);
+          await loadMeAndOps();
+          opsList();
+        } catch (e) {
+          console.log(e);
+          notify(e, "warning", true);
+        }
+      });
     }
   }
 }

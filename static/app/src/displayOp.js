@@ -1,4 +1,4 @@
-import WasabeeOp from "./operation";
+// import WasabeeOp from "./operation";
 import WasabeeLink from "./link";
 import WasabeeTeam from "./team";
 import WasabeeMe from "./me";
@@ -26,18 +26,20 @@ import {
   assignLinkPromise,
 } from "./server";
 
-export function displayOp(state) {
+export async function displayOp(state) {
   const subnav = document.getElementById("wasabeeSubnav");
   while (subnav.lastChild) subnav.removeChild(subnav.lastChild);
 
-  const op = new WasabeeOp(localStorage[state.op]);
-  if (!op) {
-    notify("invalid op", "danger", true);
-    return;
+  // const op = new WasabeeOp(localStorage[state.op]);
+  let op = null;
+  console.log(state);
+  try {
+    op = await opPromise(state.op);
+    // op.store();
+    await fetchUncachedTeams(op.teamlist);
+  } catch (e) {
+    notify("Op load failed", "warning", true);
   }
-
-  // don't await since we don't need the data yet
-  fetchUncachedTeams(op.teamlist);
 
   subnav.innerHTML = `
 <nav class="navbar navbar-expand-sm navbar-light bg-light">
@@ -213,8 +215,11 @@ function checklist(op, assignmentsOnly = false) {
 
     if (s instanceof WasabeeMarker) {
       const portal = L.DomUtil.create("td", null, row);
+      const portalLink = L.DomUtil.create("a", null, portal);
       const p = op.getPortal(s.portalId);
-      portal.textContent = p.name;
+      portalLink.href = `https://intel.ingress.com/?pll=${p.lat},${p.lng}&z=14`;
+      portalLink.target = "_blank";
+      portalLink.textContent = p.name;
 
       L.DomUtil.create("td", s.type, row).textContent = " " + s.friendlyType;
       L.DomUtil.create("td", null, row).textContent = " ";
@@ -248,11 +253,17 @@ function checklist(op, assignmentsOnly = false) {
     }
     if (s instanceof WasabeeLink) {
       const fPortal = L.DomUtil.create("td", null, row);
+      const fPortalLink = L.DomUtil.create("a", null, fPortal);
       const fp = op.getPortal(s.fromPortalId);
-      fPortal.textContent = fp.name;
+      fPortalLink.textContent = fp.name;
+      fPortalLink.href = `https://intel.ingress.com/?pll=${fp.lat},${fp.lng}&z=14`;
+      fPortalLink.target = "_blank";
       const tPortal = L.DomUtil.create("td", null, row);
+      const tPortalLink = L.DomUtil.create("a", null, tPortal);
       const tp = op.getPortal(s.toPortalId);
-      tPortal.textContent = tp.name;
+      tPortalLink.textContent = tp.name;
+      tPortalLink.href = `https://intel.ingress.com/?pll=${tp.lat},${tp.lng}&z=14`;
+      tPortalLink.target = "_blank";
 
       L.DomUtil.create("td", null, row).textContent = calculateDistance(fp, tp);
       const assignedToTD = L.DomUtil.create("td", null, row);

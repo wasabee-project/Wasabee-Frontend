@@ -153,7 +153,6 @@ function buildMenu() {
       notify(e, "warning", true);
     }
     delete localStorage["me"];
-    delete localStorage["loadedOp"];
     delete localStorage["sentToServer"];
     window.location.href = "/";
   });
@@ -209,8 +208,8 @@ async function loadMeAndOps() {
     const nme = await WasabeeMe.waitGet(true);
     if (nme && nme.GoogleID) {
       nme.store();
-      // loads all available ops and teams
-      await syncOps(nme.Ops, nme.Teams);
+      // load all available ops and teams
+      await syncOps(nme);
     } else {
       console.log(nme);
       throw new Error("invalid data from /me");
@@ -345,8 +344,6 @@ function teamList() {
       try {
         await SetTeamShareWD(t.ID, s);
         notify("share wd set", "success");
-        // await loadMeAndOps();
-        // teamList();
       } catch (e) {
         console.log(e);
         notify(e, "warning");
@@ -363,8 +360,6 @@ function teamList() {
       try {
         await SetTeamLoadWD(t.ID, s);
         notify("load wd set", "success");
-        // await loadMeAndOps();
-        // teamList();
       } catch (e) {
         console.log(e);
         notify(e, "warning");
@@ -527,12 +522,10 @@ function clearOpsStorage() {
   }
 }
 
-async function syncOps(ops, meteams) {
-  const teamSet = new Set();
+async function syncOps(me) {
+  const opsID = new Set(me.Ops.map((o) => o.ID));
   const promises = new Array();
-  const opsID = new Set(ops.map((o) => o.ID));
   for (const o of opsID) promises.push(opPromise(o));
-
   try {
     const results = await Promise.allSettled(promises);
     for (const r of results) {
@@ -541,11 +534,6 @@ async function syncOps(ops, meteams) {
         throw new Error("Op load failed, please refresh");
       }
       r.value.store();
-      for (const t of r.value.teamlist) {
-        for (const mt of meteams) {
-          if (mt.ID == t.teamid) teamSet.add(t.teamid);
-        }
-      }
     }
   } catch (e) {
     console.log(e);
@@ -553,15 +541,17 @@ async function syncOps(ops, meteams) {
     // return;
   }
 
-  const me = WasabeeMe.cacheGet();
   const meTeams = new Set(me.Teams.map((t) => t.ID));
   const teamPromises = new Array();
-  for (const t of teamSet) {
-    if (meTeams.has(t)) teamPromises.push(WasabeeTeam.waitGet(t, 300));
-  }
+  for (const t of meTeams) teamPromises.push(WasabeeTeam.waitGet(t, 300));
   try {
-    await Promise.allSettled(teamPromises);
-    // no need to evaluate since WasabeeTeam.waitGet did all the work
+    const results = await Promise.allSettled(teamPromises);
+    for (const r of results) {
+      if (r.status != "fullfilled") {
+        console.log(r);
+        throw new Error("team load failed, please refresh");
+      }
+    }
   } catch (e) {
     console.log(e);
     notify(e, "warning", true);

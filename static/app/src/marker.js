@@ -58,6 +58,7 @@ export default class WasabeeMarker {
     // at some point we are going to get consistent
     var state = this.state;
     if (this.state == "completed") state = "done";
+    if (this.state == "acknowledged") state = "acknowledge";
 
     return (
       window.wasabeewebui.cdnurl +

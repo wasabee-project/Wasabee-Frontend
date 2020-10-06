@@ -30,12 +30,10 @@ export async function displayOp(state) {
   const subnav = document.getElementById("wasabeeSubnav");
   while (subnav.lastChild) subnav.removeChild(subnav.lastChild);
 
-  // const op = new WasabeeOp(localStorage[state.op]);
   let op = null;
-  console.log(state);
   try {
     op = await opPromise(state.op);
-    // op.store();
+    op.store();
     await fetchUncachedTeams(op.teamlist);
   } catch (e) {
     notify("Op load failed", "warning", true);
@@ -1037,8 +1035,8 @@ function fetchUncachedTeams(teamlist) {
   const teamset = new Set(teamlist.map((t) => t.teamid));
   for (const t of teamset) {
     // cached teams resolve instantly, the others are pulled
-    // long cache time since this is just for the name
-    promises.push(WasabeeTeam.waitGet(t, 600));
+    // long cache time since this is only for the name
+    promises.push(WasabeeTeam.waitGet(t, 3600));
   }
   return Promise.allSettled(promises);
 }

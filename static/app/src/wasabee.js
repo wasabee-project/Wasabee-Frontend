@@ -547,9 +547,9 @@ async function syncOps(me) {
   try {
     const results = await Promise.allSettled(teamPromises);
     for (const r of results) {
-      if (r.status != "fullfilled") {
+      if (r.status != "fulfilled") {
         console.log(r);
-        throw new Error("team load failed, please refresh");
+        // throw new Error("team load failed, please refresh");
       }
     }
   } catch (e) {

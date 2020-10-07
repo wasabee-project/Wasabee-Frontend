@@ -1,6 +1,6 @@
 {
   "name": "Wasabee-WebUI",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Not for swiping right",
   "private": "true",
   "scripts": {
@@ -11,24 +11,25 @@
   "author": "Wasabee Project",
   "license": "ISC",
   "devDependencies": {
-    "eslint": "^7.8.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-loader": "^4.0.2",
+    "eslint": "^7.10.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-friendly-formatter": "^4.0.1",
     "eslint-plugin-prettier": "^3.1.4",
+    "eslint-webpack-plugin": "^2.1.0",
     "jquery-sortablejs": "^1.6.1",
-    "prettier": "^2.0.5",
+    "prettier": "^2.1.2",
     "prettier-webpack-plugin": "^1.2.0",
-    "sortablejs": "^1.10.2",
-    "webpack": "^4.44.0",
+    "sortablejs": "^1.12.0",
+    "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "bootstrap": "^4.5.0",
-    "firebase": "^7.17.1",
-    "firebase-messaging": "^1.0.6",
+    "bootstrap": "^4.5.2",
     "jquery": "^3.5.1",
-    "leaflet": "^1.6.0",
-    "leaflet.geodesic": "^2.5.4",
+    "firebase": "^7.22.1",
+    "firebase-messaging": "^1.0.6",
+    "leaflet": "^1.7.1",
+    "leaflet.geodesic": "^2.5.5-0",
     "popper": "^1.0.1",
     "popper.js": "^1.16.1"
   }

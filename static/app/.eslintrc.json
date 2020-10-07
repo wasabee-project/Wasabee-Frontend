@@ -13,6 +13,8 @@
     "es2020": true
   },
   "rules": {
+    "no-unused-vars": [ "off", {"varsIgnorePattern": "^_" } ],
+    "no-template-curly-in-string": 0,
     "no-console": "off",
     "lines-between-class-members": ["error", "always"],
     "no-template-curly-in-string": 1,

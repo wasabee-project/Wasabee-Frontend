@@ -1,21 +1,16 @@
-const path = require('path');
+const path = require("path");
+const ESLintPlugin = require("eslint-webpack-plugin");
 
 module.exports = {
   entry: "./src/wasabee.js",
   mode: "development",
   output: {
-    filename: 'main.js',
-    path: path.resolve(__dirname, 'dist'),
+    filename: "main.js",
+    path: path.resolve(__dirname, "dist"),
   },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-	loader: 'eslint-loader',
-	options: {
-	  fix: true,
-	},
-      },
-    ],
-  },
+  plugins: [
+    new ESLintPlugin({
+      fix: true,
+    }),
+  ],
 };

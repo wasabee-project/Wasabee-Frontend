@@ -86,7 +86,6 @@ export async function opPromise(opID) {
         raw = await response.json();
         newop = new WasabeeOp(raw);
         newop.localchanged = false;
-        newop.fetched = new Date().toUTCString();
         newop.server = server;
         return Promise.resolve(newop);
       case 304: // If-Modified-Since replied NotModified
@@ -148,7 +147,7 @@ export function assignLinkPromise(opID, linkID, agentID) {
 }
 
 // sends a target (portal) to the server to notify the agent
-export function targetPromise(agentID, portal) {
+export function targetPromise(agentID, portal, type = "ad hoc") {
   return genericPost(
     `/api/v1/agent/${agentID}/target`,
     JSON.stringify({
@@ -156,6 +155,7 @@ export function targetPromise(agentID, portal) {
       Lat: portal.lat,
       Lng: portal.lng,
       ID: portal.id,
+      Type: type,
     }),
     "application/json;charset=UTF-8"
   );
@@ -234,7 +234,7 @@ export function SetLinkState(opID, linkID, state) {
 // updates an agent's key count, return value is status code
 export function opKeyPromise(opID, portalID, onhand, capsule) {
   const fd = new FormData();
-  fd.append("onhand", onhand);
+  fd.append("count", onhand);
   fd.append("capsule", capsule);
   return genericPost(`/api/v1/draw/${opID}/portal/${portalID}/keyonhand`, fd);
 }
@@ -274,10 +274,11 @@ export function addPermPromise(opID, teamID, role, zone) {
 }
 
 // removes a permission from an op; return value is status code
-export function delPermPromise(opID, teamID, role) {
+export function delPermPromise(opID, teamID, role, zone) {
   const fd = new FormData();
   fd.append("team", teamID);
   fd.append("role", role);
+  fd.append("zone", zone);
   return genericDelete(`/api/v1/draw/${opID}/perms`, fd);
 }
 

@@ -21,7 +21,7 @@ export function displayHelp() {
    <div class="card-body">
     <div>Stable Release: <a href="https://cdn2.wasabee.rocks/iitcplugin/prod/wasabee.user.js">https://cdn2.wasabee.rocks/iitcplugin/prod/wasabee.user.js</a>
     <span class="dim small">This is the supported version that has been tested</span></div>
-    <div>Development Build: <a href="https://server.wasabee.rocks/static/dev/wasabee.user.js">https://server.wasabee.rocks/static/dev/wasabee.user.js</a>
+    <div>Development Build: <a href="https://am.wasabee.rocks/static/dev/wasabee.user.js">https://server.wasabee.rocks/static/dev/wasabee.user.js</a>
     <span class="dim small">This is the current work-in-progress version which may contain bugs</span></div>
     <div>IITC-Android Install Instructions: <a href="https://enl.rocks/-NaqC">https://enl.rocks/-NaqC</a>
     <span class="dim small">Instructions for installing on IITC-Android</span></div>

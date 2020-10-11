@@ -426,7 +426,7 @@ function map(op) {
     const marker = L.marker(targetPortal.latLng, {
       title: targetPortal.name,
       icon: L.icon({
-        iconUrl: `${window.wasabeewebui.cdnurl}/img/markers/anchor_lime.svg`,
+        iconUrl: `${window.wasabeewebui.cdnurl}/img/markers/pin_lime.svg`,
         shadowUrl: null,
         iconSize: L.point(24, 40),
         iconAnchor: L.point(12, 40),

@@ -182,7 +182,7 @@
           permission = await Notification.requestPermission();
           if (permission === "granted") {
             console.debug("Notification permission granted.");
-            setupMessaging(); // yes, recurse
+            await setupMessaging(); // yes, recurse
           } else {
             console.warn("Unable to get permission to notify.");
           }

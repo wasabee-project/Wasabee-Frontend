@@ -12,7 +12,7 @@ export function displaySettings() {
   const content = document.getElementById("wasabeeContent");
   while (content.lastChild) content.removeChild(content.lastChild);
 
-  // <title>{{.IngressName}} Agent data</title>
+  // <title>{{.name}} Agent data</title>
 
   content.innerHTML = `
 <div class="container">
@@ -23,11 +23,11 @@ export function displaySettings() {
   <div class="card mb-2">
    <div class="card-header">Agent Info</div>
    <div class="card-body">
-    <div>Display Name: <span class="agent-name">${me.IngressName}</span>
+    <div>Display Name: <span class="agent-name">${me.name}</span>
      <p><em>This information comes from <a href="https://v.enl.one/">V</a> and/or <a href="https://enlightened.rocks">.rocks</a>. If you have an UnverifiedAgent_ name, please ensure your .Rocks and V information is correct.</em></p>
     </div>
     <div>GoogleID: <span class="agent-name">${me.GoogleID}</span></div>
-    <div>Level: <span class="agent-name">${me.Level}</span></div>
+    <div>Level: <span class="agent-name">${me.level}</span></div>
     <div><a href="https://v.enl.one/" target="_new">V Status</a>: <span id="vstatus"></div>
     <div><a href="https://enl.rocks/" target="_new">enl.rocks Status</a>: <span id="rocksstatus">
      <p><em><a href="#tooltip" class="tooltip-display" data-toggle="tooltip" title=".Rocks verification typically only takes place in relationship to anomolies. Lack of verification does not mean you don't have a .rocks account, it just means you've not been verified at an anomaly event">What is .Rocks verification?</a></em></p>
@@ -75,13 +75,13 @@ export function displaySettings() {
   });
 
   const vstatus = document.getElementById("vstatus");
-  if (me.VVerified) {
-    vstatus.innerHTML = `<a href="https://v.enl.one/profile/${me.Vid}" target="_new">verified</a>`;
+  if (me.Vverified) {
+    vstatus.innerHTML = `<a href="https://v.enl.one/profile/${me.enlid}" target="_new">verified</a>`;
   } else {
     vstatus.textContent = "not verified";
   }
   const rocksstatus = document.getElementById("rocksstatus");
-  if (me.RocksVerified) {
+  if (me.rocks) {
     rocksstatus.textContent = "verified";
   } else {
     rocksstatus.textContent = "not verified";

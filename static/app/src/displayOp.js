@@ -855,18 +855,17 @@ function manage(op) {
       const tp = op.getPortal(s.toPortalId);
       tPortal.textContent = tp.name;
 
-      L.DomEvent.on(reverse, "click", () => {
-        reverseLinkDirection(op.ID, s.ID).then(
-          () => {
-            notify("reverse succeeded");
-            op.reverseLink(s.fromPortalId, s.toPortalId);
-            manage(op);
-          },
-          (reject) => {
-            notify(reject);
-            console.log(reject);
-          }
-        );
+      L.DomEvent.on(reverse, "click", async () => {
+        try {
+          await reverseLinkDirection(op.ID, s.ID);
+          const newop = await opPromise(op.ID);
+          newop.store();
+          notify("reverse succeeded");
+          manage(newop);
+        } catch (e) {
+          notify(e, "danger", true);
+          console.log(e);
+        }
       });
 
       L.DomUtil.create("td", null, row).textContent = calculateDistance(fp, tp);

@@ -64,6 +64,19 @@ export class WasabeeOp {
     }
   }
 
+  static load(opID) {
+    try {
+      const raw = localStorage[opID];
+      if (raw == null) throw new Error("invalid operation ID");
+      const op = new WasabeeOp(raw);
+      if (op == null) throw new Error("corrupted operation");
+      return op;
+    } catch (e) {
+      console.error(e);
+    }
+    return null;
+  }
+
   // CHANGED from IITC plugin
   store() {
     this.stored = Date.now();

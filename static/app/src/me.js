@@ -15,27 +15,19 @@ export class WasabeeMe {
 
     this.fetched = obj.fetched ? obj.fetched : Date.now();
     this.GoogleID = obj.GoogleID;
-    this.IngressName = obj.IngressName;
-    this.Level = obj.Level;
+    this.name = obj.name;
+    this.level = obj.level;
     this.VVerified = obj.VVerified;
-    this.VBlacklisted = obj.VBlacklisted;
-    this.Vid = obj.Vid;
-    this.RocksVerified = obj.RocksVerified;
-    this.LocationKey = obj.LocationKey;
+    this.blacklisted = obj.blacklisted;
+    this.EnlID = obj.EnlID;
+    this.rocks = obj.rocks;
+    this.lockey = obj.lockey;
     if (obj.Telegram) {
       this.Telegram = {};
       this.Telegram.ID = obj.Telegram.ID;
       this.Telegram.Verified = obj.Telegram.Verified;
       this.Telegram.Authtoken = obj.Telegram.Authtoken;
     }
-
-    /*
-    this.OwnedTeams = Array();
-    if (obj.OwnedTeams && obj.OwnedTeams.length > 0) {
-      for (const team of obj.OwnedTeams) {
-        this.OwnedTeams.push(team);
-      }
-    } */
 
     this.Teams = Array();
     if (obj.Teams !== null) {

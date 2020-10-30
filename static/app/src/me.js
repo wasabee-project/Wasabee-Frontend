@@ -17,9 +17,9 @@ export class WasabeeMe {
     this.GoogleID = obj.GoogleID;
     this.name = obj.name;
     this.level = obj.level;
-    this.VVerified = obj.VVerified;
+    this.Vverified = obj.Vverified;
     this.blacklisted = obj.blacklisted;
-    this.EnlID = obj.EnlID;
+    this.enlid = obj.enlid;
     this.rocks = obj.rocks;
     this.lockey = obj.lockey;
     if (obj.Telegram) {

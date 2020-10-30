@@ -95,14 +95,14 @@ export function displaySettings() {
       if (me.Telegram.Authtoken) {
         tg.innerHTML = `Step 2: Tell the bot (<a href="tg://resolve?domain=${window.wasabeewebui.botname}">@${window.wasabeewebui.botname}</a>) <a href="https://telegram.me/${window.wasabeewebui.botname}?start=${me.Telegram.Authtoken}">${me.Telegram.Authtoken}</a> to conclude verification.`;
       } else {
-        tg.innerHTML = `Step 1: Tell the bot (<a href="tg://resolve?domain=${window.wasabeewebui.botname}">@${window.wasabeewebui.botname}</a>) <a href="https://telegram.me/${window.wasabeewebui.botname}?start=${me.LocationKey}">${me.LocationKey}</a> to start the verification process. If you have sent this to the bot and this step still shows here, log out and back in.`;
+        tg.innerHTML = `Step 1: Tell the bot (<a href="tg://resolve?domain=${window.wasabeewebui.botname}">@${window.wasabeewebui.botname}</a>) <a href="https://telegram.me/${window.wasabeewebui.botname}?start=${me.lockey}">${me.lockey}</a> to start the verification process. If you have sent this to the bot and this step still shows here, log out and back in.`;
         // XXX add refresh button with FORCE option set on fetching /me
       }
     }
   } else {
-    tg.innerHTML = `Tell the bot (<a href="tg://resolve?domain=${window.wasabeewebui.botname}">@${window.wasabeewebui.botname}</a>) <a href="https://telegram.me/${window.wasabeewebui.botname}?start=${me.LocationKey}">${me.LocationKey}</a> to start the verification process.`;
+    tg.innerHTML = `Tell the bot (<a href="tg://resolve?domain=${window.wasabeewebui.botname}">@${window.wasabeewebui.botname}</a>) <a href="https://telegram.me/${window.wasabeewebui.botname}?start=${me.lockey}">${me.lockey}</a> to start the verification process.`;
   }
 
   const ott = document.getElementById("ott");
-  ott.textContent = me.LocationKey;
+  ott.textContent = me.lockey;
 }

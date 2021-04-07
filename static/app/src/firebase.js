@@ -1,6 +1,6 @@
 import { WasabeeMe } from "./me";
 import { sendTokenToWasabee, getCustomTokenFromServer } from "./server";
-import * as firebase from "firebase/app";
+import firebase from "firebase/app";
 import "firebase/messaging";
 import "firebase/analytics";
 import "firebase/auth";

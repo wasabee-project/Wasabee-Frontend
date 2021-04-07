@@ -34,7 +34,6 @@ export default class WasabeeAgent {
 
     // distance, dispayname, squad and state are meaningless in the cache since you cannot know which team set them
     this.distance = obj.distance ? Number(obj.distance) : 0; // don't use this
-    this.displayname = obj.displayname ? obj.displayname : "";
     this.squad = obj.squad ? obj.squad : null;
     this.state = obj.state;
 

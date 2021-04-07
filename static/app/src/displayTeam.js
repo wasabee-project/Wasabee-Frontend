@@ -2,7 +2,6 @@ import WasabeeTeam from "./team";
 import {
   removeAgentFromTeamPromise,
   setAgentTeamSquadPromise,
-  setDisplayName,
   changeTeamOwnerPromise,
   createJoinLinkPromise,
   deleteJoinLinkPromise,
@@ -252,7 +251,6 @@ async function manage(teamID) {
 <th scope="col">Agent</th>
 <th scope="col">Sharing Location</th>
 <th scope="col">Squad</th>
-<th scope="col">Display Name</th>
 <th scope="col">&nbsp;</th>
 </tr>
 </thead>
@@ -297,7 +295,6 @@ async function manage(teamID) {
 <td>${a.name}</td>
 <td>${state}</td>
 <td><input type="text" value="${a.squad}" id="${teamID}.${a.id}.squad" /></td>
-<td><input type="text" value="${a.name}" id="${teamID}.${a.id}.displayname" /></td>
 <td>${remove}</td>
 </tr>`;
       teamTable.insertAdjacentHTML("beforeend", row);
@@ -321,22 +318,6 @@ async function manage(teamID) {
       L.DomEvent.on(squad, "change", (ev) => {
         L.DomEvent.stop(ev);
         setAgentTeamSquadPromise(a.id, teamID, squad.value).then(
-          () => {
-            manage(teamID);
-          },
-          (reject) => {
-            notify(reject, "danger", true);
-            console.log(reject);
-          }
-        );
-      });
-
-      const displayname = document.getElementById(
-        `${teamID}.${a.id}.displayname`
-      );
-      L.DomEvent.on(displayname, "change", (ev) => {
-        L.DomEvent.stop(ev);
-        setDisplayName(teamID, a.id, displayname.value).then(
           () => {
             manage(teamID);
           },

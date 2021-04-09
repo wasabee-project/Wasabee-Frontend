@@ -21,7 +21,7 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.setBackgroundMessageHandler(async function(payload) {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
+  console.debug('[firebase-messaging-sw.js] Received background message ', payload);
 
   // we re-send the message from firebase to the listening clients (Wasabee-IITC)
   const allClients = await clients.matchAll({
@@ -32,7 +32,7 @@ messaging.setBackgroundMessageHandler(async function(payload) {
     self.registration.unregister();
   } else {
     for (const client of allClients) {
-      console.log("posting firebase to message client: ", client, payload);
+      console.debug("posting firebase to message client: ", client, payload);
       client.postMessage(payload);
     }
   }

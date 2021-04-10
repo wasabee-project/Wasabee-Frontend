@@ -173,8 +173,8 @@ function checklist(op, assignmentsOnly = false) {
 <div class="card-body">
 <ul class="list-group list-group-flush">
 <li class="list-group-item" id="opComment">Comment: ${op.comment}</li>
-<li class="list-group-item"><a href="/api/v1/draw/${op.ID}/stock">Stock Intel Link</a></li>
-<li class="list-group-item"><strong><a href="/api/v1/draw/${op.ID}/myroute">My Route</a> (Google Maps)</strong></li>
+<!-- <li class="list-group-item"><a href="/api/v1/draw/${op.ID}/stock">Stock Intel Link</a></li> -->
+<li class="list-group-item"><strong><a href="/api/v1/draw/${op.ID}/myroute">My Route (assignments in order)</a> (Google Maps)</strong></li>
 </ul>
 </div>
 </div>

@@ -1,8 +1,8 @@
 // Give the service worker access to Firebase Messaging.
 // Note that you can only use Firebase Messaging here, other Firebase libraries
 // are not available in the service worker.
-importScripts('https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js');
+importScripts('https://www.gstatic.com/firebasejs/8.4.1/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/8.4.1/firebase-messaging.js');
  
 // Initialize the Firebase app in the service worker by passing in the messagingSenderId.
 firebase.initializeApp({
@@ -23,7 +23,7 @@ const messaging = firebase.messaging();
 messaging.setBackgroundMessageHandler(async function(payload) {
   console.debug('[firebase-messaging-sw.js] Received background message ', payload);
 
-  // we re-send the message from firebase to the listening clients (Wasabee-IITC)
+  // we re-send the message from firebase to the listening clients (Wasabee-IITC & WebUI)
   const allClients = await clients.matchAll({
     includeUncontrolled: true
   });

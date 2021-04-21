@@ -11,10 +11,10 @@
       <div><p>this screen intended to be loaded in an iframe</p></div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-analytics.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-messaging.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-auth.js"></script>
 
     <script>
       // Initialize the Firebase app in the service worker by passing in the messagingSenderId.
@@ -35,7 +35,7 @@
       messaging.usePublicVapidKey(
         "BEB7mMFzF4way3Scjrwt62mWvpQcPnSm2_8iJaxokgzt9DqZqqidQ1phjuqHciVvcVVK5uJtJw3Bg1Kt8Nw2-hk"
       );
-      setupMessaging();
+      setupMessaging(); // async, but no need to await here
 
       messaging.onTokenRefresh(async () => {
         try {
@@ -61,10 +61,10 @@
     console.log("firebase auth noted token change");
   }); */
 
-      window.addEventListener("message", (event) => {
+      window.addEventListener("message", async (event) => {
         if (!event.data) event.data = {};
         event.data.app_name = "Wasabee-IITC";
-        event.data.app_version = "0.18";
+        event.data.app_version = "0.19";
 
         // Messages coming from IITC
         if (event.origin == "https://intel.ingress.com") {
@@ -72,8 +72,8 @@
             // this is used to trigger sending the firebase tokens to wasabee server
             // if they have not already been sent (e.g. first login)
             case "wasabeeLogin":
-              customToken();
-              setupMessaging();
+              await customToken();
+              await setupMessaging();
               analytics.logEvent("login", event.data);
               break;
             case "analytics":
@@ -84,10 +84,11 @@
               analytics.logEvent("exception", event.data);
               break;
             case "wasabeeLogout":
-              messaging.deleteToken(); // await
-              setTokenSentToServer(false);
+              await messaging.deleteToken();
+              await setTokenSentToServer(false);
               delete localStorage["customToken"];
               analytics.logEvent("logout", event.data);
+              break;
             default:
               console.error(
                 "unknown event from IITC to firebase subsystem",
@@ -114,7 +115,7 @@
         analytics.logEvent("message_received", {
           source: "firebase",
           app_name: "Wasabee-IITC",
-          app_version: "0.18",
+          app_version: "0.19",
         });
       });
 
@@ -141,13 +142,13 @@
         try {
           currentToken = await messaging.getToken();
           if (currentToken) {
-            sendTokenToServer(currentToken);
+            await sendTokenToServer(currentToken);
           } else {
             console.debug(
               "No Instance ID token available. Requesting permission to generate one."
             );
             setTokenSentToServer(false);
-            requestPermission();
+            await requestPermission();
           }
         } catch (e) {
           console.warn("An error occurred while retrieving token. ", e);

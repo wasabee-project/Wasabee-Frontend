@@ -661,15 +661,25 @@ export function setLinkComment(opID, linkID, desc) {
 }
 
 export function setLinkZone(opID, linkID, zone) {
-  console.log(opID, linkID, zone);
   const fd = new FormData();
   fd.append("zone", zone);
   return genericPost(`/api/v1/draw/${opID}/link/${linkID}/zone`, fd);
 }
 
 export function setMarkerZone(opID, markerID, zone) {
-  console.log(opID, markerID, zone);
   const fd = new FormData();
   fd.append("zone", zone);
   return genericPost(`/api/v1/draw/${opID}/marker/${markerID}/zone`, fd);
+}
+
+export function setLinkDelta(opID, linkID, delta) {
+  const fd = new FormData();
+  fd.append("delta", delta);
+  return genericPost(`/api/v1/draw/${opID}/link/${linkID}/delta`, fd);
+}
+
+export function setMarkerDelta(opID, markerID, delta) {
+  const fd = new FormData();
+  fd.append("delta", delta);
+  return genericPost(`/api/v1/draw/${opID}/marker/${markerID}/delta`, fd);
 }

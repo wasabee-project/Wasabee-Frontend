@@ -16,12 +16,20 @@ export class WasabeeMe {
     this.fetched = obj.fetched ? obj.fetched : Date.now();
     this.GoogleID = obj.GoogleID;
     this.name = obj.name;
+    this.vname = obj.vname;
+    this.rocksname = obj.rocksname;
+    this.intelname = obj.intelname;
     this.level = obj.level;
     this.Vverified = obj.Vverified;
     this.blacklisted = obj.blacklisted;
     this.enlid = obj.enlid;
     this.rocks = obj.rocks;
+    this.querytoken = obj.querytoken;
+    this.pic = obj.pic;
+    this.intelfaction = obj.intelfaction;
     this.lockey = obj.lockey;
+    this.querytoken = obj.lockey;
+
     if (obj.Telegram) {
       this.Telegram = {};
       this.Telegram.ID = obj.Telegram.ID;
@@ -40,13 +48,6 @@ export class WasabeeMe {
     if (obj.Ops && obj.Ops.length > 0) {
       for (const op of obj.Ops) {
         this.Ops.push(op);
-      }
-    }
-
-    this.Assignments = Array();
-    if (obj.Assignments && obj.Assignments.length > 0) {
-      for (const assignment of obj.Assignments) {
-        this.Assignments.push(assignment);
       }
     }
   }

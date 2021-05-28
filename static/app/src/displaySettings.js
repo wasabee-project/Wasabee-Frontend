@@ -23,16 +23,21 @@ export function displaySettings() {
   <div class="card mb-2">
    <div class="card-header">Agent Info</div>
    <div class="card-body">
-    <div>Display Name: <span class="agent-name">${me.name}</span>
-     <p><em>This information comes from <a href="https://v.enl.one/">V</a> and/or <a href="https://enlightened.rocks">.rocks</a>. If you have an UnverifiedAgent_ name, please ensure your .Rocks and V information is correct.</em></p>
-    </div>
-    <div>GoogleID: <span class="agent-name">${me.GoogleID}</span></div>
-    <div>Level: <span class="agent-name">${me.level}</span></div>
+    <div>Wasabee Name: <span class="agent-name">${me.name}</span></div>
+    <div>V Name: <span class="agent-name">${me.vname}</span></div>
     <div><a href="https://v.enl.one/" target="_new">V Status</a>: <span id="vstatus"></div>
+    <div>Rocks Name: <span class="agent-name">${me.rocksname}</span></div>
     <div><a href="https://enl.rocks/" target="_new">enl.rocks Status</a>: <span id="rocksstatus">
      <p><em><a href="#tooltip" class="tooltip-display" data-toggle="tooltip" title=".Rocks verification typically only takes place in relationship to anomolies. Lack of verification does not mean you don't have a .rocks account, it just means you've not been verified at an anomaly event">What is .Rocks verification?</a></em></p>
     </div>
+    <div>GoogleID: <span class="agent-name">${me.GoogleID}</span></div>
+    <div>Level: <span class="agent-name">${me.level}</span>
+     <p><em>This information comes from <a href="https://v.enl.one/">V</a> and/or <a href="https://enlightened.rocks">.rocks</a>. If you have an UnverifiedAgent_ name, please ensure your .Rocks and V information is correct.</em></p>
    </div>
+    <div>Intel Name: <span class="agent-name">${me.intelname}</span></div>
+    <div>Intel Faction: <span class="agent-name">${me.intelfaction}</span>
+     <p><em>This information is set by the IITC plugin. It should not be trusted for authorization.</em></p>
+	</div>
   </div>
   <div class="card mb-2">
    <div class="card-header">Options</div>

@@ -29,6 +29,8 @@
         measurementId: "G-LZR2PVKWM7",
       });
       const analytics = firebase.analytics();
+      analytics.setAnalyticsCollectionEnabled(true);
+      analytics.setUserProperties("wasabee-test", "this is a test");
 
       const messaging = firebase.messaging();
       const auth = firebase.auth();
@@ -57,17 +59,16 @@
         delete localStorage["customToken"];
       });
 
-      /* auth.onIdTokenChanged((user) => {
-    console.log("firebase auth noted token change");
-  }); */
+      /* auth.onIdTokenChanged((user) => { console.log("firebase auth noted token change"); }); */
 
       window.addEventListener("message", async (event) => {
         if (!event.data) event.data = {};
-        event.data.app_name = "Wasabee-IITC";
-        event.data.app_version = "0.19";
+        if (!event.data.app_name) event.data.app_name = "Wasabee-Firebase-ServiceWorker";
+        if (!event.data.app_version) event.data.app_version = "0.1 (SW)";
 
         // Messages coming from IITC
         if (event.origin == "https://intel.ingress.com") {
+	  console.log(event.data);
           switch (event.data.id) {
             // this is used to trigger sending the firebase tokens to wasabee server
             // if they have not already been sent (e.g. first login)
@@ -78,7 +79,9 @@
               break;
             case "analytics":
               event.data.screen_name = event.data.action;
-              analytics.logEvent("screen_view", event.data);
+              event.data.title = event.data.action;
+              // analytics.logEvent("screen_view", event.data);
+	      analytics.setCurrentScreen(event.data.action, event.data);
               break;
             case "exception":
               analytics.logEvent("exception", event.data);
@@ -114,8 +117,7 @@
 
         analytics.logEvent("message_received", {
           source: "firebase",
-          app_name: "Wasabee-IITC",
-          app_version: "0.19",
+          app_name: "Wasabee-IITC (fb-sw)",
         });
       });
 

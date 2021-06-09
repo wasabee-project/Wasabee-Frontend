@@ -29,6 +29,7 @@ export class WasabeeMe {
     this.intelfaction = obj.intelfaction;
     this.lockey = obj.lockey;
     this.querytoken = obj.lockey;
+    this.vapi = obj.vapi;
 
     if (obj.Telegram) {
       this.Telegram = {};

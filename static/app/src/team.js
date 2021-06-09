@@ -5,6 +5,7 @@ const teamcache = new Map();
 
 export default class WasabeeTeam {
   constructor(data) {
+	console.log(data);
     if (typeof data == "string") {
       try {
         data = JSON.parse(data);
@@ -21,6 +22,8 @@ export default class WasabeeTeam {
     this.rc = data.rc;
     this.rk = data.rk;
     this.jlt = data.jlt;
+    this.vt = data.vt;
+    this.vr = data.vr;
 
     // convert to WasabeeAgents and push them into the agent cache
     for (const agent of data.agents) {

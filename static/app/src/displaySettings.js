@@ -1,6 +1,8 @@
 import WasabeeMe from "./me";
 import { startSendLoc, stopSendLoc } from "./loc";
 import { logEvent } from "./firebase";
+import { notify } from "./notify";
+import { setVAPIkey } from "./server";
 
 export function displaySettings() {
   logEvent("screen_view", { screen_name: "settings" });
@@ -35,7 +37,7 @@ export function displaySettings() {
      <p><em>This information comes from <a href="https://v.enl.one/">V</a> and/or <a href="https://enlightened.rocks">.rocks</a>. If you have an UnverifiedAgent_ name, please ensure your .Rocks and V information is correct.</em></p>
    </div>
     <div>Intel Name: <span class="agent-name">${me.intelname}</span></div>
-    <div>Intel Faction: <span class="agent-name">${me.intelfaction}</span>
+    <!-- <div>Intel Faction: <span class="agent-name">${me.intelfaction}</span> -->
      <p><em>This information is set by the IITC plugin. It should not be trusted for authorization.</em></p>
 	</div>
   </div>
@@ -57,6 +59,13 @@ export function displaySettings() {
    <div class="card-body">
     <div id="ott"></div>
     <div class="small dim">Use this to log into Wasabee-IITC if Google Oauth2 and Webview both fail</div>
+   </div>
+  </div>
+  <div class="card mb-2">
+   <div class="card-header">V API token</div>
+   <div class="card-body">
+    <div id="vapidiv"><input type="text" id="vapi" placeholder="0123456789abcdef0123456789abcdef0123456789"/></div>
+    <div class="small dim">If you need to sync V teams with Wasabee, enter a valid V API token.</div>
    </div>
   </div>
  </div>
@@ -110,4 +119,16 @@ export function displaySettings() {
 
   const ott = document.getElementById("ott");
   ott.textContent = me.lockey;
+
+  const vapi = document.getElementById("vapi");
+  vapi.value = me.vapi;
+  L.DomEvent.on(vapi, "change", async () => {
+    try {
+      await setVAPIkey(vapi.value);
+      notify("V API Key updated", "success");
+    } catch (e) {
+	  console.log(e);
+      notify("V API Key update failed", "warning", true);
+    }
+  });
 }

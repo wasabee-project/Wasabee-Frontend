@@ -683,3 +683,27 @@ export function setMarkerDelta(opID, markerID, delta) {
   fd.append("delta", delta);
   return genericPost(`/api/v1/draw/${opID}/marker/${markerID}/delta`, fd);
 }
+
+export function setVAPIkey(v) {
+  const fd = new FormData();
+  fd.append("v", v);
+  return genericPost("/api/v1/me/VAPIkey", fd);
+}
+
+export function pullV(teamID) {
+  return genericGet(`/api/v1/team/${teamID}/v`);
+}
+
+export function configV(teamID, vteam, role) {
+  vteam = Number(vteam);
+  role = Number(role);
+  if (role < 0 || role > 200) {
+    role = 0;
+  }
+  console.log(teamID, vteam, role);
+
+  const fd = new FormData();
+  fd.append("vteam", vteam);
+  fd.append("role", role);
+  return genericPost(`/api/v1/team/${teamID}/v`, fd);
+}

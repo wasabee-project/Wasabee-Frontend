@@ -11,6 +11,8 @@ import {
   pullRocks,
   renameTeamPromise,
   deleteTeamPromise,
+  pullV,
+  configV,
 } from "./server";
 import { notify } from "./notify";
 import WasabeeMe from "./me";
@@ -365,8 +367,19 @@ async function settings(teamID) {
      <div>Rocks Community Identifier: <input type="text" name="rockscomm" id="rockscomm" placeholder="afdviaren.com"/> <span class="dim small">Typically looks like "randomstring.com"</span></div>
      <div>Rocks Community API Key: <input type="text" name="rockskey" id="rockskey" placeholder="VnNfDerpL1nKsppMerZvwaXX"  /> <span class="dim small">24 letter string</span></div>
      <div class="dim small">If you want this team to have its membership populated from an .rocks community, you will need to get the community ID and API key from the community's settings and add them here. Do not do this unless you trust the enl.rocks community.</div>
-</form>
     <button id="rockspull">Pull associated enl.rocks community members onto this team</button>
+   </div>
+  </div>
+ <div class="card mb-2">
+  <div class="card-header">V integration</div>
+   <div class="card-body">
+     <div>V Team ID #: <input type="text" name="vteam" id="vteam" placeholder="1234"/></div>
+     <div>V Team Role: <select id="vrole">
+     <option value="0">All</option>
+     <option value="1">Planner</option>
+	 </select></div>
+     <div class="dim small">You must set a valid V API token in your settings tab.</div>
+    <button id="vpull">Pull associated V team/role members onto this team</button>
    </div>
   </div>
  <div class="card mb-2">
@@ -397,11 +410,14 @@ async function settings(teamID) {
   const rockscomm = document.getElementById("rockscomm");
   const rockskey = document.getElementById("rockskey");
   const rockspull = document.getElementById("rockspull");
+  const vpull = document.getElementById("vpull");
   const newOwner = document.getElementById("newOwner");
   const joinLink = document.getElementById("joinLink");
   const announce = document.getElementById("announce");
   const deleteButton = document.getElementById("delete");
   const rename = document.getElementById("rename");
+  const vteam = document.getElementById("vteam");
+  const vrole = document.getElementById("vrole");
 
   L.DomEvent.on(announce, "click", () => {
     const announceContent = document.getElementById("announceContent");
@@ -463,6 +479,45 @@ async function settings(teamID) {
     );
   });
 
+  L.DomEvent.on(vpull, "click", (ev) => {
+    L.DomEvent.stop(ev);
+    vpull.textContent = "pulling... please wait";
+    vpull.disabled = true;
+    pullV(teamID).then(
+      () => {
+        notify("V Team fetched", "success");
+        vpull.textContent = "done";
+      },
+      (reject) => {
+        notify(reject, "danger");
+        console.log(reject);
+        vpull.textContent = reject;
+      }
+    );
+  });
+
+  L.DomEvent.on(vteam, "change", async (ev) => {
+    L.DomEvent.stop(ev);
+	try {
+      await configV(teamID, vteam.value, vrole.value);
+	  notify("updated V team link");
+	} catch (e) {
+	  console.log(e);
+	  notify(e, "danger", true);
+	}
+  });
+
+  L.DomEvent.on(vrole, "change", async (ev) => {
+    L.DomEvent.stop(ev);
+	try {
+      await configV(teamID, vteam.value, vrole.value);
+	  notify("updated V team link");
+	} catch (e) {
+	  console.log(e);
+	  notify(e, "danger", true);
+	  }
+  });
+
   L.DomEvent.on(rename, "change", (ev) => {
     L.DomEvent.stop(ev);
     renameTeamPromise(teamID, rename.value).then(
@@ -496,6 +551,8 @@ async function settings(teamID) {
 
     if (team.rc) rockscomm.value = team.rc;
     if (team.rk) rockskey.value = team.rk;
+    if (team.vt) vteam.value = team.vt;
+    if (team.vr) vrole.value = team.vr;
 
     // join link
     if (team.jlt) {

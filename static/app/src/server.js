@@ -707,3 +707,7 @@ export function configV(teamID, vteam, role) {
   fd.append("role", role);
   return genericPost(`/api/v1/team/${teamID}/v`, fd);
 }
+
+export function importVteams(mode) {
+  return genericGet(`/api/v1/team/vbulkimport?mode=${mode}`);
+}

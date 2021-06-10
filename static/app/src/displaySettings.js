@@ -2,7 +2,7 @@ import WasabeeMe from "./me";
 import { startSendLoc, stopSendLoc } from "./loc";
 import { logEvent } from "./firebase";
 import { notify } from "./notify";
-import { setVAPIkey } from "./server";
+import { setVAPIkey, importVteams } from "./server";
 
 export function displaySettings() {
   logEvent("screen_view", { screen_name: "settings" });
@@ -69,6 +69,20 @@ export function displaySettings() {
    </div>
   </div>
  </div>
+  <div class="card mb-2">
+   <div class="card-header">V team import</div>
+   <div class="card-body">
+    <div id="vapidiv">
+	<select name="vimportmode" id="vimportmode">
+	 <option value="team">Create one Wasabee team per V team</option>
+	 <option value="role">Create one Wasabee team per V team/role pair</option>
+	 </select>
+	<input type="button" id="vimport" value="V team import">
+	</div>
+    <div class="small dim">This can potentially create a large number of Wasabee teams at once. Only use this if you are sure you need it.</div>
+   </div>
+  </div>
+ </div>
 </div>
 </div>`;
 
@@ -130,5 +144,18 @@ export function displaySettings() {
 	  console.log(e);
       notify("V API Key update failed", "warning", true);
     }
+  });
+
+  const vimport = document.getElementById("vimport");
+  L.DomEvent.on(vimport, "click", async () => {
+    try {
+      notify("starting V team import");
+      const vimportmode = document.getElementById("vimportmode");
+	  await importVteams(vimportmode.value);
+      notify("V team import complete", "success");
+    } catch (e) {
+	  console.log(e);
+	  notify("V team import failed (or is still being processed)", "warning", true)
+	}
   });
 }

@@ -13,7 +13,8 @@ export function notify(msg, level = "primary", log = true) {
   n.role = "alert";
   n.textContent = msg;
   const b = L.DomUtil.create("button", "close", n);
-  b.setAttribute("data-dismiss", "alert");
+  // b.setAttribute("data-dismiss", "alert");
+  b.setAttribute("data-bs-dismiss", "alert");
   b.ariaLabel = "close";
   const s = L.DomUtil.create("span", null, b);
   s.textContent = "X";

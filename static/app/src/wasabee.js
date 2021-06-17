@@ -32,6 +32,7 @@ import Vue from "vue";
 import OperationsView from "./views/Operations.vue";
 
 async function wasabeeMain() {
+  console.log("Start wasabee UI");
   try {
     const raw = await loadConfig();
     window.wasabeewebui = JSON.parse(raw);
@@ -426,4 +427,4 @@ function opsList() {
 polyfill();
 
 // entry into main
-wasabeeMain();
+window.addEventListener('load', wasabeeMain);

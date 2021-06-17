@@ -574,7 +574,7 @@ export function GetWasabeeServer() {
     return server;
   }
   // Wasabee-WebUI doesn't need to specify the server
-  return "";
+  return window.location.origin;
 }
 
 export function GetUpdateList() {

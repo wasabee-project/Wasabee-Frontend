@@ -29,8 +29,8 @@ export function displayTeam(state) {
 </button>
 <div class="collapse navbar-collapse" id="teamsNav">
   <ul class="navbar-nav" id="teamNavbar">
-   <li class="nav-item"><a class="nav-link active" href="#team.list.${state.team}" id="teamList">List</a></li>
-   <li class="nav-item"><a class="nav-link" href="#team.map.${state.team}" id="teamMap">Agent Map</a></li>
+   <li class="nav-item"><a class="nav-link active" href="#team/list/${state.team}" id="teamList">List</a></li>
+   <li class="nav-item"><a class="nav-link" href="#team/map/${state.team}" id="teamMap">Agent Map</a></li>
   </ul>
  </div>
 </nav>
@@ -63,7 +63,7 @@ export function displayTeam(state) {
     }
   }
   if (owned) {
-    const m = `<li class="nav-item"><a class="nav-link" href="#team.manage.${state.team}" id="teamManage">Manage</a></li>`;
+    const m = `<li class="nav-item"><a class="nav-link" href="#team/manage/${state.team}" id="teamManage">Manage</a></li>`;
     teamNavbar.insertAdjacentHTML("beforeend", m);
     const teamManageNav = document.getElementById("teamManage");
     L.DomEvent.on(teamManageNav, "click", (ev) => {
@@ -74,7 +74,7 @@ export function displayTeam(state) {
       manage(state.team);
     });
 
-    const s = `<li class="nav-item"><a class="nav-link" href="#team.settings.${state.team}" id="teamSettings">Settings</a></li>`;
+    const s = `<li class="nav-item"><a class="nav-link" href="#team/settings/${state.team}" id="teamSettings">Settings</a></li>`;
     teamNavbar.insertAdjacentHTML("beforeend", s);
     const teamSettingsNav = document.getElementById("teamSettings");
     L.DomEvent.on(teamSettingsNav, "click", (ev) => {
@@ -103,13 +103,18 @@ export function displayTeam(state) {
       console.log("unknown team screen state:", state);
       list(state.team);
   }
+
+  const vm = new Vue({
+    el: '#wasabeeContent',
+    render: (h) => h(TeamView),
+  });
 }
 
 async function list(teamID) {
   history.pushState(
     { screen: "team", team: teamID, subscreen: "list" },
     "team list",
-    `#team.list.${teamID}`
+    `#team/list/${teamID}`
   );
   logEvent("screen_view", { screen_name: "team list" });
 
@@ -168,7 +173,7 @@ async function map(teamID) {
   history.pushState(
     { screen: "team", team: teamID, subscreen: "map" },
     "team map",
-    `#team.map.${teamID}`
+    `#team/map/${teamID}`
   );
   logEvent("screen_view", { screen_name: "team map" });
 
@@ -232,7 +237,7 @@ async function manage(teamID) {
   history.pushState(
     { screen: "team", team: teamID, subscreen: "manage" },
     "team manage",
-    `#team.manage.${teamID}`
+    `#team/manage/${teamID}`
   );
   logEvent("screen_view", { screen_name: "team manage" });
 
@@ -340,7 +345,7 @@ async function settings(teamID) {
   history.pushState(
     { screen: "team", team: teamID, subscreen: "settings" },
     "team settings",
-    `#team.settings.${teamID}`
+    `#team/settings/${teamID}`
   );
   logEvent("screen_view", { screen_name: "team settings" });
 

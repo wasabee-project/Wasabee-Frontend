@@ -15,10 +15,10 @@
 						</thead>
 					<tbody id="ops">
 						<tr v-for="op in ops" :key="op.ID">
-							<td><a v-on:click="opClick(op)" :href="'#operation.checklist.' + op.ID">{{ op.name }}</a></td>
+							<td><a v-on:click="opClick(op)" :href="'#operation/checklist/' + op.ID">{{ op.name }}</a></td>
 							<td>{{ op.comment }}</td>
 							<td>
-								<a v-for="teamid in filterTeamsID(op.teamlist)" :key="teamid" :href="'#team.list.' + teamid" v-on:click="teamClick(teamid)">
+								<a v-for="teamid in filterTeamsID(op.teamlist)" :key="teamid" :href="'#team/list/' + teamid" v-on:click="teamClick(teamid)">
 									{{ getTeamName(teamid) }}
 								</a>
 							</td>

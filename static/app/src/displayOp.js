@@ -61,7 +61,7 @@ export async function displayOp(state) {
   ]) {
     const li = L.DomUtil.create("li", "nav-item", opNavbar);
     const link = L.DomUtil.create("a", "nav-link", li);
-    link.href = `#operation.${nav}.${state.op}`;
+    link.href = `#operation/${nav}/${state.op}`;
     link.textContent = name;
     link.id = "op" + nav;
     L.DomEvent.on(link, "click", (ev) => {
@@ -157,7 +157,7 @@ function checklist(op, assignmentsOnly = false) {
   history.pushState(
     { screen: "operation", op: op.ID, subscreen: subscreen },
     `op ${subscreen}`,
-    `#operation.${subscreen}.${op.ID}`
+    `#operation/${subscreen}/${op.ID}`
   );
   logEvent("screen_view", { screen_name: `op ${subscreen}` });
 
@@ -312,7 +312,7 @@ function map(op) {
   history.pushState(
     { screen: "operation", op: op.ID, subscreen: "map" },
     "op map",
-    `#operation.map.${op.ID}`
+    `#operation/map/${op.ID}`
   );
   logEvent("screen_view", { screen_name: "op map" });
 
@@ -466,7 +466,7 @@ function permissions(op) {
   history.pushState(
     { screen: "operation", op: op.ID, subscreen: "permissions" },
     "op permissions",
-    `#operation.permissions.${op.ID}`
+    `#operation/permissions/${op.ID}`
   );
   logEvent("screen_view", { screen_name: "op permissions" });
 
@@ -592,7 +592,7 @@ function keys(op) {
   history.pushState(
     { screen: "operation", op: op.ID, subscreen: "keys" },
     "op keys",
-    `#operations.keys.${op.ID}`
+    `#operations/keys/${op.ID}`
   );
   logEvent("screen_view", { screen_name: "op keys" });
 
@@ -743,7 +743,7 @@ function manage(op) {
   history.pushState(
     { screen: "operation", op: op.ID, subscreen: "manage" },
     "op manage",
-    `#operation.manage.${op.ID}`
+    `#operation/manage/${op.ID}`
   );
   logEvent("screen_view", { screen_name: "op manage" });
 

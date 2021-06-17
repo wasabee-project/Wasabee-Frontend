@@ -20,7 +20,7 @@
               You are not on any teams, have your operator add you with this GoogleID: {{ me.GoogleID }}
             </td></tr>
             <tr v-for="team in teams" :key="team.ID">
-              <td><a :href="'#team.list.' + team.ID" v-on:click="teamClick(team.ID)">
+              <td><a :href="'#team/list/' + team.ID" v-on:click="teamClick(team.ID)">
               {{ team.Name }}
               </a></td>
               <td>
@@ -37,7 +37,7 @@
                 <button v-if="!isOwner(team)" v-on:click="leaveTeam(team)">Leave</button>
               </td>
               <td>
-                <a v-for="(name, id) in teamsOps[team.ID]" :key="id" :href="'#operation.checklist.' + id" v-on:click="opClick(id)">
+                <a v-for="(name, id) in teamsOps[team.ID]" :key="id" :href="'#operation/checklist/' + id" v-on:click="opClick(id)">
                   {{ name }}
                 </a>
               </td>

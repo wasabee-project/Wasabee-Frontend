@@ -179,7 +179,7 @@ function chooseScreen(state) {
     if (!s) {
       state.screen = "teams";
     } else {
-      const y = s.split(".");
+      const y = s.split("/");
       state.screen = y[0];
       if (y[1] && y[2]) {
         state.subscreen = y[1];

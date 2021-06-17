@@ -24,6 +24,13 @@ import { displayTeam } from "./displayTeam";
 import { displayHelp } from "./displayHelp";
 import polyfill from "./polyfill";
 
+import { clearOpsStorage, loadMeAndOps } from "./sync";
+
+import Vue from "vue";
+//import VueRouter from 'vue-router'
+
+import OperationsView from "./views/Operations.vue";
+
 async function wasabeeMain() {
   try {
     const raw = await loadConfig();
@@ -198,26 +205,6 @@ function chooseScreen(state) {
       break;
     default:
       teamList();
-  }
-}
-
-async function loadMeAndOps() {
-  clearOpsStorage();
-
-  try {
-    const nme = await WasabeeMe.waitGet(true);
-    if (nme && nme.GoogleID) {
-      nme.store();
-      // load all available ops and teams
-      await syncOps(nme);
-    } else {
-      console.log(nme);
-      throw new Error("invalid data from /me");
-    }
-  } catch (e) {
-    notify(e, "danger", true);
-    console.log(e);
-    throw e;
   }
 }
 
@@ -428,135 +415,11 @@ function opsList() {
   // clear the old screen
   const subnav = document.getElementById("wasabeeSubnav");
   while (subnav.lastChild) subnav.removeChild(subnav.lastChild);
-  const content = document.getElementById("wasabeeContent");
-  while (content.lastChild) content.removeChild(content.lastChild);
 
-  const me = WasabeeMe.cacheGet();
-
-  const teamMap = new Map();
-  for (const t of me.Teams) {
-    teamMap.set(t.ID, t.Name);
-  }
-
-  // bootstrap layout
-  content.innerHTML = `
-<div class="container"><div class="row"><div class="col">
-<h1>Operations <a href="#operations" id="opsRefresh">↻</a></h1>
-<table class="table table-striped">
-<thead class="thead"><tr><th scope="col">Operation</th><th scope="col">Comment</th><th scope="col">Teams</th><th>Commands</th></tr></thead>
-<tbody id="ops"></tbody>
-</table>
-</div></div></div>`;
-
-  const opsRefreshNav = document.getElementById("opsRefresh");
-  L.DomEvent.on(opsRefreshNav, "click", async (ev) => {
-    L.DomEvent.stop(ev);
-    try {
-      await loadMeAndOps();
-      opsList();
-    } catch (e) {
-      console.log(e);
-      notify(e, "warning", true);
-    }
+  const vm = new Vue({
+    el: '#wasabeeContent',
+    render: (h) => h(OperationsView),
   });
-
-  const tbody = document.getElementById("ops");
-
-  const lsk = Object.keys(localStorage);
-  for (const id of lsk) {
-    if (id.length != 40) continue;
-    const op = new WasabeeOp(localStorage[id]);
-    if (!op || !op.ID) continue;
-
-    const row = L.DomUtil.create("tr", null, tbody);
-    const name = L.DomUtil.create("td", null, row);
-    const nameA = L.DomUtil.create("a", null, name);
-    nameA.href = `#operation.checklist.${op.ID}`;
-    nameA.textContent = op.name;
-    L.DomEvent.on(nameA, "click", (ev) => {
-      L.DomEvent.stop(ev);
-      displayOp({ screen: "operation", op: op.ID, state: "main" });
-    });
-
-    const comment = L.DomUtil.create("td", null, row);
-    comment.textContent = op.comment;
-
-    const teams = L.DomUtil.create("td", null, row);
-    for (const t of op.teamlist) {
-      if (teamMap.has(t.teamid)) {
-        const a = L.DomUtil.create("a", null, teams);
-        a.textContent = teamMap.get(t.teamid);
-        a.href = `#team.list.${t.teamid}`;
-        L.DomEvent.on(a, "click", (ev) => {
-          L.DomEvent.stop(ev);
-          displayTeam({ screen: "team", team: t.teamid, subscreen: "list" });
-        });
-      }
-      // else { const span = L.DomUtil.create("span", null, teams); span.textContent = `Not on team: ${t.teamid}`; }
-      L.DomUtil.create("br", null, teams);
-    }
-
-    const commands = L.DomUtil.create("td", null, row);
-    if (op.creator == me.GoogleID) {
-      const b = L.DomUtil.create("button", null, commands);
-      b.textContent = "Delete";
-      L.DomEvent.on(b, "click", async (ev) => {
-        L.DomEvent.stop(ev);
-        try {
-          await deleteOpPromise(op.ID);
-          await loadMeAndOps();
-          opsList();
-        } catch (e) {
-          console.log(e);
-          notify(e, "warning", true);
-        }
-      });
-    }
-  }
-}
-
-function clearOpsStorage() {
-  const lsk = Object.keys(localStorage);
-  for (const id of lsk) {
-    if (id.length == 40) delete localStorage[id];
-  }
-}
-
-async function syncOps(me) {
-  const opsID = new Set(me.Ops.map((o) => o.ID));
-  const promises = new Array();
-  for (const o of opsID) promises.push(opPromise(o));
-  try {
-    const results = await Promise.allSettled(promises);
-    for (const r of results) {
-      if (r.status != "fulfilled") {
-        console.log(r);
-        throw new Error("Op load failed, please refresh");
-      }
-      r.value.store();
-    }
-  } catch (e) {
-    console.log(e);
-    notify(e, "warning", true);
-    // return;
-  }
-
-  const meTeams = new Set(me.Teams.map((t) => t.ID));
-  const teamPromises = new Array();
-  for (const t of meTeams) teamPromises.push(WasabeeTeam.waitGet(t, 300));
-  try {
-    const results = await Promise.allSettled(teamPromises);
-    for (const r of results) {
-      if (r.status != "fulfilled") {
-        console.log(r);
-        // throw new Error("team load failed, please refresh");
-      }
-    }
-  } catch (e) {
-    console.log(e);
-    notify(e, "warning", true);
-    return;
-  }
 }
 
 // polyfill

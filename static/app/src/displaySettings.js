@@ -141,7 +141,7 @@ export function displaySettings() {
       await setVAPIkey(vapi.value);
       notify("V API Key updated", "success");
     } catch (e) {
-	  console.log(e);
+      console.log(e);
       notify("V API Key update failed", "warning", true);
     }
   });
@@ -151,11 +151,15 @@ export function displaySettings() {
     try {
       notify("starting V team import");
       const vimportmode = document.getElementById("vimportmode");
-	  await importVteams(vimportmode.value);
+      await importVteams(vimportmode.value);
       notify("V team import complete", "success");
     } catch (e) {
-	  console.log(e);
-	  notify("V team import failed (or is still being processed)", "warning", true)
-	}
+      console.log(e);
+      notify(
+        "V team import failed (or is still being processed)",
+        "warning",
+        true
+      );
+    }
   });
 }

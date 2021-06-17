@@ -65,7 +65,7 @@ export class WasabeeOp {
   }
 
   static load(opID) {
-	console.log("loading :", opID);
+    console.log("loading :", opID);
     try {
       const raw = localStorage[opID];
       if (raw == null)

@@ -1,4 +1,3 @@
-import "bootstrap";
 import L from "leaflet";
 import { firebaseInit, runFirebaseStart, logEvent } from "./firebase";
 import {
@@ -27,8 +26,11 @@ import polyfill from "./polyfill";
 import { clearOpsStorage, loadMeAndOps } from "./sync";
 
 import Vue from "vue";
-//import VueRouter from 'vue-router'
+import { BootstrapVue } from "bootstrap-vue";
 
+import router from "./router";
+
+import AppView from "./App.vue";
 import OperationsView from "./views/Operations.vue";
 import TeamsView from "./views/Teams.vue";
 
@@ -52,13 +54,22 @@ async function wasabeeMain() {
     await loadMeAndOps();
     startSendLoc();
     buildMenu();
-    chooseScreen(null);
+    //chooseScreen(null);
   } catch (e) {
     console.log(e);
     notify(e);
     return;
   }
   runFirebaseStart();
+
+  Vue.use(BootstrapVue);
+
+  const app = new Vue({
+    el: "#app",
+    router,
+    render: (h) => h(AppView),
+  });
+  app.$mount("#app");
 
   // for debugging only, we listen to firebase directly and don't need the service worker
   window.addEventListener("message", (event) => {
@@ -219,7 +230,7 @@ function teamList() {
   while (subnav.lastChild) subnav.removeChild(subnav.lastChild);
 
   const vm = new Vue({
-    el: '#wasabeeContent',
+    el: "#wasabeeContent",
     render: (h) => h(TeamsView),
   });
 }
@@ -233,7 +244,7 @@ function opsList() {
   while (subnav.lastChild) subnav.removeChild(subnav.lastChild);
 
   const vm = new Vue({
-    el: '#wasabeeContent',
+    el: "#wasabeeContent",
     render: (h) => h(OperationsView),
   });
 }

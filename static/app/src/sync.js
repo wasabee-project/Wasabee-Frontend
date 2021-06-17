@@ -23,7 +23,6 @@ export async function loadMeAndOps() {
   }
 }
 
-
 export function clearOpsStorage() {
   const lsk = Object.keys(localStorage);
   for (const id of lsk) {

@@ -1,7 +1,7 @@
 const path = require("path");
-// const ESLintPlugin = require("eslint-webpack-plugin");
+const ESLintPlugin = require("eslint-webpack-plugin");
 const webpack = require("webpack");
-// const PrettierPlugin = require("prettier-webpack-plugin");
+const PrettierPlugin = require("prettier-webpack-plugin");
 const { VueLoaderPlugin } = require('vue-loader');
 
 module.exports = {
@@ -23,7 +23,7 @@ module.exports = {
   plugins: [
     new webpack.ProgressPlugin(),
     new VueLoaderPlugin(),
-    // new PrettierPlugin(),
-    // new ESLintPlugin({ fix: true })
+    //new PrettierPlugin(),
+    new ESLintPlugin({ fix: true })
   ],
 };

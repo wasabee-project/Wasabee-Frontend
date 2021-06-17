@@ -18,6 +18,9 @@ import { notify } from "./notify";
 import WasabeeMe from "./me";
 import { logEvent } from "./firebase";
 
+import Vue from "vue";
+import TeamView from "./views/Team.vue";
+
 export function displayTeam(state) {
   const subnav = document.getElementById("wasabeeSubnav");
   while (subnav.lastChild) subnav.removeChild(subnav.lastChild);
@@ -104,10 +107,10 @@ export function displayTeam(state) {
       list(state.team);
   }
 
-  const vm = new Vue({
-    el: '#wasabeeContent',
-    render: (h) => h(TeamView),
-  });
+  // const vm = new Vue({
+  //   el: '#wasabeeContent',
+  //   render: (h) => h(TeamView),
+  // });
 }
 
 async function list(teamID) {
@@ -362,8 +365,8 @@ async function settings(teamID) {
  <div class="card mb-2">
   <div class="card-header">Admin Functions</div>
   <div class="card-body">
-    <div><label>Rename Team <input type="text" id="rename"></label></div> 
-    <div><hr/><label>Delete this team </label><button id="delete">Delete</button></div> 
+    <div><label>Rename Team <input type="text" id="rename"></label></div>
+    <div><hr/><label>Delete this team </label><button id="delete">Delete</button></div>
   </div>
  </div>
  <div class="card mb-2">
@@ -535,24 +538,24 @@ async function settings(teamID) {
 
   L.DomEvent.on(vteam, "change", async (ev) => {
     L.DomEvent.stop(ev);
-	try {
+    try {
       await configV(teamID, vteam.value, vrole.value);
-	  notify("updated V team link");
-	} catch (e) {
-	  console.log(e);
-	  notify(e, "danger", true);
-	}
+      notify("updated V team link");
+    } catch (e) {
+      console.log(e);
+      notify(e, "danger", true);
+    }
   });
 
   L.DomEvent.on(vrole, "change", async (ev) => {
     L.DomEvent.stop(ev);
-	try {
+    try {
       await configV(teamID, vteam.value, vrole.value);
-	  notify("updated V team link");
-	} catch (e) {
-	  console.log(e);
-	  notify(e, "danger", true);
-	  }
+      notify("updated V team link");
+    } catch (e) {
+      console.log(e);
+      notify(e, "danger", true);
+    }
   });
 
   L.DomEvent.on(rename, "change", (ev) => {

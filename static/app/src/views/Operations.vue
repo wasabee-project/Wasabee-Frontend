@@ -16,7 +16,9 @@
             <tbody id="ops">
               <tr v-for="op in ops" :key="op.ID">
                 <td>
-                  <router-link :to="'/operation/' + op.ID + '/list'">{{ op.name }}</router-link>
+                  <router-link :to="'/operation/' + op.ID + '/list'">{{
+                    op.name
+                  }}</router-link>
                 </td>
                 <td>{{ op.comment }}</td>
                 <td>

@@ -7,7 +7,6 @@ import Help from "../views/Help.vue";
 
 import Operation from "../views/Operation.vue";
 import OperationChecklist from "../views/OperationChecklist.vue";
-import OperationAssignments from "../views/OperationAssignments.vue";
 import OperationMap from "../views/OperationMap.vue";
 import OperationKeys from "../views/OperationKeys.vue";
 import OperationManage from "../views/OperationManage.vue";
@@ -51,7 +50,11 @@ const routes = [
     children: [
       { path: "", redirect: "list" },
       { path: "list", component: OperationChecklist },
-      { path: "assignments", component: OperationAssignments },
+      {
+        path: "assignments",
+        component: OperationChecklist,
+        props: { assignmentsOnly: true },
+      },
       { path: "map", component: OperationMap },
       { path: "keys", component: OperationKeys },
       { path: "manage", component: OperationManage },

@@ -16,6 +16,7 @@ export function notify(msg, level = "primary", log = true) {
   // b.setAttribute("data-dismiss", "alert");
   b.setAttribute("data-bs-dismiss", "alert");
   b.ariaLabel = "close";
+  L.DomEvent.on(b, "click", () => n.remove());
   const s = L.DomUtil.create("span", null, b);
   s.textContent = "X";
   s.ariaHidden = "true";

@@ -12,6 +12,7 @@
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
+    <div id="wasabeeAlerts"></div>
     <router-view />
   </div>
 </template>

@@ -71,7 +71,7 @@ export default {
   	agentSquadChange: function (agent) {
       setAgentTeamSquadPromise(agent.id, this.team.id, agent.squad).then(
         () => {
-	        this.$emit("refresh");
+	        //this.$emit("refresh");
         },
         (reject) => {
           notify(reject, "danger", true);

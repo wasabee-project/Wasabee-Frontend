@@ -8,7 +8,7 @@
           <b-nav-item to="/operations">Operations</b-nav-item>
           <b-nav-item to="/settings">Settings</b-nav-item>
           <b-nav-item to="/help">Help</b-nav-item>
-          <b-nav-item href="/logout">Log out</b-nav-item>
+          <b-nav-item v-on:click="logout">Log out</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
@@ -16,3 +16,27 @@
     <router-view />
   </div>
 </template>
+
+<script>
+import { notify } from "./notify";
+import { clearOpsStorage } from "./sync";
+import { logoutPromise } from "./server";
+
+export default {
+  methods: {
+    logout: async function () {
+      // clear all ops
+      clearOpsStorage();
+      try {
+        await logoutPromise();
+      } catch (e) {
+        console.log(e);
+        notify(e, "warning", true);
+      }
+      delete localStorage["me"];
+      delete localStorage["sentToServer"];
+      window.location.href = "/";
+    },
+  },
+};
+</script>

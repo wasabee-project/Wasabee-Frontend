@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Teams from "../views/Teams.vue";
+
 import Operations from "../views/Operations.vue";
 import Settings from "../views/Settings.vue";
 import Help from "../views/Help.vue";

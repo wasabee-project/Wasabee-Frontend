@@ -7,7 +7,15 @@ import polyfill from "./polyfill";
 import { loadMeAndOps } from "./sync";
 
 import Vue from "vue";
-import { BootstrapVue } from "bootstrap-vue";
+import {
+  BNav,
+  BNavbar,
+  BNavbarToggle,
+  BNavItem,
+  BNavbarNav,
+  BCollapse,
+  BButton,
+} from "bootstrap-vue";
 
 import router from "./router";
 
@@ -39,7 +47,14 @@ async function wasabeeMain() {
   }
   runFirebaseStart();
 
-  Vue.use(BootstrapVue);
+  //Vue.use(BootstrapVue);
+  Vue.component("BNav", BNav);
+  Vue.component("BNavbar", BNavbar);
+  Vue.component("BNavbarToggle", BNavbarToggle);
+  Vue.component("BNavItem", BNavItem);
+  Vue.component("BNavbarNav", BNavbarNav);
+  Vue.component("BCollapse", BCollapse);
+  Vue.component("BButton", BButton);
 
   const app = new Vue({
     el: "#app",

@@ -51,13 +51,13 @@
                 >
               </LPopup>
             </LMarker>
-            <!-- needs geodesic -->
-            <LPolyline
+            <LGeodesic
               v-for="link in assignments.links"
               :key="link.ID"
               :lat-lngs="link.getLatLngs(operation)"
               :weight="2"
-              :color="link.color == 'main' ? operation.color : link.color"
+              :color="getLinkColor(link)"
+              :opacity="0.75"
             />
             <LMarker
               v-for="anchor in assignments.anchors"
@@ -129,13 +129,13 @@
                 >
               </LPopup>
             </LMarker>
-            <!-- needs geodesic -->
-            <LPolyline
+            <LGeodesic
               v-for="link in others.links"
               :key="link.ID"
               :lat-lngs="link.getLatLngs(operation)"
               :weight="2"
-              :color="link.color == 'main' ? operation.color : link.color"
+              :color="getLinkColor(link)"
+              :opacity="0.75"
             />
             <LMarker
               v-for="anchor in others.anchors"
@@ -187,11 +187,32 @@ import {
   LMarker,
   LIcon,
   LPopup,
-  LPolygon,
-  LPolyline,
 } from "vue2-leaflet";
 
+import LGeodesic from "./LGeodesic.vue";
+
 import WasabeeMe from "../me";
+
+function newColors(incoming) {
+  switch (incoming) {
+    case "groupa":
+      return "orange";
+    case "groupb":
+      return "yellow";
+    case "groupc":
+      return "lime";
+    case "groupd":
+      return "purple";
+    case "groupe":
+      return "teal";
+    case "groupf":
+      return "fuchsia";
+    case "main":
+      return "red";
+    default:
+      return incoming;
+  }
+}
 
 export default {
   props: ["operation"],
@@ -246,6 +267,11 @@ export default {
       if (agent) return agent.name;
       return id;
     },
+    getLinkColor: function (link) {
+      return newColors(
+        link.color == "main" ? this.operation.color : link.color
+      );
+    },
   },
   components: {
     LMap,
@@ -256,7 +282,7 @@ export default {
     LIcon,
     LPopup,
     // LPolygon,
-    LPolyline,
+    LGeodesic,
   },
 };
 </script>

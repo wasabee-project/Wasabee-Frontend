@@ -87,4 +87,4 @@ async function wasabeeMain() {
 polyfill();
 
 // entry into main
-window.addEventListener('load', wasabeeMain);
+window.addEventListener("load", wasabeeMain);

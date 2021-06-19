@@ -7,7 +7,14 @@
 <body>
 
 <!-- fill by Vuejs -->
-<div id="app"></div>
+<div id="app">
+	<!-- loading spinner -->
+	<div class="text-center">
+	  <div role="status" style="background-image: url(https://cdn2.wasabee.rocks/img/bee.svg); background-size: cover; background-position-x: 34%; width: 10rem; height: 10rem; animation: spinner-border 0.9s ease infinite; margin: calc(50vh - 10rem) auto;">
+	    <span class="sr-only">Loading</span>
+	  </div>
+	</div>
+</div>
 
 {{template "footer"}}
 <script src="/static/app/dist/main.js"></script>

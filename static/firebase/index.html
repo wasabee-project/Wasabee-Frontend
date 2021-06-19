@@ -11,10 +11,10 @@
       <div><p>this screen intended to be loaded in an iframe</p></div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-messaging.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-analytics.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-messaging.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-auth.js"></script>
 
     <script>
       // Initialize the Firebase app in the service worker by passing in the messagingSenderId.
@@ -61,6 +61,7 @@
 
       /* auth.onIdTokenChanged((user) => { console.log("firebase auth noted token change"); }); */
 
+      // respond to messages from Wasabee-IITC
       window.addEventListener("message", async (event) => {
         if (!event.data) event.data = {};
         if (!event.data.app_name) event.data.app_name = "Wasabee-Firebase-ServiceWorker";

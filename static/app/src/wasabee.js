@@ -1,4 +1,3 @@
-import L from "leaflet";
 import { firebaseInit, runFirebaseStart } from "./firebase";
 import { loadConfig } from "./server";
 import { startSendLoc, stopSendLoc } from "./loc";

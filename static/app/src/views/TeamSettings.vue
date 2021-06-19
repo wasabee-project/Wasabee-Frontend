@@ -40,7 +40,7 @@
               Rocks Community Identifier:
               <input
                 type="text"
-                v-model="team.rc"
+                v-model.lazy="team.rc"
                 placeholder="afdviaren.com"
                 v-on:change="updateRocks"
               />
@@ -52,7 +52,7 @@
               Rocks Community API Key:
               <input
                 type="text"
-                v-model="team.rk"
+                v-model.lazy="team.rk"
                 placeholder="VnNfDerpL1nKsppMerZvwaXX"
                 v-on:change="updateRocks"
               />
@@ -76,7 +76,7 @@
               V Team ID #:
               <input
                 type="text"
-                v-model="team.vt"
+                v-model.lazy="team.vt"
                 v-on:change="updateV"
                 placeholder="1234"
               />

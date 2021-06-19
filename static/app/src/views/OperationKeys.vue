@@ -29,7 +29,7 @@
                 <input
                   size="10"
                   v-on:change="keyChange(key)"
-                  v-model="key.capsule"
+                  v-model.lazy="key.capsule"
                 />
               </td>
             </tr>

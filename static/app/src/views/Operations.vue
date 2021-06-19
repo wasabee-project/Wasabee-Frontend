@@ -51,8 +51,6 @@
 import WasabeeMe from "../me";
 import WasabeeOp from "../operation";
 import { notify } from "../notify";
-import { displayOp } from "../displayOp";
-import { displayTeam } from "../displayTeam";
 import { deleteOpPromise } from "../server";
 
 import { loadMeAndOps } from "../sync";
@@ -90,12 +88,6 @@ export default {
         console.log(e);
         notify(e, "warning", true);
       }
-    },
-    opClick: function (op) {
-      displayOp({ screen: "operation", op: op.ID, state: "main" });
-    },
-    teamClick: function (team) {
-      displayTeam({ screen: "team", team: team.teamid, subscreen: "list" });
     },
     filterTeamsID: function (teams) {
       return new Set(

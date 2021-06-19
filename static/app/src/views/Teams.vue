@@ -26,10 +26,7 @@
               </tr>
               <tr v-for="team in teams" :key="team.ID">
                 <td>
-                  <router-link
-                    :to="'/team/' + team.ID + '/list'"
-                    v-on:click="teamClick(team.ID)"
-                  >
+                  <router-link :to="'/team/' + team.ID + '/list'">
                     {{ team.Name }}
                   </router-link>
                 </td>
@@ -102,8 +99,6 @@
 import WasabeeMe from "../me";
 import WasabeeOp from "../operation";
 import { notify } from "../notify";
-import { displayOp } from "../displayOp";
-import { displayTeam } from "../displayTeam";
 import {
   SetTeamState,
   SetTeamShareWD,
@@ -162,12 +157,6 @@ export default {
         notify(e, "warning", true);
         console.log(e);
       }
-    },
-    opClick: function (opID) {
-      displayOp({ screen: "operation", op: opID, state: "main" });
-    },
-    teamClick: function (tid) {
-      displayTeam({ screen: "team", team: tid, subscreen: "list" });
     },
     setTeamState: async function (team) {
       try {

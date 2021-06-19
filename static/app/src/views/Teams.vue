@@ -3,7 +3,9 @@
     <div class="container">
       <div class="row">
         <div class="col">
-          <h1>Teams <a href="#teams" v-on:click="refresh">↻</a></h1>
+          <h1>
+            Teams <b-button v-on:click="refresh" variant="primary">↻</b-button>
+          </h1>
           <table class="table table-striped">
             <thead class="thead">
               <tr>

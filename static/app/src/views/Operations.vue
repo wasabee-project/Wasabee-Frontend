@@ -3,7 +3,10 @@
     <div class="container">
       <div class="row">
         <div class="col">
-          <h1>Operations <a v-on:click="refresh">↻</a></h1>
+          <h1>
+            Operations
+            <b-button v-on:click="refresh" variant="primary">↻</b-button>
+          </h1>
           <table class="table table-striped">
             <thead class="thead">
               <tr>

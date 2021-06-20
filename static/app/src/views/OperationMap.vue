@@ -17,6 +17,17 @@
             attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
             layer-type="base"
           />
+          <LLayerGroup name="Zones">
+            <LPolygon
+              v-for="z in zones.polygons"
+              :key="z.id"
+              :lat-lngs="z.points"
+              :color="z.color"
+              :fill-color="z.color"
+            >
+              <LPopup>{{ z.name }} </LPopup>
+            </LPolygon>
+          </LLayerGroup>
           <LLayerGroup
             v-for="(layer, name) in layers"
             :key="name"
@@ -111,6 +122,7 @@ import {
   LTileLayer,
   LControlLayers,
   LLayerGroup,
+  LPolygon,
   LMarker,
   LIcon,
   LPopup,
@@ -148,6 +160,13 @@ export default {
     cdn: window.wasabeewebui.cdnurl,
   }),
   computed: {
+    zones: function () {
+      return {
+        polygons: this.operation.zones.filter(
+          (z) => z.points && z.points.length > 2
+        ),
+      };
+    },
     assignments: function () {
       const markers = this.operation.markers.filter(
         (m) => m.assignedTo == this.me.GoogleID
@@ -214,7 +233,7 @@ export default {
     LMarker,
     LIcon,
     LPopup,
-    // LPolygon,
+    LPolygon,
     LGeodesic,
   },
 };

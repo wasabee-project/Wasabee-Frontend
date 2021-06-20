@@ -17,9 +17,14 @@
             attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
             layer-type="base"
           />
-          <LLayerGroup name="Assignments" layer-type="overlay">
+          <LLayerGroup
+            v-for="(layer, name) in layers"
+            :key="name"
+            :name="name"
+            layer-type="overlay"
+          >
             <LMarker
-              v-for="marker in assignments.markers"
+              v-for="marker in layer.markers"
               :key="marker.ID"
               :lat-lng="getPortal(marker.portalId).latLng"
               :title="getPortal(marker.portalId).name"
@@ -52,7 +57,7 @@
               </LPopup>
             </LMarker>
             <LGeodesic
-              v-for="link in assignments.links"
+              v-for="link in layer.links"
               :key="link.ID"
               :lat-lngs="link.getLatLngs(operation)"
               :weight="2"
@@ -60,85 +65,7 @@
               :opacity="0.75"
             />
             <LMarker
-              v-for="anchor in assignments.anchors"
-              :key="anchor"
-              :lat-lng="getPortal(anchor).latLng"
-              :title="getPortal(anchor).name"
-            >
-              <LIcon
-                :icon-url="cdn + '/img/markers/pin_lime.svg'"
-                :icon-size="[24, 40]"
-                :icon-anchor="[12, 40]"
-                :popup-anchor="[-1, -48]"
-              />
-              <LPopup>
-                {{ getPortal(anchor).name }}
-                <div v-if="getPortal(anchor).comment">
-                  {{ getPortal(anchor).comment }}
-                </div>
-                <div v-if="getPortal(anchor).hardness">
-                  {{ getPortal(anchor).status }}
-                </div>
-                <b-button
-                  target="_blank"
-                  size="sm"
-                  variant="outline-primary"
-                  :href="
-                    'https://www.google.com/maps/search/?api=1&query=' +
-                    getPortal(anchor).latLng.lat +
-                    ',' +
-                    getPortal(anchor).latLng.lng
-                  "
-                  >Google Map</b-button
-                >
-              </LPopup>
-            </LMarker>
-          </LLayerGroup>
-
-          <LLayerGroup name="Other" layer-type="overlay">
-            <LMarker
-              v-for="marker in others.markers"
-              :key="marker.ID"
-              :lat-lng="getPortal(marker.portalId).latLng"
-              :title="getPortal(marker.portalId).name"
-            >
-              <LIcon
-                :icon-url="marker.icon"
-                :icon-size="[24, 40]"
-                :icon-anchor="[12, 40]"
-                :popup-anchor="[-1, -48]"
-              />
-              <LPopup>
-                {{ getPortal(marker.portalId).name }}
-                <div v-if="marker.comment">{{ marker.comment }}</div>
-                <div v-if="marker.status != 'pending'">{{ marker.status }}</div>
-                <div v-if="marker.assignedTo">
-                  {{ getAgentName(marker.assignedTo) }}
-                </div>
-                <b-button
-                  target="_blank"
-                  size="sm"
-                  variant="outline-primary"
-                  :href="
-                    'https://www.google.com/maps/search/?api=1&query=' +
-                    getPortal(marker.portalId).latLng.lat +
-                    ',' +
-                    getPortal(marker.portalId).latLng.lng
-                  "
-                  >Google Map</b-button
-                >
-              </LPopup>
-            </LMarker>
-            <LGeodesic
-              v-for="link in others.links"
-              :key="link.ID"
-              :lat-lngs="link.getLatLngs(operation)"
-              :weight="2"
-              :color="getLinkColor(link)"
-              :opacity="0.75"
-            />
-            <LMarker
-              v-for="anchor in others.anchors"
+              v-for="anchor in layer.anchors"
               :key="anchor"
               :lat-lng="getPortal(anchor).latLng"
               :title="getPortal(anchor).name"
@@ -255,6 +182,12 @@ export default {
         markers,
         links,
         anchors,
+      };
+    },
+    layers: function () {
+      return {
+        Assignments: this.assignments,
+        Others: this.others,
       };
     },
   },

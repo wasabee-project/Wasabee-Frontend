@@ -6,6 +6,8 @@ import "firebase/analytics";
 import "firebase/auth";
 import { notify } from "./notify";
 
+import eventHub from "./eventHub";
+
 let messaging = null;
 
 export async function firebaseInit() {
@@ -79,7 +81,7 @@ export function runFirebaseStart() {
           break;
         case "Map Change":
           console.log("firebase map change: ", payload);
-          // download op
+          eventHub.$emit("mapChanged", payload.data);
           break;
         case "Login":
           if (me.GoogleID != payload.data.gid) {

@@ -26,26 +26,17 @@ async function wasabeeMain() {
   try {
     const raw = await loadConfig();
     window.wasabeewebui = JSON.parse(raw);
-    await firebaseInit();
+    await loadMeAndOps();
+    startSendLoc();
   } catch (e) {
-    notify("unable to load config: " + e, "danger", true);
     console.log(e);
+    notify("unable to load config: " + e, "danger", true);
     return;
   }
   window.wasabeewebui._updateList = new Map();
 
   // TODO: off-line mode that just uses the data in localStorage
   // for when you are doing an op and have low/no signal
-
-  try {
-    await loadMeAndOps();
-    startSendLoc();
-  } catch (e) {
-    console.log(e);
-    notify(e);
-    return;
-  }
-  runFirebaseStart();
 
   //Vue.use(BootstrapVue);
   Vue.component("BNav", BNav);
@@ -62,6 +53,16 @@ async function wasabeeMain() {
     render: (h) => h(AppView),
   });
   app.$mount("#app");
+
+  // do not wait for firebase
+  firebaseInit().then(
+    () => {
+      runFirebaseStart();
+    },
+    (e) => {
+      notify("unable to start firebase: " + e, "danger", true);
+    }
+  );
 
   // for debugging only, we listen to firebase directly and don't need the service worker
   window.addEventListener("message", (event) => {

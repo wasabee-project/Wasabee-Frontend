@@ -72,7 +72,6 @@
             <input
               type="checkbox"
               v-model="step.completed"
-              :disabled="step.assignedTo != me.GoogleID"
               v-on:change="complete(step)"
             />
           </td>

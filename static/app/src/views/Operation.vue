@@ -23,6 +23,8 @@ import WasabeeTeam from "../team";
 
 import { opPromise } from "../server";
 
+import eventHub from "../eventHub";
+
 export default {
   props: ["id"],
   data: () => ({
@@ -39,7 +41,8 @@ export default {
     },
   },
   methods: {
-    refresh: async function () {
+    refresh: async function (data) {
+      if (data && data.opID !== this.id) return;
       const op = await opPromise(this.id);
       op.store();
       this.operation = op;
@@ -49,6 +52,11 @@ export default {
     const op = await opPromise(this.id);
     op.store();
     this.operation = op;
+
+    eventHub.$on("mapChanged", this.refresh);
+  },
+  beforeDestroy() {
+    eventHub.$off("mapChanged", this.refresh);
   },
 };
 </script>

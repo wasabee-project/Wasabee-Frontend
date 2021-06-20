@@ -60,6 +60,7 @@
           </td>
           <td>
             <select v-model="step.assignedTo" v-on:change="setAssign(step)">
+              <option value="">Unassigned</option>
               <option v-for="agent in agents" :key="agent.id" :value="agent.id">
                 {{ agent.name }}
               </option>

@@ -3,7 +3,7 @@
   "ecmaVersion": 11,
   "sourceType": "module"
   },
-  "extends": ["eslint:recommended", "plugin:prettier/recommended"],
+  "extends": ["eslint:recommended", "plugin:prettier/recommended", "plugin:vue/essential"],
   "env": {
     "browser": true,
     "es6": true,

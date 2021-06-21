@@ -6,27 +6,18 @@
 </head>
 <body>
 
-<!-- Navigation -->
-<!-- <nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation"> -->
-<nav class="navbar navbar-expand-md sticky-top topnav navbar-light" role="navigation">
- <button type="button" class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
-  <span class="navbar-toggler-icon"></span>
- </button>
- <!-- this is managed in the js -->
- <div class="collapse navbar-collapse" id="navbar-collapse"></div>
-</nav>
-
-<!-- alerts go here -->
-<div id="wasabeeAlerts"></div>
-
-<!-- subnav goes here -->
-<div class="container" id="wasabeeSubnav"></div>
-
-<!-- content goes here -->
-<div id="wasabeeContent"></div>
+<!-- fill by Vuejs -->
+<div id="app">
+	<!-- loading spinner -->
+	<div class="text-center">
+	  <div role="status" style="background-image: url(https://cdn2.wasabee.rocks/img/bee.svg); background-size: cover; background-position-x: 34%; width: 10rem; height: 10rem; animation: spinner-border 0.9s ease infinite; margin: calc(50vh - 10rem) auto;">
+	    <span class="sr-only">Loading</span>
+	  </div>
+	</div>
+</div>
 
 {{template "footer"}}
-<script src="/static/app/dist/main.js"></script>
+<script src="https://cdn2.wasabee.rocks/js/webui.js"></script>
 </body>
 </html>
 {{end}}

@@ -6,6 +6,8 @@ import "firebase/analytics";
 import "firebase/auth";
 import { notify } from "./notify";
 
+import eventHub from "./eventHub";
+
 let messaging = null;
 
 export async function firebaseInit() {
@@ -61,9 +63,12 @@ export async function firebaseInit() {
         );
       });
   });
+}
+
+export function runFirebaseStart() {
+  if (!messaging) return;
 
   const me = WasabeeMe.cacheGet();
-
   messaging.onMessage((payload) => {
     if (payload.data && payload.data.cmd) {
       logEvent("message_received", { command: payload.data.cmd });
@@ -76,7 +81,7 @@ export async function firebaseInit() {
           break;
         case "Map Change":
           console.log("firebase map change: ", payload);
-          // download op
+          eventHub.$emit("mapChanged", payload.data);
           break;
         case "Login":
           if (me.GoogleID != payload.data.gid) {
@@ -106,10 +111,7 @@ export async function firebaseInit() {
       }
     }
   });
-}
 
-export function runFirebaseStart() {
-  if (!messaging) return;
   messaging
     .getToken()
     .then((currentToken) => {

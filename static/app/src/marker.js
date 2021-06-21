@@ -5,7 +5,7 @@ export default class WasabeeMarker {
     this.type = "unset";
     this.comment = null;
     this.state = "pending";
-    this.completedBy = null;
+    this.completedID = null;
     this.assignedTo = null;
     this.order = 0;
     this.zone = 1;
@@ -47,11 +47,25 @@ export default class WasabeeMarker {
     marker.type = obj.type ? obj.type : "unset";
     marker.comment = obj.comment ? obj.comment : null;
     marker.state = obj.state ? obj.state : "pending";
-    marker.completedBy = obj.completedBy ? obj.completedBy : null;
+    marker.completedID = obj.completedID ? obj.completedID : null;
     marker.assignedTo = obj.assignedTo ? obj.assignedTo : null;
     marker.order = obj.order ? obj.order : 0;
     marker.zone = obj.zone ? obj.zone : 1;
     return marker;
+  }
+
+  get completed() {
+    return this.state == "completed";
+  }
+
+  set completed(value) {
+    if (value != this.completed) {
+      this.state = value
+        ? "completed"
+        : this.assignedTo
+        ? "assigned"
+        : "pending";
+    }
   }
 
   get icon() {

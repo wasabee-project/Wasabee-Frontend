@@ -5,7 +5,7 @@ const teamcache = new Map();
 
 export default class WasabeeTeam {
   constructor(data) {
-	console.log(data);
+    console.log(data);
     if (typeof data == "string") {
       try {
         data = JSON.parse(data);

@@ -13,6 +13,7 @@
     <table class="table table-striped" id="optable">
       <thead>
         <tr>
+          <th scope="col">&nbsp;</th>
           <th scope="col">Order</th>
           <th scope="col">Portal</th>
           <th scope="col">&nbsp;</th>
@@ -24,8 +25,10 @@
           <th scope="col">Completed</th>
         </tr>
       </thead>
-      <draggable v-model="steps" tag="tbody">
+      <draggable v-model="steps" tag="tbody" handle=".handle">
         <tr v-for="step in steps" :key="step.ID">
+          <td class="handle"></td>
+
           <td>{{ step.opOrder }}</td>
 
           <td v-if="isMarker(step)">

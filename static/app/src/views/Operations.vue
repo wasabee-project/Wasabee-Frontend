@@ -69,6 +69,7 @@ export default {
         if (!op || !op.ID) continue;
         ops.push(op);
       }
+      ops.sort((a, b) => a.name.localeCompare(b.name));
       return ops;
     },
     teamMap: function () {

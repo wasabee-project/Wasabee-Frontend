@@ -7,7 +7,7 @@
       <b-nav-item to="keys">Keys</b-nav-item>
       <b-nav-item to="manage" v-if="canWrite">Manage</b-nav-item>
       <b-nav-item to="permissions" v-if="canWrite">Permissions</b-nav-item>
-      <b-button v-on:click="refresh" variant="primary">↻</b-button>
+      <b-button v-on:click="refresh()" variant="primary">↻</b-button>
     </b-nav>
     <router-view
       v-on:refresh="refresh"

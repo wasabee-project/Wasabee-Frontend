@@ -13,6 +13,7 @@
       v-on:refresh="refresh"
       v-if="operation"
       :operation="operation"
+      :canWrite="canWrite"
     />
   </div>
 </template>

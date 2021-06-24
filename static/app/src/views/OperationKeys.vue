@@ -6,23 +6,40 @@
         <table class="table table-striped">
           <thead>
             <tr>
-              <th scope="col">Portal</th>
-              <th scope="col">Required</th>
-              <th scope="col">Total</th>
-              <th scope="col">My Count</th>
-              <th scope="col">Capsule</th>
+              <th @click="sort('name')">Portal</th>
+              <th @click="sort('required')">Required</th>
+              <th v-if="canWrite">
+                <select v-model="agent">
+                  <option v-for="a in agentList" :key="a.id" :value="a.id">
+                    {{ a.name }}
+                  </option>
+                </select>
+              </th>
+              <th v-else @click="sort('agentRequired')">Agent needs</th>
+              <th @click="sort('onHand')">Total</th>
+              <th @click="sort('iHave')">Agent Count</th>
+              <th @click="sort('capsule')">Capsule</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="key in klist" :key="key.id">
+            <tr
+              v-for="key in klist"
+              :key="key.id"
+              :class="{
+                'table-warning': key.agentRequired > key.iHave,
+                'table-danger': key.required > key.onHand,
+              }"
+            >
               <td>{{ key.name }}</td>
-              <td>{{ key.Required }}</td>
+              <td>{{ key.required }}</td>
+              <td>{{ key.agentRequired }}</td>
               <td>{{ key.onHand }}</td>
               <td>
                 <input
                   size="3"
                   v-on:change="keyChange(key)"
                   v-model.number="key.iHave"
+                  :disabled="agent != me.GoogleID"
                 />
               </td>
               <td>
@@ -30,6 +47,7 @@
                   size="10"
                   v-on:change="keyChange(key)"
                   v-model.lazy="key.capsule"
+                  :disabled="agent != me.GoogleID"
                 />
               </td>
             </tr>
@@ -62,16 +80,31 @@
 <script>
 import { notify } from "../notify";
 import WasabeeMe from "../me";
+import WasabeeTeam from "../team";
 import { opKeyPromise } from "../server";
 
 export default {
-  props: ["operation"],
+  props: ["operation", "canWrite"],
   data: () => ({
     me: WasabeeMe.cacheGet(),
+    sortBy: "name",
+    sortDesc: false,
+    agent: WasabeeMe.cacheGet().GoogleID,
   }),
   computed: {
+    agentList: function () {
+      const map = new Map();
+      for (const tr of this.operation.teamlist) {
+        const team = WasabeeTeam.cacheGet(tr.teamid);
+        if (!team) continue;
+        for (const agent of team.agents) map.set(agent.id, agent);
+      }
+      if (!map.size) return [{ id: this.me.GoogleID, name: this.me.name }];
+
+      return Array.from(map.values());
+    },
     klist: function () {
-      const klist = new Map();
+      const kmap = new Map();
       for (const a of this.operation.anchors) {
         const k = {};
         const links = this.operation.links.filter(function (link) {
@@ -80,58 +113,65 @@ export default {
 
         k.id = a;
         k.name = this.operation.getPortal(k.id).name;
-        k.Required = links.length;
+        k.required = links.length;
+        k.agentRequired = links.filter(
+          (l) => l.assignedTo == this.agent
+        ).length;
         k.onHand = 0;
         k.iHave = 0;
         k.capsule = "";
-        if (k.Required == 0) continue;
-
-        const thesekeys = this.operation.keysonhand.filter(
-          (kk) => kk.portalId == a
-        );
-        if (thesekeys && thesekeys.length > 0) {
-          for (const t of thesekeys) {
-            k.onHand += t.onhand;
-            if (t.gid == this.me.GoogleID) {
-              k.iHave = t.onhand;
-              k.capsule = t.capsule;
-            }
-          }
-        }
-        klist.set(k.id, k);
+        if (k.required > 0) kmap.set(k.id, k);
       }
 
       for (const p of this.operation.markers.filter(
         (m) => m.type == "GetKeyPortalMarker"
       )) {
-        if (klist.has(p.portalId)) {
-          const key = klist.get(p.portalId);
-          key.Required = "+ " + key.Required;
-        } else {
-          const k = klist.get(p.portalId);
+        if (!kmap.has(p.portalId)) {
+          const k = kmap.get(p.portalId);
           k.id = p.portalId;
           k.name = this.operation.getPortal(k.id).name;
-          k.Required = "Not Specified";
+          k.required = 0;
+          k.agentRequired = 0;
           k.onHand = 0;
           k.iHave = 0;
           k.capsule = "";
-
-          const thesekeys = this.operation.keysonhand.filter(
-            (kk) => kk.portalId == k.id
-          );
-          if (thesekeys && thesekeys.length > 0) {
-            for (const t of thesekeys) {
-              k.onHand += t.onhand;
-              if (t.gid == this.me.GoogleID) {
-                k.iHave = t.onhand;
-                k.capsule = t.capsule;
-              }
-            }
-          }
-          klist.set(k.id, k);
         }
       }
-      return klist.values();
+
+      const klist = [];
+      for (const [id, k] of kmap) {
+        const thesekeys = this.operation.keysonhand.filter(
+          (kk) => kk.portalId == id
+        );
+        if (thesekeys && thesekeys.length > 0) {
+          for (const t of thesekeys) {
+            k.onHand += t.onhand;
+            if (t.gid == this.agent) {
+              k.iHave = t.onhand;
+              k.capsule = t.capsule;
+            }
+          }
+        }
+        klist.push(k);
+      }
+
+      switch (this.sortBy) {
+        case "name":
+        case "capsule":
+          klist.sort((a, b) => a[this.sortBy].localeCompare(b[this.sortBy]));
+          break;
+        case "required":
+        case "agentRequired":
+        case "onHand":
+        case "iHave":
+          klist.sort((a, b) => a[this.sortBy] - b[this.sortBy]);
+          break;
+        default:
+          break;
+      }
+      if (this.sortDesc) klist.reverse();
+
+      return klist;
     },
     koh: function () {
       const missing = { name: "[portal no longer in op]" };
@@ -145,6 +185,13 @@ export default {
     },
   },
   methods: {
+    sort: function (cat) {
+      if (cat === this.sortBy) this.sortDesc = !this.sortDesc;
+      else {
+        this.sortBy = cat;
+        this.sortDesc = false;
+      }
+    },
     keyChange: async function (key) {
       try {
         await opKeyPromise(this.operation.ID, key.id, key.iHave, key.capsule);

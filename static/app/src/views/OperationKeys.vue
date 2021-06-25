@@ -127,7 +127,7 @@ export default {
         (m) => m.type == "GetKeyPortalMarker"
       )) {
         if (!kmap.has(p.portalId)) {
-          const k = kmap.get(p.portalId);
+          const k = {};
           k.id = p.portalId;
           k.name = this.operation.getPortal(k.id).name;
           k.required = 0;
@@ -135,6 +135,7 @@ export default {
           k.onHand = 0;
           k.iHave = 0;
           k.capsule = "";
+          kmap.set(k.id, k);
         }
       }
 

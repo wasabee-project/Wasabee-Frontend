@@ -6,10 +6,10 @@
         <table class="table table-striped">
           <thead>
             <tr>
-              <th scope="col">Team</th>
-              <th scope="col">Permission</th>
-              <th scope="col">Zone</th>
-              <th scope="col">&nbsp;</th>
+              <th>Team</th>
+              <th>Permission</th>
+              <th>Zone</th>
+              <th v-if="isOwner">&nbsp;</th>
             </tr>
           </thead>
           <tbody>
@@ -17,32 +17,36 @@
               <td>{{ t.name }}</td>
               <td>{{ t.role }}</td>
               <td>{{ t.zoneName }}</td>
-              <td><button v-on:click="removePerm(t)">Remove</button></td>
+              <td v-if="isOwner">
+                <button v-on:click="removePerm(t)">Remove</button>
+              </td>
             </tr>
           </tbody>
         </table>
-        <label>
-          Add Team:
-          <select v-model="teamID">
-            <option disabled>Team name:</option>
-            <option v-for="t in me.Teams" :key="t.ID" :value="t.ID">
-              {{ t.Name }}
-            </option>
-          </select>
-          <select v-model="teamRole">
-            <option disabled>Role:</option>
-            <option value="read">Read</option>
-            <option value="write">Write</option>
-            <option value="assignedonly">Assigned only</option>
-          </select>
-          <select v-model="teamZone">
-            <option value="0">All zones</option>
-            <option v-for="z in operation.zones" :key="z.id" :value="z.id">
-              {{ z.name }}
-            </option>
-          </select>
-        </label>
-        <button v-on:click="addPerm">Add</button>
+        <div v-if="isOwner">
+          <label>
+            Add Team:
+            <select v-model="teamID">
+              <option disabled>Team name:</option>
+              <option v-for="t in me.Teams" :key="t.ID" :value="t.ID">
+                {{ t.Name }}
+              </option>
+            </select>
+            <select v-model="teamRole">
+              <option disabled>Role:</option>
+              <option value="read">Read</option>
+              <option value="write">Write</option>
+              <option value="assignedonly">Assigned only</option>
+            </select>
+            <select v-model="teamZone">
+              <option value="0">All zones</option>
+              <option v-for="z in operation.zones" :key="z.id" :value="z.id">
+                {{ z.name }}
+              </option>
+            </select>
+          </label>
+          <button v-on:click="addPerm">Add</button>
+        </div>
       </div>
     </div>
   </div>
@@ -62,6 +66,9 @@ export default {
     teamZone: 0,
   }),
   computed: {
+    isOwner: function () {
+      return this.me.GoogleID == this.operation.creator;
+    },
     teams: function () {
       return this.operation.teamlist.map((t) => {
         const team = WasabeeTeam.cacheGet(t.teamid);

@@ -18,9 +18,8 @@ import WasabeeTeam from "../team";
 import { notify } from "../notify";
 
 export default {
-  props: ["id"],
+  props: ["id", "me"],
   data: () => ({
-    me: WasabeeMe.cacheGet(),
     team: null,
     loading: true,
   }),

@@ -28,9 +28,8 @@ import { notify } from "../notify";
 import eventHub from "../eventHub";
 
 export default {
-  props: ["id"],
+  props: ["id", "me"],
   data: () => ({
-    me: WasabeeMe.cacheGet(),
     operation: null,
     loading: true,
   }),

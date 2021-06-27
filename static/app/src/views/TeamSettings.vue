@@ -273,8 +273,8 @@ export default {
       );
     },
     sendAnnouncement: function () {
-      sendAnnounce(this.team.id, this.announce);
-      this.announce = "";
+      sendAnnounce(this.team.id, this.announcement);
+      this.announcement = "";
       notify("Message Sent");
     },
     changeOwner: function () {

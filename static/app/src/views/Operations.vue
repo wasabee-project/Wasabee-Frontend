@@ -1,5 +1,5 @@
 <template>
-  <div id="wasabeeContent">
+  <div id="wasabeeContent" :class="{ loading: loading }">
     <div class="container">
       <div class="row">
         <div class="col">
@@ -58,6 +58,7 @@ import { loadMeAndOps } from "../sync";
 export default {
   data: () => ({
     me: WasabeeMe.cacheGet(),
+    loading: false,
   }),
   computed: {
     ops: function () {
@@ -81,6 +82,7 @@ export default {
   },
   methods: {
     refresh: async function () {
+      this.loading = true;
       try {
         await loadMeAndOps();
         this.me = WasabeeMe.cacheGet();
@@ -88,6 +90,7 @@ export default {
         console.log(e);
         notify(e, "warning", true);
       }
+      this.loading = false;
     },
     filterTeamsID: function (teams) {
       return new Set(

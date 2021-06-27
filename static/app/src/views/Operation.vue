@@ -1,5 +1,5 @@
 <template>
-  <div id="wasabeeContent">
+  <div id="wasabeeContent" :class="{ loading: loading }">
     <b-nav tabs>
       <b-nav-item to="list">Checklist</b-nav-item>
       <b-nav-item to="assignments">Assignments</b-nav-item>
@@ -23,6 +23,7 @@ import WasabeeMe from "../me";
 import WasabeeTeam from "../team";
 
 import { opPromise } from "../server";
+import { notify } from "../notify";
 
 import eventHub from "../eventHub";
 
@@ -31,6 +32,7 @@ export default {
   data: () => ({
     me: WasabeeMe.cacheGet(),
     operation: null,
+    loading: true,
   }),
   computed: {
     canWrite: function () {
@@ -42,18 +44,25 @@ export default {
     },
   },
   methods: {
-    refresh: async function (data) {
+    refresh: function (data) {
       if (data && data.opID !== this.id) return;
-      const op = await opPromise(this.id);
-      op.store();
-      this.operation = op;
+      this.loading = true;
+      opPromise(this.id)
+        .then((op) => {
+          op.store();
+          this.operation = op;
+          this.loading = false;
+        })
+        .catch((e) => {
+          notify(e.toString());
+          this.loading = false;
+          this.operation = null;
+          this.$router.replace("/operations");
+        });
     },
   },
-  async created() {
-    const op = await opPromise(this.id);
-    op.store();
-    this.operation = op;
-
+  created() {
+    this.refresh();
     eventHub.$on("mapChanged", this.refresh);
   },
   beforeDestroy() {

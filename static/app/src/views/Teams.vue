@@ -9,12 +9,12 @@
           <table class="table table-striped">
             <thead class="thead">
               <tr>
-                <th scope="col">Team</th>
-                <th scope="col">Share Location</th>
-                <th scope="col">Share WD Keys</th>
-                <th scope="col">Load WD Keys</th>
-                <th scope="col"></th>
-                <th scope="col">Ops</th>
+                <th>Team</th>
+                <th>Share Location</th>
+                <th>Share WD Keys</th>
+                <th>Load WD Keys</th>
+                <th>Ops</th>
+                <th></th>
               </tr>
             </thead>
             <tbody id="teams">
@@ -58,14 +58,6 @@
                   />
                 </td>
                 <td>
-                  <button v-if="isOwner(team)" v-on:click="deleteTeam(team)">
-                    Delete
-                  </button>
-                  <button v-if="!isOwner(team)" v-on:click="leaveTeam(team)">
-                    Leave
-                  </button>
-                </td>
-                <td>
                   <router-link
                     v-for="(name, id) in teamsOps[team.ID]"
                     :key="id"
@@ -73,6 +65,24 @@
                   >
                     {{ name }}
                   </router-link>
+                </td>
+                <td>
+                  <b-button
+                    v-if="isOwner(team)"
+                    v-on:click="deleteTeam(team)"
+                    variant="danger"
+                    size="sm"
+                  >
+                    Delete
+                  </b-button>
+                  <b-button
+                    v-if="!isOwner(team)"
+                    v-on:click="leaveTeam(team)"
+                    variant="warning"
+                    size="sm"
+                  >
+                    Leave
+                  </b-button>
                 </td>
               </tr>
             </tbody>

@@ -8,7 +8,7 @@
             Comment: {{ operation.comment }}
           </li>
           <!-- <li class="list-group-item"><a :href="'/api/v1/draw/' + operation.ID + '/stock'">Stock Intel Link</a></li> -->
-          <li class="list-group-item">
+          <li v-if="assignmentsOnly" class="list-group-item">
             <strong
               ><a :href="'/api/v1/draw/' + operation.ID + '/myroute'"
                 >My Route (assignments in order)</a
@@ -56,13 +56,18 @@
           </td>
           <td>
             {{ getAgentName(step.assignedTo) }}
-            <button v-if="needAck(step)" v-on:click="ackMarker(step.ID)">
+            <b-button
+              v-if="needAck(step)"
+              v-on:click="ackMarker(step.ID)"
+              variant="warning"
+              size="sm"
+            >
               ack
-            </button>
+            </b-button>
           </td>
           <td>{{ step.comment }}</td>
           <td>{{ getZoneName(step.zone) }}</td>
-          <td>
+          <td class="text-center">
             <input
               type="checkbox"
               v-model="step.completed"
@@ -157,7 +162,7 @@ export default {
       }
       level = Math.round(level * 10) / 10;
 
-      return dist + "km (level " + level + ")";
+      return dist + "km (L" + level + ")";
     },
     getZoneName: function (id) {
       for (const z of this.operation.zones) {

@@ -34,9 +34,14 @@
                   </router-link>
                 </td>
                 <td>
-                  <button v-if="isOwner(op)" v-on:click="deleteOp(op)">
+                  <b-button
+                    v-if="isOwner(op)"
+                    v-on:click="deleteOp(op)"
+                    variant="danger"
+                    size="sm"
+                  >
                     Delete
-                  </button>
+                  </b-button>
                 </td>
               </tr>
             </tbody>

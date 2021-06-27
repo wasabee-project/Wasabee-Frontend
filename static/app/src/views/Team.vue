@@ -5,7 +5,7 @@
       <b-nav-item to="map">Agent Map</b-nav-item>
       <b-nav-item to="manage" v-if="isOwner">Manage</b-nav-item>
       <b-nav-item to="settings" v-if="isOwner">Settings</b-nav-item>
-      <b-button v-on:click="refresh">↻</b-button>
+      <b-button v-on:click="refresh" variant="primary">↻</b-button>
     </b-nav>
     <router-view v-on:refresh="refresh" v-if="team" :team="team" />
   </div>

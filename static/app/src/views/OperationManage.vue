@@ -34,10 +34,10 @@
           <td v-if="isMarker(step)">
             <PortalLink :id="step.portalId" :operation="operation" />
           </td>
+          <td v-if="isMarker(step)"></td>
           <td v-if="isMarker(step)" :class="step.type">
             {{ step.friendlyType }}
           </td>
-          <td v-if="isMarker(step)"></td>
           <td v-if="isMarker(step)"></td>
 
           <td v-if="isLink(step)">
@@ -72,7 +72,7 @@
           <td>
             <input v-model.lazy="step.comment" v-on:change="setComment(step)" />
           </td>
-          <td>
+          <td class="text-center">
             <input
               type="checkbox"
               v-model="step.completed"
@@ -192,7 +192,7 @@ export default {
       }
       level = Math.round(level * 10) / 10;
 
-      return dist + "km (level " + level + ")";
+      return dist + "km (L" + level + ")";
     },
     setComment: async function (step) {
       try {

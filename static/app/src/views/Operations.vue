@@ -62,9 +62,8 @@ export default {
   computed: {
     ops: function () {
       const ops = [];
-      const lsk = Object.keys(localStorage);
+      const lsk = new Set(this.me.Ops.map((o) => o.ID));
       for (const id of lsk) {
-        if (id.length != 40) continue;
         const op = new WasabeeOp(localStorage[id]);
         if (!op || !op.ID) continue;
         ops.push(op);

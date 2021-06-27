@@ -1,5 +1,5 @@
 <template>
-  <div id="wasabeeContent" :class="{ loading: loading }">
+  <div id="wasabeeContent">
     <div class="container">
       <div class="row">
         <div class="col">
@@ -112,10 +112,9 @@ import { logEvent } from "../firebase";
 import { loadMeAndOps } from "../sync";
 
 export default {
+  props: ["me"],
   data: () => ({
-    me: WasabeeMe.cacheGet(),
     newTeamName: "",
-    loading: false,
   }),
   computed: {
     teams: function () {
@@ -137,16 +136,8 @@ export default {
     },
   },
   methods: {
-    refresh: async function () {
-      this.loading = true;
-      try {
-        await loadMeAndOps();
-        this.me = WasabeeMe.cacheGet();
-      } catch (e) {
-        console.log(e);
-        notify(e, "warning", true);
-      }
-      this.loading = false;
+    refresh: function () {
+      this.$emit("refresh");
     },
     createTeam: async function () {
       if (!this.newTeamName) {

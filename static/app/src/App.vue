@@ -13,18 +13,40 @@
       </b-collapse>
     </b-navbar>
     <div id="wasabeeAlerts"></div>
-    <router-view />
+    <router-view
+      v-on:refresh="refresh"
+      :me="me"
+      :class="{ loading: loading }"
+    />
     <div id="loading-animation"></div>
   </div>
 </template>
 
 <script>
 import { notify } from "./notify";
-import { clearOpsStorage } from "./sync";
+import { loadMeAndOps, clearOpsStorage } from "./sync";
 import { logoutPromise } from "./server";
 
+import WasabeeMe from "./me";
+
 export default {
+  data: () => ({
+    me: WasabeeMe.cacheGet(),
+    loading: false,
+  }),
   methods: {
+    refresh: async function () {
+      this.loading = true;
+      try {
+        await loadMeAndOps();
+        this.me = WasabeeMe.cacheGet();
+      } catch (e) {
+        console.log(e);
+        if (e.message == "invalid data from /me") this.logout();
+        notify(e, "warning", true);
+      }
+      this.loading = false;
+    },
     logout: async function () {
       // clear all ops
       clearOpsStorage();
@@ -34,7 +56,7 @@ export default {
         console.log(e);
         notify(e, "warning", true);
       }
-      delete localStorage["me"];
+      WasabeeMe.purge();
       delete localStorage["sentToServer"];
       window.location.href = "/";
     },

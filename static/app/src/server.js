@@ -114,7 +114,7 @@ export async function opPromise(opID) {
 // use WasabeeMe.cacheGet or WasabeeMe.waitGet for caching
 export async function mePromise() {
   try {
-    const response = await genericGet("/me?json=y");
+    const response = await genericGet("/api/v1/me");
     return response;
   } catch (e) {
     console.error(e);

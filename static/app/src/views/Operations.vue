@@ -1,5 +1,5 @@
 <template>
-  <div id="wasabeeContent" :class="{ loading: loading }">
+  <div id="wasabeeContent">
     <div class="container">
       <div class="row">
         <div class="col">
@@ -56,10 +56,7 @@ import { deleteOpPromise } from "../server";
 import { loadMeAndOps } from "../sync";
 
 export default {
-  data: () => ({
-    me: WasabeeMe.cacheGet(),
-    loading: false,
-  }),
+  props: ["me"],
   computed: {
     ops: function () {
       const ops = [];
@@ -81,16 +78,8 @@ export default {
     },
   },
   methods: {
-    refresh: async function () {
-      this.loading = true;
-      try {
-        await loadMeAndOps();
-        this.me = WasabeeMe.cacheGet();
-      } catch (e) {
-        console.log(e);
-        notify(e, "warning", true);
-      }
-      this.loading = false;
+    refresh: function () {
+      this.$emit("refresh");
     },
     filterTeamsID: function (teams) {
       return new Set(

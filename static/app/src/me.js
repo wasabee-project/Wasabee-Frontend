@@ -72,6 +72,16 @@ export class WasabeeMe {
     return new WasabeeMe(raw);
   }
 
+  static purge() {
+    const me = WasabeeMe.cacheGet();
+    if (me) {
+      for (const op of me.Ops) {
+        delete localStorage[op.ID];
+      }
+      WasabeeMe.remove();
+    }
+  }
+
   static async waitGet(force = false) {
     if (!force) {
       const lsme = localStorage[AGENT_INFO_KEY];

@@ -45,6 +45,8 @@ export default {
   methods: {
     refresh: function (data) {
       if (data && data.opID !== this.id) return;
+      if (data && this.operation && this.operation.lasteditid === data.updateID)
+        return;
       this.loading = true;
       opPromise(this.id)
         .then((op) => {

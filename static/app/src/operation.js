@@ -49,6 +49,9 @@ export class WasabeeOp {
     this.keysonhand = obj.keysonhand ? obj.keysonhand : Array();
     this.zones = obj.zones ? obj.zones : Array();
 
+    this.referencetime = obj.referencetime ? obj.referencetime : null;
+    this.lasteditid = obj.lasteditid ? obj.lasteditid : null;
+
     this._idToOpportals = new Map();
     this._coordsToOpportals = new Map();
 

@@ -33,7 +33,6 @@
                 <td>
                   <input
                     type="checkbox"
-                    class="form-check-input"
                     v-model="team.State"
                     true-value="On"
                     false-value="Off"
@@ -43,7 +42,6 @@
                 <td>
                   <input
                     type="checkbox"
-                    class="form-check-input"
                     v-model="team.ShareWD"
                     true-value="On"
                     false-value="Off"
@@ -53,7 +51,6 @@
                 <td>
                   <input
                     type="checkbox"
-                    class="form-check-input"
                     v-model="team.LoadWD"
                     true-value="On"
                     false-value="Off"

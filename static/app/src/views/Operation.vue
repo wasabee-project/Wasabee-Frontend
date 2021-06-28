@@ -1,5 +1,5 @@
 <template>
-  <div id="wasabeeContent" :class="{ loading: loading }">
+  <div id="wasabeeContent">
     <b-nav tabs>
       <b-nav-item to="list">Checklist</b-nav-item>
       <b-nav-item to="assignments">Assignments</b-nav-item>
@@ -14,6 +14,7 @@
       v-if="operation"
       :operation="operation"
       :canWrite="canWrite"
+      :class="{ loading: loading }"
     />
   </div>
 </template>

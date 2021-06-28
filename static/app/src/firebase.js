@@ -74,13 +74,18 @@ export function runFirebaseStart() {
       logEvent("message_received", { command: payload.data.cmd });
       switch (payload.data.cmd) {
         case "Agent Location Change":
-          console.log("agent location change: ", payload);
-          break;
         case "Generic Message":
-          notify(JSON.stringify(payload), "primary", false);
+          console.log("FB message:", payload.data);
+          break;
+        case "Marker Status Change":
+        case "Link Status Change":
+        case "Marker Assignment Change":
+        case "Link Assignment Change":
+          eventHub.$emit("notifyChange", payload.data);
+          console.log("FB message:", payload.data);
           break;
         case "Map Change":
-          console.log("firebase map change: ", payload);
+          console.log("FB message:", payload.data);
           eventHub.$emit("mapChanged", payload.data);
           break;
         case "Login":
@@ -105,9 +110,20 @@ export function runFirebaseStart() {
             }
           }
           break;
+        case "Delete":
+          console.log("FB message:", payload.data);
+          break;
+        case "Subscribe":
+          console.log("FB message:", payload.data);
+          break;
+        case "Target":
+          console.log("FB message:", payload.data);
+          break;
+        case "Quit":
+          console.log("FB message:", payload.data);
+          break;
         default:
-          notify(JSON.stringify(payload), "primary", false);
-          console.log("Firebase message received: ", payload);
+          console.log("FB unknown:", payload);
       }
     }
   });

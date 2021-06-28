@@ -253,6 +253,24 @@ export class WasabeeOp {
     return this._idToOpportals.get(portalID);
   }
 
+  getMarker(markerID) {
+    for (const m of this.markers) {
+      if (m.ID == markerID) {
+        return m;
+      }
+    }
+    return null;
+  }
+
+  getLinkByID(linkID) {
+    for (const v of this.links) {
+      if (v.ID == linkID) {
+        return v;
+      }
+    }
+    return null;
+  }
+
   removeAnchor(portalId) {
     this.anchors = this.anchors.filter(function (anchor) {
       return anchor !== portalId;

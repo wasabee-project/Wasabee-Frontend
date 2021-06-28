@@ -12,7 +12,19 @@
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
-    <div id="wasabeeAlerts"></div>
+    <div id="wasabeeNotification">
+      <b-alert
+        v-for="(alert, i) in alerts"
+        :key="i"
+        :variant="alert.level"
+        :show="alert.show"
+        @dismissed="alert.show = false"
+        dismissible
+        fade
+      >
+        {{ alert.message }}
+      </b-alert>
+    </div>
     <router-view
       v-on:refresh="refresh"
       :me="me"
@@ -27,12 +39,16 @@ import { notify } from "./notify";
 import { loadMeAndOps, clearOpsStorage } from "./sync";
 import { logoutPromise } from "./server";
 
+import eventHub from "./eventHub";
+
 import WasabeeMe from "./me";
+import WasabeeOp from "./operation";
 
 export default {
   data: () => ({
     me: WasabeeMe.cacheGet(),
     loading: false,
+    alerts: [],
   }),
   methods: {
     refresh: async function () {
@@ -60,6 +76,42 @@ export default {
       delete localStorage["sentToServer"];
       window.location.href = "/";
     },
+    makeToast: function (options) {
+      options.show = true;
+      this.alerts.push(options);
+      setTimeout(() => {
+        options.show = false;
+      }, 5000);
+    },
+    notifyChange: function (data) {
+      try {
+        const op = WasabeeOp.load(data.opID);
+        if (!op) return;
+        if (op.lasteditid == data.updateID) return;
+        if (data.cmd == "Marker Assignment Change") {
+          const marker = op.getMarker(data.markerID);
+          const portal = op.getPortal(marker.portalId);
+          this.makeToast({
+            message: `You are assigned to ${marker.friendlyType} on ${portal.name} in operation ${op.name}`,
+            level: "info",
+          });
+        } else if (data.cmd == "Link Assignment Change") {
+          const link = op.getLinkByID(data.linkID);
+          const from = op.getPortal(link.fromPortalId);
+          const to = op.getPortal(link.toPortalId);
+          this.makeToast({
+            message: `You are assigned to the link from ${from.name} to ${to.name} in operation ${op.name}`,
+            level: "info",
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    },
+  },
+  created() {
+    eventHub.$on("notify", this.makeToast);
+    eventHub.$on("notifyChange", this.notifyChange);
   },
 };
 </script>

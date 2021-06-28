@@ -8,6 +8,7 @@ import { loadMeAndOps } from "./sync";
 
 import Vue from "vue";
 import {
+  BAlert,
   BNav,
   BNavbar,
   BNavbarToggle,
@@ -39,6 +40,7 @@ async function wasabeeMain() {
   // for when you are doing an op and have low/no signal
 
   //Vue.use(BootstrapVue);
+  Vue.component("BAlert", BAlert);
   Vue.component("BNav", BNav);
   Vue.component("BNavbar", BNavbar);
   Vue.component("BNavbarToggle", BNavbarToggle);

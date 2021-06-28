@@ -2,102 +2,98 @@
   <div id="wasabeeContent">
     <div class="container">
       <div class="row">
-        <div class="col">
-          <h1>
-            Teams <b-button v-on:click="refresh" variant="primary">↻</b-button>
-          </h1>
-          <table class="table table-striped">
-            <thead class="thead">
-              <tr>
-                <th>Team</th>
-                <th>Share Location</th>
-                <th>Share WD Keys</th>
-                <th>Load WD Keys</th>
-                <th>Ops</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="teams">
-              <tr v-if="!teams.length">
-                <td colspan="6">
-                  You are not on any teams, have your operator add you with this
-                  GoogleID: {{ me.GoogleID }}
-                </td>
-              </tr>
-              <tr v-for="team in teams" :key="team.ID">
-                <td>
-                  <router-link :to="'/team/' + team.ID + '/list'">
-                    {{ team.Name }}
-                  </router-link>
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    v-model="team.State"
-                    true-value="On"
-                    false-value="Off"
-                    v-on:change="setTeamState(team)"
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    v-model="team.ShareWD"
-                    true-value="On"
-                    false-value="Off"
-                    v-on:change="setTeamShareWD(team)"
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    v-model="team.LoadWD"
-                    true-value="On"
-                    false-value="Off"
-                    v-on:change="setTeamLoadWD(team)"
-                  />
-                </td>
-                <td>
-                  <router-link
-                    v-for="(name, id) in teamsOps[team.ID]"
-                    :key="id"
-                    :to="'/operation/' + id + '/list'"
-                  >
-                    {{ name }}
-                  </router-link>
-                </td>
-                <td>
-                  <b-button
-                    v-if="isOwner(team)"
-                    v-on:click="deleteTeam(team)"
-                    variant="danger"
-                    size="sm"
-                  >
-                    <span v-if="toDelete === team.ID">Confirm?</span>
-                    <span v-else>Delete</span>
-                  </b-button>
-                  <b-button
-                    v-else
-                    v-on:click="leaveTeam(team)"
-                    variant="warning"
-                    size="sm"
-                  >
-                    <span v-if="toDelete === team.ID">Confirm?</span>
-                    <span v-else>Leave</span>
-                  </b-button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div class="row">
+        <h1>
+          Teams <b-button v-on:click="refresh" variant="primary">↻</b-button>
+        </h1>
+        <table class="table table-striped">
+          <thead class="thead">
+            <tr>
+              <th>Team</th>
+              <th>Share Location</th>
+              <th>Share WD Keys</th>
+              <th>Load WD Keys</th>
+              <th>Ops</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="teams">
+            <tr v-if="!teams.length">
+              <td colspan="6">
+                You are not on any teams, have your operator add you with this
+                GoogleID: {{ me.GoogleID }}
+              </td>
+            </tr>
+            <tr v-for="team in teams" :key="team.ID">
+              <td>
+                <router-link :to="'/team/' + team.ID + '/list'">
+                  {{ team.Name }}
+                </router-link>
+              </td>
+              <td>
+                <input
+                  type="checkbox"
+                  v-model="team.State"
+                  true-value="On"
+                  false-value="Off"
+                  v-on:change="setTeamState(team)"
+                />
+              </td>
+              <td>
+                <input
+                  type="checkbox"
+                  v-model="team.ShareWD"
+                  true-value="On"
+                  false-value="Off"
+                  v-on:change="setTeamShareWD(team)"
+                />
+              </td>
+              <td>
+                <input
+                  type="checkbox"
+                  v-model="team.LoadWD"
+                  true-value="On"
+                  false-value="Off"
+                  v-on:change="setTeamLoadWD(team)"
+                />
+              </td>
+              <td>
+                <router-link
+                  v-for="(name, id) in teamsOps[team.ID]"
+                  :key="id"
+                  :to="'/operation/' + id + '/list'"
+                >
+                  {{ name }}
+                </router-link>
+              </td>
+              <td>
+                <b-button
+                  v-if="isOwner(team)"
+                  v-on:click="deleteTeam(team)"
+                  variant="danger"
+                  size="sm"
+                >
+                  <span v-if="toDelete === team.ID">Confirm?</span>
+                  <span v-else>Delete</span>
+                </b-button>
+                <b-button
+                  v-else
+                  v-on:click="leaveTeam(team)"
+                  variant="warning"
+                  size="sm"
+                >
+                  <span v-if="toDelete === team.ID">Confirm?</span>
+                  <span v-else>Leave</span>
+                </b-button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
         <div class="col">
           <label
             >New Team:
             <input type="text" placeholder="New Team" v-model="newTeamName"
           /></label>
-          <button v-on:click="createTeam">New Team</button>
+          <b-button variant="info" v-on:click="createTeam">New Team</b-button>
         </div>
       </div>
     </div>

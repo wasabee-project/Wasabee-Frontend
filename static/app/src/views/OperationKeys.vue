@@ -1,78 +1,77 @@
 <template>
   <div class="container">
     <div class="row">
-      <div class="col">
-        <h1 id="opName">{{ operation.name }}</h1>
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th @click="sort('name')">Portal</th>
-              <th @click="sort('required')">Required</th>
-              <th v-if="canWrite">
-                <select v-model="agent">
-                  <option v-for="a in agentList" :key="a.id" :value="a.id">
-                    {{ a.name }}
-                  </option>
-                </select>
-              </th>
-              <th v-else @click="sort('agentRequired')">Agent needs</th>
-              <th @click="sort('onHand')">Total</th>
-              <th @click="sort('iHave')">Agent Count</th>
-              <th @click="sort('capsule')">Capsule</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="key in klist"
-              :key="key.id"
-              :class="{
-                'table-warning': key.agentRequired > key.iHave,
-                'table-danger': key.required > key.onHand,
-              }"
-            >
-              <td>{{ key.name }}</td>
-              <td>{{ key.required }}</td>
-              <td>{{ key.agentRequired }}</td>
-              <td>{{ key.onHand }}</td>
-              <td>
-                <input
-                  size="3"
-                  v-on:change="keyChange(key)"
-                  v-model.number="key.iHave"
-                  :disabled="agent != me.GoogleID"
-                />
-              </td>
-              <td>
-                <input
-                  size="10"
-                  v-on:change="keyChange(key)"
-                  v-model.lazy="key.capsule"
-                  :disabled="agent != me.GoogleID"
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <hr />
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th scope="col">Portal</th>
-              <th scope="col">Agent</th>
-              <th scope="col">Count</th>
-              <th scope="col">Capsule</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="key in koh" :key="key.key">
-              <td>{{ key.name }}</td>
-              <td>{{ key.agent }}</td>
-              <td>{{ key.count }}</td>
-              <td>{{ key.capsule }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <h1 id="opName">{{ operation.name }}</h1>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th @click="sort('name')">Portal</th>
+            <th @click="sort('required')">Required</th>
+            <th v-if="canWrite">
+              <select v-model="agent">
+                <option v-for="a in agentList" :key="a.id" :value="a.id">
+                  {{ a.name }}
+                </option>
+              </select>
+            </th>
+            <th v-else @click="sort('agentRequired')">Agent needs</th>
+            <th @click="sort('onHand')">Total</th>
+            <th @click="sort('iHave')">Agent Count</th>
+            <th @click="sort('capsule')">Capsule</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="key in klist"
+            :key="key.id"
+            :class="{
+              'table-warning': key.agentRequired > key.iHave,
+              'table-danger': key.required > key.onHand,
+            }"
+          >
+            <td>{{ key.name }}</td>
+            <td>{{ key.required }}</td>
+            <td>{{ key.agentRequired }}</td>
+            <td>{{ key.onHand }}</td>
+            <td>
+              <input
+                size="3"
+                v-on:change="keyChange(key)"
+                v-model.number="key.iHave"
+                :disabled="agent != me.GoogleID"
+              />
+            </td>
+            <td>
+              <input
+                size="10"
+                v-on:change="keyChange(key)"
+                v-model.lazy="key.capsule"
+                :disabled="agent != me.GoogleID"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="row">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Portal</th>
+            <th scope="col">Agent</th>
+            <th scope="col">Count</th>
+            <th scope="col">Capsule</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="key in koh" :key="key.key">
+            <td>{{ key.name }}</td>
+            <td>{{ key.agent }}</td>
+            <td>{{ key.count }}</td>
+            <td>{{ key.capsule }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>

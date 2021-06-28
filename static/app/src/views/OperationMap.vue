@@ -1,118 +1,114 @@
 <template>
   <div class="container-fluid">
-    <div class="row">
-      <div class="col">
-        <h1 id="opName">{{ operation.name }}</h1>
-        <LMap
-          id="map"
-          style="height: calc(100vh - 300px); min-height: 200px"
-          :bounds="operation.mbr"
+    <h1 id="opName">{{ operation.name }}</h1>
+    <LMap
+      id="map"
+      style="height: calc(100vh - 300px); min-height: 200px"
+      :bounds="operation.mbr"
+    >
+      <LControlLayers
+        position="topright"
+        :hideSingleBase="true"
+      ></LControlLayers>
+      <LTileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
+        layer-type="base"
+      />
+      <LLayerGroup name="Zones">
+        <LPolygon
+          v-for="z in zones.polygons"
+          :key="z.id"
+          :lat-lngs="z.points"
+          :color="z.color"
+          :fill-color="z.color"
         >
-          <LControlLayers
-            position="topright"
-            :hideSingleBase="true"
-          ></LControlLayers>
-          <LTileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
-            layer-type="base"
+          <LPopup>{{ z.name }} </LPopup>
+        </LPolygon>
+      </LLayerGroup>
+      <LLayerGroup
+        v-for="(layer, name) in layers"
+        :key="name"
+        :name="name"
+        layer-type="overlay"
+      >
+        <LMarker
+          v-for="marker in layer.markers"
+          :key="marker.ID"
+          :lat-lng="getPortal(marker.portalId).latLng"
+          :title="getPortal(marker.portalId).name"
+        >
+          <LIcon
+            :icon-url="marker.icon"
+            :icon-size="[24, 40]"
+            :icon-anchor="[12, 40]"
+            :popup-anchor="[-1, -48]"
           />
-          <LLayerGroup name="Zones">
-            <LPolygon
-              v-for="z in zones.polygons"
-              :key="z.id"
-              :lat-lngs="z.points"
-              :color="z.color"
-              :fill-color="z.color"
+          <LPopup>
+            {{ getPortal(marker.portalId).name }}
+            <div v-if="marker.comment">{{ marker.comment }}</div>
+            <div v-if="marker.status != 'pending'">{{ marker.status }}</div>
+            <div v-if="marker.assignedTo">
+              {{ getAgentName(marker.assignedTo) }}
+            </div>
+            <b-button
+              target="_blank"
+              size="sm"
+              variant="outline-primary"
+              :href="
+                'https://www.google.com/maps/search/?api=1&query=' +
+                getPortal(marker.portalId).latLng.lat +
+                ',' +
+                getPortal(marker.portalId).latLng.lng
+              "
+              >Google Map</b-button
             >
-              <LPopup>{{ z.name }} </LPopup>
-            </LPolygon>
-          </LLayerGroup>
-          <LLayerGroup
-            v-for="(layer, name) in layers"
-            :key="name"
-            :name="name"
-            layer-type="overlay"
-          >
-            <LMarker
-              v-for="marker in layer.markers"
-              :key="marker.ID"
-              :lat-lng="getPortal(marker.portalId).latLng"
-              :title="getPortal(marker.portalId).name"
+          </LPopup>
+        </LMarker>
+        <LGeodesic
+          v-for="link in layer.links"
+          :key="link.ID"
+          :lat-lngs="link.getLatLngs(operation)"
+          :weight="2"
+          :color="getLinkColor(link)"
+          :opacity="0.75"
+        />
+        <LMarker
+          v-for="anchor in layer.anchors"
+          :key="anchor"
+          :lat-lng="getPortal(anchor).latLng"
+          :title="getPortal(anchor).name"
+        >
+          <LIcon
+            :icon-url="cdn + '/img/markers/pin_lime.svg'"
+            :icon-size="[24, 40]"
+            :icon-anchor="[12, 40]"
+            :popup-anchor="[-1, -48]"
+          />
+          <LPopup>
+            {{ getPortal(anchor).name }}
+            <div v-if="getPortal(anchor).comment">
+              {{ getPortal(anchor).comment }}
+            </div>
+            <div v-if="getPortal(anchor).hardness">
+              {{ getPortal(anchor).status }}
+            </div>
+            <b-button
+              target="_blank"
+              size="sm"
+              variant="outline-primary"
+              :href="
+                'https://www.google.com/maps/search/?api=1&query=' +
+                getPortal(anchor).latLng.lat +
+                ',' +
+                getPortal(anchor).latLng.lng
+              "
+              >Google Map</b-button
             >
-              <LIcon
-                :icon-url="marker.icon"
-                :icon-size="[24, 40]"
-                :icon-anchor="[12, 40]"
-                :popup-anchor="[-1, -48]"
-              />
-              <LPopup>
-                {{ getPortal(marker.portalId).name }}
-                <div v-if="marker.comment">{{ marker.comment }}</div>
-                <div v-if="marker.status != 'pending'">{{ marker.status }}</div>
-                <div v-if="marker.assignedTo">
-                  {{ getAgentName(marker.assignedTo) }}
-                </div>
-                <b-button
-                  target="_blank"
-                  size="sm"
-                  variant="outline-primary"
-                  :href="
-                    'https://www.google.com/maps/search/?api=1&query=' +
-                    getPortal(marker.portalId).latLng.lat +
-                    ',' +
-                    getPortal(marker.portalId).latLng.lng
-                  "
-                  >Google Map</b-button
-                >
-              </LPopup>
-            </LMarker>
-            <LGeodesic
-              v-for="link in layer.links"
-              :key="link.ID"
-              :lat-lngs="link.getLatLngs(operation)"
-              :weight="2"
-              :color="getLinkColor(link)"
-              :opacity="0.75"
-            />
-            <LMarker
-              v-for="anchor in layer.anchors"
-              :key="anchor"
-              :lat-lng="getPortal(anchor).latLng"
-              :title="getPortal(anchor).name"
-            >
-              <LIcon
-                :icon-url="cdn + '/img/markers/pin_lime.svg'"
-                :icon-size="[24, 40]"
-                :icon-anchor="[12, 40]"
-                :popup-anchor="[-1, -48]"
-              />
-              <LPopup>
-                {{ getPortal(anchor).name }}
-                <div v-if="getPortal(anchor).comment">
-                  {{ getPortal(anchor).comment }}
-                </div>
-                <div v-if="getPortal(anchor).hardness">
-                  {{ getPortal(anchor).status }}
-                </div>
-                <b-button
-                  target="_blank"
-                  size="sm"
-                  variant="outline-primary"
-                  :href="
-                    'https://www.google.com/maps/search/?api=1&query=' +
-                    getPortal(anchor).latLng.lat +
-                    ',' +
-                    getPortal(anchor).latLng.lng
-                  "
-                  >Google Map</b-button
-                >
-              </LPopup>
-            </LMarker>
-          </LLayerGroup>
-        </LMap>
-      </div>
-    </div>
+          </LPopup>
+        </LMarker>
+      </LLayerGroup>
+    </LMap>
   </div>
 </template>
 

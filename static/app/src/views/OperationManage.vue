@@ -5,7 +5,10 @@
       <div class="card-header" id="opName">{{ operation.name }}</div>
       <div class="card-body">
         <ul class="list-group list-group-flush">
-          <textarea v-model.lazy="operation.comment"></textarea>
+          <textarea
+            v-model.lazy="operation.comment"
+            class="form-control"
+          ></textarea>
         </ul>
       </div>
     </div>

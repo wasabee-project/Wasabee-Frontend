@@ -73,15 +73,17 @@
                     variant="danger"
                     size="sm"
                   >
-                    Delete
+                    <span v-if="toDelete === team.ID">Confirm?</span>
+                    <span v-else>Delete</span>
                   </b-button>
                   <b-button
-                    v-if="!isOwner(team)"
+                    v-else
                     v-on:click="leaveTeam(team)"
                     variant="warning"
                     size="sm"
                   >
-                    Leave
+                    <span v-if="toDelete === team.ID">Confirm?</span>
+                    <span v-else>Leave</span>
                   </b-button>
                 </td>
               </tr>
@@ -122,6 +124,7 @@ export default {
   props: ["me"],
   data: () => ({
     newTeamName: "",
+    toDelete: null,
   }),
   computed: {
     teams: function () {
@@ -194,23 +197,31 @@ export default {
       return team.Owner == this.me.GoogleID;
     },
     deleteTeam: async function (t) {
-      try {
-        await deleteTeamPromise(t.ID);
-        logEvent("leave_group");
-        await this.refresh();
-      } catch (e) {
-        console.log(e);
-        notify(e, "warning");
+      if (this.toDelete !== t.ID) this.toDelete = t.ID;
+      else {
+        try {
+          await deleteTeamPromise(t.ID);
+          logEvent("leave_group");
+          await this.refresh();
+        } catch (e) {
+          console.log(e);
+          notify(e, "warning");
+        }
+        this.toDelete = null;
       }
     },
     leaveTeam: async function (t) {
-      try {
-        await leaveTeamPromise(t.ID);
-        logEvent("leave_group");
-        await this.refresh();
-      } catch (e) {
-        console.log(e);
-        notify(e, "warning");
+      if (this.toDelete !== t.ID) this.toDelete = t.ID;
+      else {
+        try {
+          await leaveTeamPromise(t.ID);
+          logEvent("leave_group");
+          await this.refresh();
+        } catch (e) {
+          console.log(e);
+          notify(e, "warning");
+        }
+        this.toDelete = null;
       }
     },
   },

@@ -35,12 +35,13 @@
                 </td>
                 <td>
                   <b-button
-                    v-if="isOwner(op)"
+                    v-if="op.own"
                     v-on:click="deleteOp(op)"
                     variant="danger"
                     size="sm"
                   >
-                    Delete
+                    <span v-if="toDelete === op.ID">Confirm?</span>
+                    <span v-else>Delete</span>
                   </b-button>
                 </td>
               </tr>
@@ -62,6 +63,9 @@ import { loadMeAndOps } from "../sync";
 
 export default {
   props: ["me"],
+  data: () => ({
+    toDelete: null,
+  }),
   computed: {
     ops: function () {
       const ops = [];
@@ -72,7 +76,13 @@ export default {
         ops.push(op);
       }
       ops.sort((a, b) => a.name.localeCompare(b.name));
-      return ops;
+      return ops.map((op) => ({
+        ID: op.ID,
+        comment: op.comment,
+        own: op.creator == this.me.GoogleID,
+        name: op.name,
+        teamlist: op.teamlist,
+      }));
     },
     teamMap: function () {
       const teamMap = new Map();
@@ -94,16 +104,17 @@ export default {
     getTeamName: function (id) {
       return this.teamMap.get(id);
     },
-    isOwner: function (op) {
-      return op.creator == this.me.GoogleID;
-    },
     deleteOp: async function (op) {
-      try {
-        await deleteOpPromise(op.ID);
-        await this.refresh();
-      } catch (e) {
-        console.log(e);
-        notify(e, "warning", true);
+      if (this.toDelete !== op.ID) this.toDelete = op.ID;
+      else {
+        try {
+          await deleteOpPromise(op.ID);
+          await this.refresh();
+        } catch (e) {
+          console.log(e);
+          notify(e, "warning", true);
+        }
+        this.toDelete = null;
       }
     },
   },

@@ -16,7 +16,9 @@
           <td>{{ t.role }}</td>
           <td>{{ t.zoneName }}</td>
           <td v-if="isOwner">
-            <button v-on:click="removePerm(t)">Remove</button>
+            <b-button variant="secondary" size="sm" v-on:click="removePerm(t)"
+              >Remove</b-button
+            >
           </td>
         </tr>
       </tbody>

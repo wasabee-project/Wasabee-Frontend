@@ -6,6 +6,7 @@
         <b-navbar-nav>
           <b-nav-item to="/teams">Teams</b-nav-item>
           <b-nav-item to="/operations">Operations</b-nav-item>
+          <b-nav-item to="/defensivekeys">Defensive keys</b-nav-item>
           <b-nav-item to="/settings">Settings</b-nav-item>
           <b-nav-item to="/help">Help</b-nav-item>
           <b-nav-item v-on:click="logout">Log out</b-nav-item>

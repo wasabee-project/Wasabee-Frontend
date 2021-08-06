@@ -12,19 +12,19 @@
         </tr>
       </thead>
       <tbody id="teamTable">
-        <tr v-for="agent in team.agents" :key="agent.id">
+        <tr v-for="agent in agents" :key="agent.id">
           <td><img :src="agent.pic" height="50" width="50" /></td>
           <td>{{ agent.name }}</td>
           <td>
             <img
-              v-if="agent.state"
+              v-if="agent.shareLoc"
               :src="cdn + '/img/checkmark.png'"
               alt="sharing location"
             />
           </td>
           <td>
             <img
-              v-if="agent.ShareWD"
+              v-if="agent.shareWD"
               :src="cdn + '/img/checkmark.png'"
               alt="sharing wd keys"
             />
@@ -42,5 +42,20 @@ export default {
   data: () => ({
     cdn: window.wasabeewebui.cdnurl,
   }),
+  computed: {
+    agents: function () {
+      return this.team.agents.map((agent) => ({
+        id: agent.id,
+        pic: agent.pic,
+        name:
+          !agent.rocks && !agent.Vverified && agent.intelname
+            ? agent.intelname
+            : agent.name,
+        shareLoc: agent.state,
+        shareWD: agent.shareWD,
+        squad: agent.squad,
+      }));
+    },
+  },
 };
 </script>

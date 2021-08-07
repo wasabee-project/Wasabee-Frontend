@@ -18,7 +18,7 @@
       <div
         v-for="(alert, i) in alerts"
         :key="i"
-        :class="['toast', 'fade', 'bg-' + alert.level, { show: alert.show }]"
+        :class="['toast', 'fade', 'toast-' + alert.level, { show: alert.show }]"
         role="alert"
       >
         <div class="toast-header">

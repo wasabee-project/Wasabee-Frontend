@@ -20,6 +20,8 @@ import TeamManage from "../views/TeamManage.vue";
 import TeamSettings from "../views/TeamSettings.vue";
 
 import DefensiveKeys from "../views/DefensiveKeys.vue";
+import DefensiveKeysList from "../views/DefensiveKeysList.vue";
+import DefensiveKeysMap from "../views/DefensiveKeysMap.vue";
 
 Vue.use(VueRouter);
 
@@ -39,6 +41,11 @@ const routes = [
     path: "/defensivekeys",
     name: "Defensive Keys",
     component: DefensiveKeys,
+    children: [
+      { path: "", redirect: "list" },
+      { path: "list", component: DefensiveKeysList },
+      { path: "map", component: DefensiveKeysMap },
+    ],
   },
   {
     path: "/settings",

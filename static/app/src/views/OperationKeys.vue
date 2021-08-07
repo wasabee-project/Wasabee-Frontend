@@ -78,17 +78,15 @@
 
 <script>
 import { notify } from "../notify";
-import WasabeeMe from "../me";
 import WasabeeTeam from "../team";
 import { opKeyPromise } from "../server";
 
 export default {
-  props: ["operation", "canWrite"],
+  props: ["me", "operation", "canWrite"],
   data: () => ({
-    me: WasabeeMe.cacheGet(),
     sortBy: "name",
     sortDesc: false,
-    agent: WasabeeMe.cacheGet().GoogleID,
+    agent: "",
   }),
   computed: {
     agentList: function () {
@@ -207,6 +205,9 @@ export default {
       if (agent) return agent.name;
       return id;
     },
+  },
+  created: function () {
+    this.agent = this.me.GoogleID;
   },
 };
 </script>

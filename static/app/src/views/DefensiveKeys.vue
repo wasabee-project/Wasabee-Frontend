@@ -10,7 +10,6 @@
 </template>
 
 <script>
-import WasabeeMe from "../me";
 import { dKeylistPromise } from "../server";
 
 import { notify } from "../notify";

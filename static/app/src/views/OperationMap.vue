@@ -80,7 +80,7 @@
           :title="getPortal(anchor).name"
         >
           <LIcon
-            :icon-url="cdn + '/img/markers/pin_lime.svg'"
+            :icon-url="$CDN_URL + '/img/markers/pin_lime.svg'"
             :icon-size="[24, 40]"
             :icon-anchor="[12, 40]"
             :popup-anchor="[-1, -48]"
@@ -150,11 +150,7 @@ function newColors(incoming) {
 }
 
 export default {
-  props: ["operation"],
-  data: () => ({
-    me: WasabeeMe.cacheGet(),
-    cdn: window.wasabeewebui.cdnurl,
-  }),
+  props: ["me", "operation"],
   computed: {
     zones: function () {
       return {

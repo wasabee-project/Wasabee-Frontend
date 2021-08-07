@@ -12,6 +12,7 @@
     <router-view
       v-on:refresh="refresh"
       v-if="operation"
+      :me="me"
       :operation="operation"
       :canWrite="canWrite"
       :class="{ loading: loading }"
@@ -20,7 +21,6 @@
 </template>
 
 <script>
-import WasabeeMe from "../me";
 import WasabeeTeam from "../team";
 
 import { opPromise } from "../server";

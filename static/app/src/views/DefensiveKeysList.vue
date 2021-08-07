@@ -39,7 +39,6 @@
 
 <script>
 import { notify } from "../notify";
-import WasabeeMe from "../me";
 import WasabeeAgent from "../agent";
 import { dKeyPromise } from "../server";
 

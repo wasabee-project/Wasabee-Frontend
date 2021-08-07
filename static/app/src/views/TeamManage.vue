@@ -25,7 +25,7 @@
           <td>
             <img
               v-if="agent.state"
-              :src="cdn + '/img/checkmark.png'"
+              :src="$CDN_URL + '/img/checkmark.png'"
               alt="sharing location"
             />
           </td>
@@ -55,10 +55,9 @@ import {
 } from "../server";
 
 export default {
-  props: ["team"],
+  props: ["me", "team"],
   data: () => ({
     agentName: "",
-    cdn: window.wasabeewebui.cdnurl,
   }),
   methods: {
     addAgent: function () {

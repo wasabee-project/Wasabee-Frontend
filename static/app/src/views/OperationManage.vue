@@ -48,7 +48,7 @@
           </td>
           <td v-if="isLink(step)">
             <a v-on:click="reverseLink(step)">
-              <img :src="cdn + '/img/swap.svg'" height="16" />
+              <img :src="$CDN_URL + '/img/swap.svg'" height="16" />
             </a>
           </td>
           <td v-if="isLink(step)">
@@ -121,11 +121,8 @@ export default {
     assignmentsOnly: {
       default: false,
     },
+    me: null,
   },
-  data: () => ({
-    me: WasabeeMe.cacheGet(),
-    cdn: window.wasabeewebui.cdnurl,
-  }),
   computed: {
     agents: function () {
       const teamset = new Set(this.operation.teamlist.map((t) => t.teamid));

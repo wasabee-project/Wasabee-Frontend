@@ -7,12 +7,11 @@
       <b-nav-item to="settings" v-if="isOwner">Settings</b-nav-item>
       <b-button v-on:click="refresh" variant="primary">↻</b-button>
     </b-nav>
-    <router-view v-on:refresh="refresh" v-if="team" :team="team" />
+    <router-view v-on:refresh="refresh" v-if="team" :me="me" :team="team" />
   </div>
 </template>
 
 <script>
-import WasabeeMe from "../me";
 import WasabeeTeam from "../team";
 
 import { notify } from "../notify";

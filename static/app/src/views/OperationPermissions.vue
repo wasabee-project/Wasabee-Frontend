@@ -51,14 +51,12 @@
 </template>
 <script>
 import { notify } from "../notify";
-import WasabeeMe from "../me";
 import WasabeeTeam from "../team";
 import { addPermPromise, delPermPromise } from "../server";
 
 export default {
-  props: ["operation"],
+  props: ["me", "operation"],
   data: () => ({
-    me: WasabeeMe.cacheGet(),
     teamID: null,
     teamRole: null,
     teamZone: 0,

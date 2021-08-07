@@ -27,6 +27,7 @@ async function wasabeeMain() {
   try {
     const raw = await loadConfig();
     window.wasabeewebui = JSON.parse(raw);
+    Vue.prototype.$CDN_URL = window.wasabeewebui.cdnurl;
     await loadMeAndOps();
     startSendLoc();
   } catch (e) {

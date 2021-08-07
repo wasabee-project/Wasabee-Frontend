@@ -101,7 +101,6 @@
 </template>
 
 <script>
-import WasabeeMe from "../me";
 import WasabeeOp from "../operation";
 import { notify } from "../notify";
 import {

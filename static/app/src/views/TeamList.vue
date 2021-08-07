@@ -18,14 +18,14 @@
           <td>
             <img
               v-if="agent.shareLoc"
-              :src="cdn + '/img/checkmark.png'"
+              :src="$CDN_URL + '/img/checkmark.png'"
               alt="sharing location"
             />
           </td>
           <td>
             <img
               v-if="agent.shareWD"
-              :src="cdn + '/img/checkmark.png'"
+              :src="$CDN_URL + '/img/checkmark.png'"
               alt="sharing wd keys"
             />
           </td>
@@ -39,9 +39,6 @@
 <script>
 export default {
   props: ["team"],
-  data: () => ({
-    cdn: window.wasabeewebui.cdnurl,
-  }),
   computed: {
     agents: function () {
       return this.team.agents.map((agent) => ({

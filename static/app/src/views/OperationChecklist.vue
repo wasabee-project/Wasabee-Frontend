@@ -103,10 +103,8 @@ export default {
     assignmentsOnly: {
       default: false,
     },
+    me: null,
   },
-  data: () => ({
-    me: WasabeeMe.cacheGet(),
-  }),
   computed: {
     steps: function () {
       const steps = this.operation.markers.concat(this.operation.links);

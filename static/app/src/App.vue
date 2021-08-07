@@ -13,18 +13,30 @@
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
-    <div id="wasabeeNotification">
-      <b-alert
+    <div style="position: fixed; top: 0; right: 0">
+      <!-- Then put toasts within -->
+      <div
         v-for="(alert, i) in alerts"
         :key="i"
-        :variant="alert.level"
-        :show="alert.show"
-        @dismissed="alert.show = false"
-        dismissible
-        fade
+        :class="['toast', 'fade', 'bg-' + alert.level, { show: alert.show }]"
+        role="alert"
       >
-        {{ alert.message }}
-      </b-alert>
+        <div class="toast-header">
+          <!-- <img src="..." class="rounded mr-2" alt="..." /> -->
+          <strong class="mr-auto text-capitalize">{{ alert.level }}</strong>
+          <button
+            type="button"
+            class="ml-2 mb-1 close"
+            data-dismiss="toast"
+            @click="alert.show = false"
+          >
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="toast-body">
+          {{ alert.message }}
+        </div>
+      </div>
     </div>
     <router-view
       v-on:refresh="refresh"
@@ -79,7 +91,7 @@ export default {
     },
     makeToast: function (options) {
       options.show = true;
-      this.alerts.push(options);
+      this.alerts.unshift(options);
       setTimeout(() => {
         options.show = false;
       }, 5000);

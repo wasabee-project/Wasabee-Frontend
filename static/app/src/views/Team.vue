@@ -5,7 +5,7 @@
       <b-nav-item to="map">Agent Map</b-nav-item>
       <b-nav-item to="manage" v-if="isOwner">Manage</b-nav-item>
       <b-nav-item to="settings" v-if="isOwner">Settings</b-nav-item>
-      <b-button v-on:click="refresh" variant="primary">↻</b-button>
+      <b-button v-on:click="refresh(true)" variant="primary">↻</b-button>
     </b-nav>
     <router-view v-on:refresh="refresh" v-if="team" :me="me" :team="team" />
   </div>
@@ -31,9 +31,9 @@ export default {
     },
   },
   methods: {
-    refresh: function () {
+    refresh: function (force) {
       this.loading = true;
-      WasabeeTeam.waitGet(this.id)
+      WasabeeTeam.waitGet(this.id, force ? 0 : 10)
         .then((team) => {
           this.team = team;
           this.loading = false;

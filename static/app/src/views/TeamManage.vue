@@ -15,7 +15,7 @@
           <th scope="col">Agent</th>
           <th scope="col">Sharing Location</th>
           <th scope="col">Squad</th>
-          <th scope="col">&nbsp;</th>
+          <th v-if="!team.RockCommunity" scope="col">&nbsp;</th>
         </tr>
       </thead>
       <tbody id="teamTable">
@@ -35,10 +35,15 @@
               v-on:change="agentSquadChange(agent)"
             />
           </td>
-          <td>
-            <button v-if="!team.RockCommunity" v-on:click="removeAgent(agent)">
+          <td v-if="!team.RockCommunity">
+            <b-button
+              v-if="agent.id != me.GoogleID"
+              v-on:click="removeAgent(agent)"
+              variant="danger"
+              size="sm"
+            >
               Remove
-            </button>
+            </b-button>
           </td>
         </tr>
       </tbody>
@@ -63,7 +68,7 @@ export default {
     addAgent: function () {
       addAgentToTeamPromise(this.agentName, this.team.id).then(
         () => {
-          this.$emit("refresh");
+          this.$emit("refresh", true);
         },
         (reject) => {
           console.log(reject);
@@ -74,7 +79,7 @@ export default {
     removeAgent: function (agent) {
       removeAgentFromTeamPromise(agent.id, this.team.id).then(
         () => {
-          this.$emit("refresh");
+          this.$emit("refresh", true);
         },
         (reject) => {
           notify(reject, "danger", true);

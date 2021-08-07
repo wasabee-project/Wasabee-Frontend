@@ -30,7 +30,6 @@
                   >
                     <template v-if="index > 0">,</template>
                     <router-link
-                      v-for="teamid in filterTeamsID(op.teamlist)"
                       :key="teamid"
                       :to="'/team/' + teamid + '/list'"
                     >

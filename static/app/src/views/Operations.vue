@@ -25,13 +25,18 @@
                 </td>
                 <td>{{ op.comment }}</td>
                 <td>
-                  <router-link
-                    v-for="teamid in filterTeamsID(op.teamlist)"
-                    :key="teamid"
-                    :to="'/team/' + teamid + '/list'"
+                  <template
+                    v-for="(teamid, index) in filterTeamsID(op.teamlist)"
                   >
-                    {{ getTeamName(teamid) }}
-                  </router-link>
+                    <template v-if="index > 0">,</template>
+                    <router-link
+                      v-for="teamid in filterTeamsID(op.teamlist)"
+                      :key="teamid"
+                      :to="'/team/' + teamid + '/list'"
+                    >
+                      {{ getTeamName(teamid) }}
+                    </router-link>
+                  </template>
                 </td>
                 <td>
                   <b-button

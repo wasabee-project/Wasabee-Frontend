@@ -57,13 +57,12 @@
                 />
               </td>
               <td>
-                <router-link
-                  v-for="(name, id) in teamsOps[team.ID]"
-                  :key="id"
-                  :to="'/operation/' + id + '/list'"
-                >
-                  {{ name }}
-                </router-link>
+                <template v-for="(name, id, index) in teamsOps[team.ID]">
+                  <template v-if="index > 0">,</template>
+                  <router-link :key="id" :to="'/operation/' + id + '/list'">
+                    {{ name }}
+                  </router-link>
+                </template>
               </td>
               <td>
                 <b-button

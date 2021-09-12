@@ -9,6 +9,7 @@
           <thead class="thead">
             <tr>
               <th>Team</th>
+              <th>Owner</th>
               <th>Share Location</th>
               <th>Share WD Keys</th>
               <th>Load WD Keys</th>
@@ -28,6 +29,9 @@
                 <router-link :to="'/team/' + team.ID + '/list'">
                   {{ team.Name }}
                 </router-link>
+              </td>
+              <td>
+                {{ getOwner(team) }}
               </td>
               <td>
                 <input
@@ -101,6 +105,7 @@
 
 <script>
 import WasabeeOp from "../operation";
+import WasabeeAgent from "../agent";
 import { notify } from "../notify";
 import {
   SetTeamState,
@@ -189,6 +194,10 @@ export default {
     },
     isOwner: function (team) {
       return team.Owner == this.me.GoogleID;
+    },
+    getOwner: function (team) {
+      const agent = WasabeeAgent.cacheGet(team.Owner);
+      return agent ? agent.name : team.Owner;
     },
     deleteTeam: async function (t) {
       if (this.toDelete !== t.ID) this.toDelete = t.ID;

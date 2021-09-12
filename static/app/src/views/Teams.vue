@@ -132,10 +132,16 @@ export default {
     teamsOps: function () {
       const teams = {};
       const lsk = Object.keys(localStorage);
+      const ops = [];
       for (const id of lsk) {
         if (id.length != 40) continue;
         const op = new WasabeeOp(localStorage[id]);
         if (!op || !op.ID) continue;
+        ops.push([op.ID, op.name]);
+      }
+      ops.sort((a, b) => a[1].localeCompare(b[1]));
+      for (const id of ops.map((d) => d[0])) {
+        const op = new WasabeeOp(localStorage[id]);
         for (const opteam of op.teamlist) {
           teams[opteam.teamid] = teams[opteam.teamid] || {};
           teams[opteam.teamid][op.ID] = op.name;

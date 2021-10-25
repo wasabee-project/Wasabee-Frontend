@@ -1,57 +1,121 @@
 <template>
   <div class="container">
+    <h1 id="opName">{{ operation.name }}</h1>
     <div class="row">
-      <h1 id="opName">{{ operation.name }}</h1>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th @click="sort('name')">Portal</th>
-            <th @click="sort('required')">Required</th>
-            <th v-if="canWrite">
-              <select v-model="agent">
-                <option v-for="a in agentList" :key="a.id" :value="a.id">
-                  {{ a.name }}
-                </option>
-              </select>
-            </th>
-            <th v-else @click="sort('agentRequired')">Agent needs</th>
-            <th @click="sort('onHand')">Total</th>
-            <th @click="sort('iHave')">Agent Count</th>
-            <th @click="sort('capsule')">Capsule</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="key in klist"
-            :key="key.id"
-            :class="{
-              'table-warning': key.agentRequired > key.iHave,
-              'table-danger': key.required > key.onHand,
-            }"
-          >
-            <td><PortalLink :id="key.id" :operation="operation" /></td>
-            <td>{{ key.required }}</td>
-            <td>{{ key.agentRequired }}</td>
-            <td>{{ key.onHand }}</td>
-            <td>
-              <input
-                size="3"
-                v-on:change="keyChange(key)"
-                v-model.number="key.iHave"
-                :disabled="agent != me.GoogleID"
+      <div class="col">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th @click="sort('name')">Portal</th>
+              <th @click="sort('required')">Required</th>
+              <th v-if="canWrite">
+                <select v-model="agent">
+                  <option v-for="a in agentList" :key="a.id" :value="a.id">
+                    {{ a.name }}
+                  </option>
+                </select>
+              </th>
+              <th v-else @click="sort('agentRequired')">Agent needs</th>
+              <th @click="sort('onHand')">Total</th>
+              <th @click="sort('iHave')">Agent Count</th>
+              <th @click="sort('capsule')">Capsule</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="key in klist"
+              :key="key.id"
+              :class="{
+                'table-warning': key.agentRequired > key.iHave,
+                'table-danger': key.required > key.onHand,
+              }"
+              @click="selectedKey = key.id"
+            >
+              <td><PortalLink :id="key.id" :operation="operation" /></td>
+              <td>{{ key.required }}</td>
+              <td>{{ key.agentRequired }}</td>
+              <td>{{ key.onHand }}</td>
+              <td>
+                <input
+                  size="3"
+                  v-on:change="keyChange(key)"
+                  v-model.number="key.iHave"
+                  :disabled="agent != me.GoogleID"
+                />
+              </td>
+              <td>
+                <input
+                  size="10"
+                  v-on:change="keyChange(key)"
+                  v-model.lazy="key.capsule"
+                  :disabled="agent != me.GoogleID"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div v-if="selectedKey && keyPortal" class="col col-md-4">
+        <div class="card" style="position: sticky; top: 0">
+          <div class="map">
+            <LMap
+              id="map"
+              style="height: 300px"
+              :center="keyPortal.latLng"
+              :zoom="15"
+            >
+              <LTileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
+                layer-type="base"
               />
-            </td>
-            <td>
-              <input
-                size="10"
-                v-on:change="keyChange(key)"
-                v-model.lazy="key.capsule"
-                :disabled="agent != me.GoogleID"
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              <LMarker :lat-lng="keyPortal.latLng" :title="keyPortal.name">
+                <LIcon
+                  :icon-url="
+                    $CDN_URL + '/img/markers/wasabee_markers_key_done.svg'
+                  "
+                  :icon-size="[24, 40]"
+                  :icon-anchor="[12, 40]"
+                  :popup-anchor="[-1, -48]"
+                />
+              </LMarker>
+            </LMap>
+          </div>
+          <div class="card-body">
+            <h3>{{ keySummary.required }} keys required</h3>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">Agent</th>
+                  <th scope="col">has</th>
+                  <th scope="col">requires</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(entry, id) in keySummary.info"
+                  :key="id"
+                  :class="{
+                    'table-warning': entry.required > entry.onHand,
+                  }"
+                >
+                  <td>{{ getAgentName(id) }}</td>
+                  <td>{{ entry.onHand }}</td>
+                  <td>{{ entry.required }}</td>
+                </tr>
+                <tr v-if="keySummary.unassigned > 0">
+                  <td>Unassigned links</td>
+                  <td></td>
+                  <td>{{ keySummary.unassigned }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <a href="#" class="btn btn-primary" @click="selectedKey = null"
+              >Close</a
+            >
+          </div>
+        </div>
+      </div>
     </div>
     <div class="row">
       <table class="table table-striped">
@@ -77,6 +141,8 @@
 </template>
 
 <script>
+import { LMap, LTileLayer, LMarker, LIcon } from "vue2-leaflet";
+
 import { notify } from "../notify";
 import WasabeeTeam from "../team";
 import { opKeyPromise } from "../server";
@@ -89,6 +155,7 @@ export default {
     sortBy: "name",
     sortDesc: false,
     agent: "",
+    selectedKey: null,
   }),
   computed: {
     agentList: function () {
@@ -183,6 +250,39 @@ export default {
         capsule: k.capsule,
       }));
     },
+    keyPortal: function () {
+      return this.selectedKey
+        ? this.operation.getPortal(this.selectedKey)
+        : null;
+    },
+    keySummary: function () {
+      const keyInfo = {};
+      const keyRequired = this.operation.KeysRequiredForPortalPerAgent(
+        this.selectedKey
+      );
+      const keyTotalRequired = Object.values(keyRequired).reduce(
+        (a, b) => a + b,
+        0
+      );
+      const keyOnHand = this.operation.KeysOnHandForPortalPerAgent(
+        this.selectedKey
+      );
+      for (const id in keyOnHand) {
+        keyInfo[id] = { onHand: keyOnHand[id], required: 0 };
+      }
+      for (const id in keyRequired) {
+        if (!(id in keyInfo)) keyInfo[id] = { onHand: 0, required: 0 };
+        keyInfo[id].required += keyRequired[id];
+      }
+      const unassigned =
+        "[unassigned]" in keyInfo ? keyInfo["[unassigned]"].required : 0;
+      delete keyInfo["[unassigned]"];
+      return {
+        info: keyInfo,
+        required: keyTotalRequired,
+        unassigned: unassigned,
+      };
+    },
   },
   methods: {
     sort: function (cat) {
@@ -212,6 +312,10 @@ export default {
     this.agent = this.me.GoogleID;
   },
   components: {
+    LMap,
+    LTileLayer,
+    LMarker,
+    LIcon,
     PortalLink,
   },
 };

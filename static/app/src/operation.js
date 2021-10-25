@@ -880,6 +880,41 @@ export class WasabeeOp {
     this.update(false);
   }
 
+  KeysOnHandForPortal(portalId) {
+    let i = 0;
+    for (const k of this.keysonhand) if (k.portalId == portalId) i += k.onhand;
+    return i;
+  }
+
+  KeysOnHandForPortalPerAgent(portalId) {
+    const is = {};
+    for (const k of this.keysonhand) {
+      if (k.portalId == portalId) {
+        if (!(k.gid in is)) is[k.gid] = 0;
+        is[k.gid] += k.onhand;
+      }
+    }
+    return is;
+  }
+
+  KeysRequiredForPortal(portalId) {
+    let i = 0;
+    for (const l of this.links) if (l.toPortalId == portalId) i++;
+    return i;
+  }
+
+  KeysRequiredForPortalPerAgent(portalId) {
+    const is = {};
+    for (const l of this.links) {
+      const id = l.assignedTo || "[unassigned]";
+      if (l.toPortalId == portalId) {
+        if (!(id in is)) is[id] = 0;
+        is[id]++;
+      }
+    }
+    return is;
+  }
+
   // note: agent name depends on the team
   getAgent(agentid) {
     const cachedAgent = WasabeeAgent.cacheGet(agentid);

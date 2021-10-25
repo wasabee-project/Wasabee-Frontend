@@ -25,7 +25,7 @@
         attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
         layer-type="base"
       />
-      <LLayerGroup name="Zones">
+      <LLayerGroup name="Zones" layer-type="overlay">
         <LPolygon
           v-for="z in zones.polygons"
           :key="z.id"

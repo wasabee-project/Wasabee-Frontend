@@ -1,6 +1,15 @@
 <template>
   <div class="container-fluid">
     <h1 id="opName">{{ operation.name }}</h1>
+
+    <label
+      >Agent:
+      <select v-model="agent">
+        <option v-for="a in agentList" :key="a.id" :value="a.id">
+          {{ a.name }}
+        </option>
+      </select>
+    </label>
     <LMap
       id="map"
       style="height: calc(100vh - 300px); min-height: 200px"
@@ -9,6 +18,7 @@
       <LControlLayers
         position="topright"
         :hideSingleBase="true"
+        :collapsed="false"
       ></LControlLayers>
       <LTileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -127,6 +137,7 @@ import {
 import LGeodesic from "./LGeodesic.vue";
 
 import WasabeeMe from "../me";
+import WasabeeTeam from "../team";
 
 function newColors(incoming) {
   switch (incoming) {
@@ -151,7 +162,21 @@ function newColors(incoming) {
 
 export default {
   props: ["me", "operation"],
+  data: () => ({
+    agent: "",
+  }),
   computed: {
+    agentList: function () {
+      const map = new Map();
+      for (const tr of this.operation.teamlist) {
+        const team = WasabeeTeam.cacheGet(tr.teamid);
+        if (!team) continue;
+        for (const agent of team.agents) map.set(agent.id, agent);
+      }
+      if (!map.size) return [{ id: this.me.GoogleID, name: this.me.name }];
+
+      return Array.from(map.values());
+    },
     zones: function () {
       return {
         polygons: this.operation.zones.filter(
@@ -161,10 +186,10 @@ export default {
     },
     assignments: function () {
       const markers = this.operation.markers.filter(
-        (m) => m.assignedTo == this.me.GoogleID
+        (m) => m.assignedTo == (this.agent || this.me.GoogleID)
       );
       const links = this.operation.links.filter(
-        (m) => m.assignedTo == this.me.GoogleID
+        (m) => m.assignedTo == (this.agent || this.me.GoogleID)
       );
       const anchors = new Set();
       for (const link of links) {
@@ -179,10 +204,10 @@ export default {
     },
     others: function () {
       const markers = this.operation.markers.filter(
-        (m) => m.assignedTo != this.me.GoogleID
+        (m) => m.assignedTo != (this.agent || this.me.GoogleID)
       );
       const links = this.operation.links.filter(
-        (m) => m.assignedTo != this.me.GoogleID
+        (m) => m.assignedTo != (this.agent || this.me.GoogleID)
       );
       const anchors = new Set();
       for (const link of links) {

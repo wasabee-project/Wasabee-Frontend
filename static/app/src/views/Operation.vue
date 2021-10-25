@@ -38,8 +38,9 @@ export default {
     canWrite: function () {
       if (!this.operation) return false;
       if (this.me.GoogleID == this.operation.creator) return true;
+      const myTeams = this.me.Teams.map((t) => t.ID);
       for (const t of this.operation.teamlist)
-        if (t.role == "write") return true;
+        if (t.role == "write" && myTeams.includes(t.id)) return true;
       return false;
     },
   },

@@ -202,12 +202,26 @@ export default {
         anchors,
       };
     },
+    unassigned: function () {
+      const markers = this.operation.markers.filter((m) => !m.assignedTo);
+      const links = this.operation.links.filter((m) => !m.assignedTo);
+      const anchors = new Set();
+      for (const link of links) {
+        anchors.add(link.fromPortalId);
+        anchors.add(link.toPortalId);
+      }
+      return {
+        markers,
+        links,
+        anchors,
+      };
+    },
     others: function () {
       const markers = this.operation.markers.filter(
-        (m) => m.assignedTo != (this.agent || this.me.GoogleID)
+        (m) => m.assignedTo && m.assignedTo != (this.agent || this.me.GoogleID)
       );
       const links = this.operation.links.filter(
-        (m) => m.assignedTo != (this.agent || this.me.GoogleID)
+        (m) => m.assignedTo && m.assignedTo != (this.agent || this.me.GoogleID)
       );
       const anchors = new Set();
       for (const link of links) {
@@ -224,6 +238,7 @@ export default {
       return {
         Assignments: this.assignments,
         Others: this.others,
+        Unassigned: this.unassigned,
       };
     },
   },

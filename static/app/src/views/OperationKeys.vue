@@ -29,7 +29,7 @@
               'table-danger': key.required > key.onHand,
             }"
           >
-            <td>{{ key.name }}</td>
+            <td><PortalLink :id="key.id" :operation="operation" /></td>
             <td>{{ key.required }}</td>
             <td>{{ key.agentRequired }}</td>
             <td>{{ key.onHand }}</td>
@@ -65,7 +65,7 @@
         </thead>
         <tbody>
           <tr v-for="key in koh" :key="key.key">
-            <td>{{ key.name }}</td>
+            <td><PortalLink :id="key.portalId" :operation="operation" /></td>
             <td>{{ key.agent }}</td>
             <td>{{ key.count }}</td>
             <td>{{ key.capsule }}</td>
@@ -80,6 +80,8 @@
 import { notify } from "../notify";
 import WasabeeTeam from "../team";
 import { opKeyPromise } from "../server";
+
+import PortalLink from "./PortalLink.vue";
 
 export default {
   props: ["me", "operation", "canWrite"],
@@ -174,7 +176,7 @@ export default {
     koh: function () {
       const missing = { name: "[portal no longer in op]" };
       return this.operation.keysonhand.map((k) => ({
-        name: (this.operation.getPortal(k.portalId) || missing).name,
+        portalId: k.portalId,
         key: k.portalId + k.gid,
         agent: this.getAgentName(k.gid),
         count: k.onhand,
@@ -208,6 +210,9 @@ export default {
   },
   created: function () {
     this.agent = this.me.GoogleID;
+  },
+  components: {
+    PortalLink,
   },
 };
 </script>

@@ -9,12 +9,13 @@
 </template>
 
 <script>
+const missing = { name: "[portal no longer in op]" };
 export default {
   props: ["id", "operation"],
   data: () => ({}),
   computed: {
     portal: function () {
-      return this.operation.getPortal(this.id);
+      return this.operation.getPortal(this.id) || missing;
     },
   },
 };

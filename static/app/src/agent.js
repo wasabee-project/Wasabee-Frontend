@@ -19,7 +19,7 @@ export default class WasabeeAgent {
     this.name = obj.name;
     this.vname = obj.vname;
     this.rocksname = obj.rocksname;
-    this.intelname = obj.intelname;
+    this.intelname = obj.intelname !== "unset" ? obj.intelname : "";
     this.intelfaction = obj.intelfaction;
     this.level = obj.level ? Number(obj.level) : 0;
     this.enlid = obj.enlid ? obj.enlid : null;
@@ -30,6 +30,10 @@ export default class WasabeeAgent {
     this.lat = obj.lat ? obj.lat : 0;
     this.lng = obj.lng ? obj.lng : 0;
     this.date = obj.date ? obj.date : null; // last location sub, not fetched
+
+    if (this.Vverified) this.name = this.vname || this.name;
+    else if (this.rocks) this.name = this.rocksname || this.name;
+    else if (this.intelname) this.name = this.intelname + " [!]";
 
     /* what did we decide to do with these?
     this.startlat = obj.startlat ? obj.startlat : 0;

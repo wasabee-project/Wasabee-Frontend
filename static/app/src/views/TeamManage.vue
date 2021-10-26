@@ -13,6 +13,7 @@
         <tr>
           <th scope="col">&nbsp;</th>
           <th scope="col">Agent</th>
+          <th scope="col">Identity</th>
           <th scope="col">Sharing Location</th>
           <th scope="col">Squad</th>
           <th v-if="!team.RockCommunity" scope="col">&nbsp;</th>
@@ -22,6 +23,18 @@
         <tr v-for="agent in team.agents" :key="agent.id">
           <td><img :src="agent.pic" height="50" width="50" /></td>
           <td>{{ agent.name }}</td>
+          <td>
+            {{
+              [
+                [agent.Vverified, "V"],
+                [agent.rocks, "Rocks"],
+                [agent.intelname, "Intel"],
+              ]
+                .filter((a) => a[0])
+                .map((a) => a[1])
+                .join(" ")
+            }}
+          </td>
           <td>
             <img
               v-if="agent.state"

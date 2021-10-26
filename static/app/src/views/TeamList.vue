@@ -6,6 +6,7 @@
         <tr>
           <th scope="col">&nbsp;</th>
           <th scope="col">Agent</th>
+          <th scope="col">Identity</th>
           <th scope="col">Sharing Location</th>
           <th scope="col">Sharing WD Keys</th>
           <th scope="col">Squad</th>
@@ -15,6 +16,7 @@
         <tr v-for="agent in agents" :key="agent.id">
           <td><img :src="agent.pic" height="50" width="50" /></td>
           <td>{{ agent.name }}</td>
+          <td>{{ agent.auths }}</td>
           <td>
             <img
               v-if="agent.shareLoc"
@@ -44,10 +46,15 @@ export default {
       return this.team.agents.map((agent) => ({
         id: agent.id,
         pic: agent.pic,
-        name:
-          !agent.rocks && !agent.Vverified && agent.intelname
-            ? agent.intelname
-            : agent.name,
+        name: agent.name,
+        auths: [
+          [agent.Vverified, "V"],
+          [agent.rocks, "Rocks"],
+          [agent.intelname, "Intel"],
+        ]
+          .filter((a) => a[0])
+          .map((a) => a[1])
+          .join(" "),
         shareLoc: agent.state,
         shareWD: agent.shareWD,
         squad: agent.squad,

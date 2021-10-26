@@ -8,14 +8,14 @@
             <tr>
               <th @click="sort('name')">Portal</th>
               <th @click="sort('required')">Required</th>
-              <th v-if="canWrite">
+              <th>
+                <label @click="sort('agentRequired')">For </label>
                 <select v-model="agent">
                   <option v-for="a in agentList" :key="a.id" :value="a.id">
                     {{ a.name }}
                   </option>
                 </select>
               </th>
-              <th v-else @click="sort('agentRequired')">Agent needs</th>
               <th @click="sort('onHand')">Total</th>
               <th @click="sort('iHave')">Agent Count</th>
               <th @click="sort('capsule')">Capsule</th>
@@ -86,6 +86,20 @@
             <table class="table table-striped">
               <thead>
                 <tr>
+                  <th scope="col">Zone</th>
+                  <th scope="col">requires</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="entry in keySummary.zones" :key="entry.zone">
+                  <td>{{ operation.zoneName(entry.zone) }}</td>
+                  <td>{{ entry.count }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <table class="table table-striped">
+              <thead>
+                <tr>
                   <th scope="col">Agent</th>
                   <th scope="col">has</th>
                   <th scope="col">requires</th>
@@ -150,7 +164,7 @@ import { opKeyPromise } from "../server";
 import PortalLink from "./PortalLink.vue";
 
 export default {
-  props: ["me", "operation", "canWrite"],
+  props: ["me", "operation"],
   data: () => ({
     sortBy: "name",
     sortDesc: false,
@@ -250,6 +264,9 @@ export default {
         capsule: k.capsule,
       }));
     },
+    keysZones: function () {
+      return this.operation.keysRequiredPerPortalPerZone();
+    },
     keyPortal: function () {
       return this.selectedKey
         ? this.operation.getPortal(this.selectedKey)
@@ -277,10 +294,12 @@ export default {
       const unassigned =
         "[unassigned]" in keyInfo ? keyInfo["[unassigned]"].required : 0;
       delete keyInfo["[unassigned]"];
+
       return {
         info: keyInfo,
         required: keyTotalRequired,
         unassigned: unassigned,
+        zones: this.keysZones.filter((e) => e.to == this.selectedKey),
       };
     },
   },

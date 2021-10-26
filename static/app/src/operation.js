@@ -915,11 +915,32 @@ export class WasabeeOp {
     return is;
   }
 
+  keysRequiredPerPortalPerZone() {
+    const is /*: { to: PortalID; zone: ZoneID; count: number }[] */ = [];
+    for (const l of this.links) {
+      const s = is.find((v) => v.to == l.toPortalId && v.zone == l.zone);
+      if (s) s.count += 1;
+      else is.push({ to: l.toPortalId, zone: l.zone, count: 1 });
+    }
+    return is;
+  }
+
   // note: agent name depends on the team
   getAgent(agentid) {
     const cachedAgent = WasabeeAgent.cacheGet(agentid);
     if (cachedAgent) return cachedAgent;
     return null;
+  }
+
+  zoneName(zoneID) {
+    zoneID = +zoneID;
+    if (zoneID == 0)
+      // All zone
+      return "All";
+    for (const z of this.zones) {
+      if (z.id == zoneID) return z.name;
+    }
+    return zoneID;
   }
 }
 

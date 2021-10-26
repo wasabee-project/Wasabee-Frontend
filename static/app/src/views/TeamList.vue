@@ -9,7 +9,7 @@
           <th scope="col">Identity</th>
           <th scope="col">Sharing Location</th>
           <th scope="col">Sharing WD Keys</th>
-          <th scope="col">Squad</th>
+          <th scope="col">Comment</th>
         </tr>
       </thead>
       <tbody id="teamTable">

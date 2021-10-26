@@ -15,7 +15,7 @@
           <th scope="col">Agent</th>
           <th scope="col">Identity</th>
           <th scope="col">Sharing Location</th>
-          <th scope="col">Squad</th>
+          <th scope="col">Comment</th>
           <th v-if="!team.RockCommunity" scope="col">&nbsp;</th>
         </tr>
       </thead>

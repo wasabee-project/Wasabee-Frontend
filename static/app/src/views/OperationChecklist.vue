@@ -23,13 +23,13 @@
     <table class="table table-striped" id="optable">
       <thead>
         <tr>
-          <th scope="col">Order</th>
+          <th @click="sort('opOrder')" scope="col">Order</th>
           <th scope="col">Portal</th>
           <th scope="col">To/Action</th>
           <th scope="col">Distance</th>
-          <th scope="col">Assigned To</th>
+          <th @click="sort('assignedTo')" scope="col">Assigned To</th>
           <th scope="col">Description</th>
-          <th scope="col">Zone</th>
+          <th @click="sort('zone')" scope="col">Zone</th>
           <th scope="col">Completed</th>
         </tr>
       </thead>
@@ -105,19 +105,47 @@ export default {
     },
     me: null,
   },
+  data: () => ({
+    sortBy: "opOrder",
+    sortDesc: false,
+  }),
   computed: {
     steps: function () {
-      const steps = this.operation.markers.concat(this.operation.links);
-      steps.sort((a, b) => {
-        return a.opOrder - b.opOrder;
-      });
+      let steps = this.operation.markers.concat(this.operation.links);
       if (this.assignmentsOnly)
-        return steps.filter((s) => s.assignedTo == this.me.GoogleID);
+        steps = steps.filter((s) => s.assignedTo == this.me.GoogleID);
+      steps.sort((a, b) => a.opOrder - b.opOrder);
+
+      switch (this.sortBy) {
+        case "assignedTo":
+          steps.sort((a, b) =>
+            this.getAgentName(a[this.sortBy]).localeCompare(
+              this.getAgentName(b[this.sortBy])
+            )
+          );
+          break;
+        case "opOrder":
+        case "zone":
+          steps.sort((a, b) => a[this.sortBy] - b[this.sortBy]);
+          break;
+        default:
+          break;
+      }
+      if (this.sortDesc) steps.reverse();
+
       return steps;
     },
   },
   methods: {
+    sort: function (cat) {
+      if (cat === this.sortBy) this.sortDesc = !this.sortDesc;
+      else {
+        this.sortBy = cat;
+        this.sortDesc = false;
+      }
+    },
     getAgentName: function (id) {
+      if (!id) return "";
       const agent = this.operation.getAgent(id);
       if (agent) return agent.name;
       return id;

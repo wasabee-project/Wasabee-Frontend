@@ -36,7 +36,11 @@
         </tr>
       </thead>
       <tbody id="opSteps">
-        <tr v-for="step in steps" :key="step.ID">
+        <tr
+          v-for="step in steps"
+          :key="step.ID"
+          :class="{ 'table-success': step.completed }"
+        >
           <td>{{ step.opOrder }}</td>
 
           <td v-if="isMarker(step)">

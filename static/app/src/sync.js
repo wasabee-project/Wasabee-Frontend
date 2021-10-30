@@ -4,8 +4,6 @@ import { opPromise } from "./server";
 import { notify } from "./notify";
 
 export async function loadMeAndOps() {
-  clearOpsStorage();
-
   try {
     const nme = await WasabeeMe.waitGet(true);
     if (nme && nme.GoogleID) {
@@ -14,6 +12,7 @@ export async function loadMeAndOps() {
       await syncOps(nme);
     } else {
       console.log(nme);
+      clearOpsStorage();
       throw new Error("invalid data from /me");
     }
   } catch (e) {
@@ -23,15 +22,30 @@ export async function loadMeAndOps() {
   }
 }
 
-export function clearOpsStorage() {
+function storedOpsList() {
+  const ids = [];
   const lsk = Object.keys(localStorage);
   for (const id of lsk) {
-    if (id.length == 40) delete localStorage[id];
+    if (id.length == 40) ids.push(id);
+  }
+  return ids;
+}
+
+export function clearOpsStorage() {
+  for (const id of storedOpsList()) {
+    delete localStorage[id];
   }
 }
 
 export async function syncOps(me) {
   const opsID = new Set(me.Ops.map((o) => o.ID));
+
+  // clear unavailable ops
+  const oldList = storedOpsList();
+  for (const id of storedOpsList()) {
+    if (!opsID.has(id)) delete localStorage[id];
+  }
+
   const promises = new Array();
   for (const o of opsID) promises.push(opPromise(o));
   try {

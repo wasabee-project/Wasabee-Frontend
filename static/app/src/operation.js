@@ -108,6 +108,7 @@ export class WasabeeOp {
       blockers: this.blockers,
       keysonhand: this.keysonhand,
       zones: this.zones,
+      lasteditid: this.lasteditid,
     };
   }
 

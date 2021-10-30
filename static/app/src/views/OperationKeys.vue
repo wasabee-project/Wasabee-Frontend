@@ -135,10 +135,10 @@
       <table class="table table-striped">
         <thead>
           <tr>
-            <th scope="col">Portal</th>
-            <th scope="col">Agent</th>
-            <th scope="col">Count</th>
-            <th scope="col">Capsule</th>
+            <th @click="sortAll('portalId')" scope="col">Portal</th>
+            <th @click="sortAll('agent')" scope="col">Agent</th>
+            <th @click="sortAll('count')" scope="col">Count</th>
+            <th @click="sortAll('capsule')" scope="col">Capsule</th>
           </tr>
         </thead>
         <tbody>
@@ -170,6 +170,8 @@ export default {
     sortDesc: false,
     agent: "",
     selectedKey: null,
+    sortAllBy: "portalId",
+    sortAllDesc: false,
   }),
   computed: {
     agentList: function () {
@@ -256,13 +258,31 @@ export default {
     },
     koh: function () {
       const missing = { name: "[portal no longer in op]" };
-      return this.operation.keysonhand.map((k) => ({
+      const koh = this.operation.keysonhand.map((k) => ({
         portalId: k.portalId,
         key: k.portalId + k.gid,
         agent: this.getAgentName(k.gid),
         count: k.onhand,
         capsule: k.capsule,
       }));
+
+      switch (this.sortAllBy) {
+        case "portalId":
+        case "capsule":
+        case "agent":
+          koh.sort((a, b) =>
+            a[this.sortAllBy].localeCompare(b[this.sortAllBy])
+          );
+          break;
+        case "count":
+          koh.sort((a, b) => a[this.sortAllBy] - b[this.sortAllBy]);
+          break;
+        default:
+          break;
+      }
+      if (this.sortAllDesc) koh.reverse();
+
+      return koh;
     },
     keysZones: function () {
       return this.operation.keysRequiredPerPortalPerZone();
@@ -309,6 +329,13 @@ export default {
       else {
         this.sortBy = cat;
         this.sortDesc = false;
+      }
+    },
+    sortAll: function (cat) {
+      if (cat === this.sortAllBy) this.sortAllDesc = !this.sortAllDesc;
+      else {
+        this.sortAllBy = cat;
+        this.sortAllDesc = false;
       }
     },
     keyChange: async function (key) {

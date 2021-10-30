@@ -9,12 +9,14 @@
           </li>
           <!-- <li class="list-group-item"><a :href="'/api/v1/draw/' + operation.ID + '/stock'">Stock Intel Link</a></li> -->
           <li v-if="assignmentsOnly" class="list-group-item">
-            <strong
-              ><a :href="'/api/v1/draw/' + operation.ID + '/myroute'"
-                >My Route (assignments in order)</a
-              >
-              (Google Maps)</strong
-            >
+            <label
+              >Agent:
+              <select v-model="agent">
+                <option v-for="a in agentList" :key="a.id" :value="a.id">
+                  {{ a.name }}
+                </option>
+              </select>
+            </label>
           </li>
         </ul>
       </div>
@@ -85,6 +87,7 @@
 
 <script>
 import WasabeeMe from "../me";
+import WasabeeTeam from "../team";
 import WasabeeMarker from "../marker";
 import WasabeeLink from "../link";
 
@@ -105,15 +108,29 @@ export default {
     },
     me: null,
   },
-  data: () => ({
-    sortBy: "opOrder",
-    sortDesc: false,
-  }),
+  data: function () {
+    return {
+      sortBy: "opOrder",
+      sortDesc: false,
+      agent: this.me.GoogleID,
+    };
+  },
   computed: {
+    agentList: function () {
+      const map = new Map();
+      for (const tr of this.operation.teamlist) {
+        const team = WasabeeTeam.cacheGet(tr.teamid);
+        if (!team) continue;
+        for (const agent of team.agents) map.set(agent.id, agent);
+      }
+      if (!map.size) return [{ id: this.me.GoogleID, name: this.me.name }];
+
+      return Array.from(map.values());
+    },
     steps: function () {
       let steps = this.operation.markers.concat(this.operation.links);
       if (this.assignmentsOnly)
-        steps = steps.filter((s) => s.assignedTo == this.me.GoogleID);
+        steps = steps.filter((s) => s.assignedTo == this.agent);
       steps.sort((a, b) => a.opOrder - b.opOrder);
 
       switch (this.sortBy) {

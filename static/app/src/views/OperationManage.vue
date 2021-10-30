@@ -16,7 +16,17 @@
     <table class="table table-striped" id="optable">
       <thead>
         <tr>
-          <th scope="col">&nbsp;</th>
+          <th scope="col" class="pl-0 pr-0">
+            <div class="custom-control custom-switch">
+              <input
+                type="checkbox"
+                class="custom-control-input"
+                v-model="enableDrag"
+                id="enableDrag"
+              />
+              <label class="custom-control-label" for="enableDrag" />
+            </div>
+          </th>
           <th scope="col">Order</th>
           <th scope="col">Portal</th>
           <th scope="col">&nbsp;</th>
@@ -28,11 +38,20 @@
           <th scope="col">Completed</th>
         </tr>
       </thead>
-      <draggable v-model="steps" tag="tbody" handle=".handle">
-        <tr v-for="step in steps" :key="step.ID">
+      <draggable
+        v-model="steps"
+        tag="tbody"
+        handle=".handle"
+        :disabled="!enableDrag"
+      >
+        <tr
+          v-for="step in steps"
+          :key="step.ID"
+          :class="{ 'table-success': step.completed }"
+        >
           <td class="handle"></td>
 
-          <td>{{ step.opOrder }}</td>
+          <td class="text-right">{{ step.opOrder }}</td>
 
           <td v-if="isMarker(step)">
             <PortalLink :id="step.portalId" :operation="operation" />
@@ -123,6 +142,9 @@ export default {
     },
     me: null,
   },
+  data: () => ({
+    enableDrag: false,
+  }),
   computed: {
     agents: function () {
       const teamset = new Set(this.operation.teamlist.map((t) => t.teamid));

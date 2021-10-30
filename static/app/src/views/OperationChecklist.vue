@@ -41,7 +41,7 @@
           :key="step.ID"
           :class="{ 'table-success': step.completed }"
         >
-          <td>{{ step.opOrder }}</td>
+          <td class="text-right">{{ step.opOrder }}</td>
 
           <td v-if="isMarker(step)">
             <PortalLink :id="step.portalId" :operation="operation" />

@@ -18,7 +18,12 @@
       <div
         v-for="(alert, i) in alerts"
         :key="i"
-        :class="['toast', 'fade', 'toast-' + alert.level, { show: alert.show }]"
+        :class="[
+          'toast',
+          'fade',
+          'toast-' + alert.level,
+          { show: alert.show, 'd-none': alert.removed },
+        ]"
         role="alert"
       >
         <div class="toast-header">
@@ -91,10 +96,15 @@ export default {
     },
     makeToast: function (options) {
       options.show = true;
+      options.removed = false;
       this.alerts.unshift(options);
+      this.alerts = this.alerts.filter((a) => !a.removed);
       setTimeout(() => {
         options.show = false;
       }, 5000);
+      setTimeout(() => {
+        options.removed = true;
+      }, 6000);
     },
     notifyChange: function (data) {
       try {

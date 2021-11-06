@@ -20,8 +20,9 @@
                 </div>
                 <div>
                   Development Build:
-                  <a href="https://am.wasabee.rocks/static/dev/wasabee.user.js"
-                    >https://am.wasabee.rocks/static/dev/wasabee.user.js</a
+                  <a
+                    href="https://cdn2.wasabee.rocks/iitcplugin/latest/dev/wasabee.user.js"
+                    >https://cdn2.wasabee.rocks/iitcplugin/latest/dev/wasabee.user.js</a
                   >
                   <span class="dim small"
                     >This is the current work-in-progress version which may

@@ -136,7 +136,6 @@ import {
 
 import LGeodesic from "./LGeodesic.vue";
 
-import WasabeeMe from "../me";
 import WasabeeTeam from "../team";
 
 function newColors(incoming) {

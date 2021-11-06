@@ -90,7 +90,6 @@
 </template>
 
 <script>
-import WasabeeMe from "../me";
 import WasabeeTeam from "../team";
 import WasabeeMarker from "../marker";
 import WasabeeLink from "../link";

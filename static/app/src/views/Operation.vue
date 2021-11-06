@@ -21,8 +21,6 @@
 </template>
 
 <script>
-import WasabeeTeam from "../team";
-
 import { opPromise } from "../server";
 import { notify } from "../notify";
 

@@ -62,8 +62,6 @@ import WasabeeOp from "../operation";
 import { notify } from "../notify";
 import { deleteOpPromise } from "../server";
 
-import { loadMeAndOps } from "../sync";
-
 export default {
   props: ["me"],
   data: () => ({

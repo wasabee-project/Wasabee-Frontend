@@ -11,10 +11,12 @@
       <div><p>this screen intended to be loaded in an iframe</p></div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+	<script type="module">
+	  import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js'
+	  import { analytics } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js'
+	  import { auth } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js'
+	  import { messaging } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging.js'
+	</script>
 
     <script>
       // Initialize the Firebase app in the service worker by passing in the messagingSenderId.

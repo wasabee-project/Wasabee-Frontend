@@ -1,3 +1,0 @@
-build commands:
-	npm install
-	npx webpack

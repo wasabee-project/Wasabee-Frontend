@@ -1,0 +1,55 @@
+{{define "default"}}
+Voir {{ WebUI }}/#/settings pour plus de détails
+{{end}}
+
+{{define "help"}}
+Si tout fonctionne correctement, vous devriez voir des boutons utiles près de la zone de saisie du message.
+Sinon, envoyez "/start"
+{{end}}
+
+{{define "InitOneFail"}}
+*Veuillez envoyer votre jeton Telegram pour commencer la vérification*
+
+Voir {{ WebUI }}/#/settings pour plus de détails
+{{end}}
+
+{{define "InitOneSuccess"}}
+*Vous avez correctement envoyé votre jeton Telegram*
+Maintenant, vous devez envoyer votre code de vérification depuis {{ Webroot }}/me#settings
+
+*Vous devrez peut-être recharger la page pour voir le code de vérification, il sera affiché au même endroit qu'avant.*
+
+Voir {{ WebUI }}/#/settings pour plus de détails
+{{end}}
+
+{{define "InitTwoFail"}}
+*La vérification a ÉCHOUÉ*
+Veuillez envoyer votre jeton sans ajouter quoi que ce soit au message
+
+Voir {{ WebUI }}/#/settings pour plus de détails
+{{end}}
+
+{{define "InitTwoSuccess"}}
+*Vérification RÉUSSIE*
+Votre compte Telegram est maintenant vérifié et peut envoyer / recevoir des mises à jour (localisation par exemple)
+{{end}}
+
+{{define "Unlinked"}}
+Dissociation réussie
+{{end}}
+
+{{define "Linked"}}
+Liaison réussie
+{{end}}
+
+{{define "SingleTeam"}}
+Spécifiez un seul teamID
+{{end}}
+
+{{define "LinkStatus"}}
+-- this will take some work --
+{{end}}
+
+{{define "Claim"}}
+-- this will take some work --
+{{end}}

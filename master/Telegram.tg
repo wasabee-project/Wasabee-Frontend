@@ -1,5 +1,5 @@
 {{define "default"}}
-Please see {{ Webroot }}/me#settings for details
+Please see {{ WebUI }}/#/settings for details
 {{end}}
 
 {{define "help"}}
@@ -9,7 +9,7 @@ If not, try saying "/start"
 
 {{define "InitOneFail"}}
 *Please send your Telegram token to begin verification*
-See {{ Webroot }}/me#settings for details
+See {{ WebUI }}/#/settings for details
 {{end}}
 
 {{define "InitOneSuccess"}}
@@ -18,13 +18,13 @@ Now, you need to send your verification code from {{ Webroot }}/me#settings
 
 *You might need to reload the page to see the verifcation code, it will be listed in the same place as before.*
 
-See {{ Webroot }}/me#settings for details
+See {{ WebUI }}/#/settings for details
 {{end}}
 
 {{define "InitTwoFail"}}
 *Verification FAILED*
 Please send your verification code without any additional content
-See {{ Webroot }}/me#settings for details
+See {{ WebUI }}/#/settings for details
 {{end}}
 
 {{define "InitTwoSuccess"}}
@@ -32,8 +32,22 @@ See {{ Webroot }}/me#settings for details
 Your telegram account is now verified and can receive updates and submit location changes
 {{end}}
 
-{{define "TeamStateChange"}}
-{{if eq .State "On"}}Enabling {{ .Team }}{{end}}
-{{if eq .State "Off"}}Disabling {{ .Team }}{{end}}
-{{if eq .State "Primary"}}Setting {{ .Team }} to primary{{end}}
+{{define "Unlinked"}}
+Successfully Unlinked
+{{end}}
+
+{{define "Linked"}}
+Successfully linked
+{{end}}
+
+{{define "SingleTeam"}}
+Specify a single teamID
+{{end}}
+
+{{define "LinkStatus"}}
+-- this will take some work --
+{{end}}
+
+{{define "Claim"}}
+-- this will take some work --
 {{end}}

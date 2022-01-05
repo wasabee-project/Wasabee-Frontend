@@ -1,10 +1,6 @@
-// Give the service worker access to Firebase Messaging.
-// Note that you can only use Firebase Messaging here, other Firebase libraries
-// are not available in the service worker.
-importScripts('https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging.js');
+importScripts('https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js')
+importScripts('https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging-compat.js')
  
-// Initialize the Firebase app in the service worker by passing in the messagingSenderId.
 firebase.initializeApp({
   apiKey: "AIzaSyDfGX11zg-3s79hd5Kzbb1TwWvw-JtN33I",
   authDomain: "phdevbin.firebaseapp.com",
@@ -16,11 +12,9 @@ firebase.initializeApp({
   measurementId: "G-LZR2PVKWM7",
 });
 
-// Retrieve an instance of Firebase Messaging so that it can handle background
-// messages.
 const messaging = firebase.messaging();
 
-messaging.setBackgroundMessageHandler(async function(payload) {
+messaging.onBackgroundMessage(async function(payload) {
   console.debug('[firebase-messaging-sw.js] Received background message ', payload);
 
   // we re-send the message from firebase to the listening clients (Wasabee-IITC & WebUI)
@@ -36,15 +30,4 @@ messaging.setBackgroundMessageHandler(async function(payload) {
       client.postMessage(payload);
     }
   }
-
-  // If we actually want to show a notification, Customize it here
-  // var notificationTitle = 'Wasabee Update';
-  // var notificationOptions = {
-  //   body: payload,
-  //   icon: '/static/android-chrome-192x192.png'
-  // };
-
-  // If we actually want to show a notification that the user could interact with...
-  // return await self.registration.showNotification(notificationTitle,
-  //   notificationOptions);
 });

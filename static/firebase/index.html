@@ -11,16 +11,17 @@
       <div><p>this screen intended to be loaded in an iframe</p></div>
     </div>
 
-	<script type="module">
-	  import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js'
-	  import { analytics } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js'
-	  import { auth } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js'
-	  import { messaging } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging.js'
-	</script>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js";
+      import {
+        getMessaging,
+        getToken,
+        onMessage,
+      } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging.js";
 
-    <script>
       // Initialize the Firebase app in the service worker by passing in the messagingSenderId.
-      firebase.initializeApp({
+      const app = initializeApp({
         apiKey: "AIzaSyDfGX11zg-3s79hd5Kzbb1TwWvw-JtN33I",
         authDomain: "phdevbin.firebaseapp.com",
         databaseURL: "https://phdevbin.firebaseio.com",
@@ -30,47 +31,21 @@
         appId: "1:269534461245:web:75ff60f80205d6da",
         measurementId: "G-LZR2PVKWM7",
       });
-      const analytics = firebase.analytics();
-      analytics.setAnalyticsCollectionEnabled(true);
-      analytics.setUserProperties("wasabee-test", "this is a test");
+      const analytics = getAnalytics(app);
 
-      const messaging = firebase.messaging();
-      const auth = firebase.auth();
-      messaging.usePublicVapidKey(
-        "BEB7mMFzF4way3Scjrwt62mWvpQcPnSm2_8iJaxokgzt9DqZqqidQ1phjuqHciVvcVVK5uJtJw3Bg1Kt8Nw2-hk"
-      );
+      const messaging = getMessaging(app);
       setupMessaging(); // async, but no need to await here
-
-      messaging.onTokenRefresh(async () => {
-        try {
-          refreshedToken = await messaging.getToken();
-          console.debug("Token refreshed.");
-          setTokenSentToServer(false);
-          await sendTokenToServer(refreshedToken);
-        } catch (e) {
-          console.error("Unable to retrieve refreshed token ", e);
-        }
-      });
-
-      auth.onAuthStateChanged((user) => {
-        if (user) {
-          console.debug("firebase auth login: ", user.uid);
-          return;
-        }
-        console.debug("firebase auth logout");
-      });
-
-      /* auth.onIdTokenChanged((user) => { console.log("firebase auth noted token change"); }); */
 
       // respond to messages from Wasabee-IITC
       window.addEventListener("message", async (event) => {
         if (!event.data) event.data = {};
-        if (!event.data.app_name) event.data.app_name = "Wasabee-Firebase-ServiceWorker";
+        if (!event.data.app_name)
+          event.data.app_name = "Wasabee-Firebase-ServiceWorker";
         if (!event.data.app_version) event.data.app_version = "0.1 (SW)";
 
         // Messages coming from IITC
         if (event.origin == "https://intel.ingress.com") {
-	  console.log(event.data);
+          console.log(event.data);
           switch (event.data.id) {
             // this is used to trigger sending the firebase tokens to wasabee server
             // if they have not already been sent (e.g. first login)
@@ -82,7 +57,7 @@
               event.data.screen_name = event.data.action;
               event.data.title = event.data.action;
               // analytics.logEvent("screen_view", event.data);
-	      analytics.setCurrentScreen(event.data.action, event.data);
+              analytics.setCurrentScreen(event.data.action, event.data);
               break;
             case "exception":
               analytics.logEvent("exception", event.data);
@@ -110,7 +85,7 @@
       });
 
       // Messages coming in from Firebase to IITC -- this relays them
-      messaging.onMessage((payload) => {
+      onMessage(messaging, (payload) => {
         // console.log('Firebase message received: ', payload.data);
         // post the message to the IITC-hosted iframe.
         window.parent.postMessage(payload, "https://intel.ingress.com");
@@ -123,42 +98,25 @@
 
       async function setupMessaging() {
         try {
-          currentToken = await messaging.getToken();
+          const currentToken = await getToken(messaging, {
+            vapidkey:
+              "BEB7mMFzF4way3Scjrwt62mWvpQcPnSm2_8iJaxokgzt9DqZqqidQ1phjuqHciVvcVVK5uJtJw3Bg1Kt8Nw2-hk",
+          });
           if (currentToken) {
-            await sendTokenToServer(currentToken);
+            try {
+              await sendTokenToWasabee(currentToken);
+            } catch (e) {
+              console.warn(e);
+            }
           } else {
             console.debug(
               "No Instance ID token available. Requesting permission to generate one."
             );
-            setTokenSentToServer(false);
             await requestPermission();
           }
         } catch (e) {
           console.warn("An error occurred while retrieving token. ", e);
-          setTokenSentToServer(false);
         }
-      }
-
-      async function sendTokenToServer(currentToken) {
-        if (isTokenSentToServer()) return;
-
-        try {
-          await sendTokenToWasabee(currentToken);
-          setTokenSentToServer(true);
-        } catch (e) {
-          console.warn(
-            "Unable to send Firebase token to the server. (User not logged in?)",
-            error
-          );
-        }
-      }
-
-      function isTokenSentToServer() {
-        return window.localStorage.getItem("sentToServer") === "1";
-      }
-
-      function setTokenSentToServer(sent) {
-        window.localStorage.setItem("sentToServer", sent ? "1" : "0");
       }
 
       async function requestPermission() {
@@ -175,49 +133,61 @@
         }
       }
 
-      function getCustomTokenFromServer() {
-        return new Promise(function (resolve, reject) {
-          var url = "/api/v1/me/firebase";
-          var req = new XMLHttpRequest();
-          req.open("GET", url, true);
-          req.withCredentials = true;
-          req.crossDomain = true;
+      async function sendTokenToWasabee(token) {
+        if (localStorage["wasabee-bearer"] == null)
+          return Promise.reject("no bearer");
 
-          req.onload = function () {
-            if (req.status === 200) {
-              resolve(req.responseText);
-            } else {
-              reject(Error(req.statusText));
-            }
+        const url = "/api/v1/me/firebase";
+        try {
+          const construct = {
+            method: "POST",
+            mode: "cors",
+            cache: "default",
+            credentials: "include",
+            redirect: "manual",
+            referrerPolicy: "origin",
+            headers: {
+              Authorization: "Bearer " + localStorage["wasabee-bearer"],
+            },
+            body: token,
           };
-          req.onerror = function () {
-            reject(Error("Network Error"));
-          };
-          req.send();
-        });
-      }
+          const response = await fetch(url, construct);
 
-      function sendTokenToWasabee(token) {
-        return new Promise(function (resolve, reject) {
-          var url = "/api/v1/me/firebase";
-          var req = new XMLHttpRequest();
-          req.open("POST", url, true);
-          req.withCredentials = true;
-          req.crossDomain = true;
-
-          req.onload = function () {
-            if (req.status === 200) {
-              console.debug("Firebase token sent to Wasabee server");
-              resolve();
-            } else {
-              reject(Error(req.statusText));
-            }
-          };
-          req.onerror = function () {
-            reject(Error("Network Error"));
-          };
-          req.send(token);
-        });
+          switch (response.status) {
+            case 200:
+              try {
+                const text = await response.json();
+                return Promise.resolve(text);
+              } catch (e) {
+                console.error(e);
+                return Promise.reject(e);
+              }
+            // break;
+            case 401:
+              try {
+                const err = await response.json();
+                return Promise.reject(
+                  wX("NOT LOGGED IN", { error: err.error })
+                );
+              } catch (e) {
+                console.error(e);
+                return Promise.reject(e);
+              }
+            // break;
+            default:
+              try {
+                const err = await response.json();
+                return Promise.reject(err.error);
+              } catch (e) {
+                console.error(e);
+                return Promise.reject(e);
+              }
+            // break;
+          }
+        } catch (e) {
+          console.error(e);
+          return Promise.reject(e);
+        }
       }
     </script>
   </body>

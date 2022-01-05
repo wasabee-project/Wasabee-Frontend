@@ -58,7 +58,6 @@
           return;
         }
         console.debug("firebase auth logout");
-        delete localStorage["customToken"];
       });
 
       /* auth.onIdTokenChanged((user) => { console.log("firebase auth noted token change"); }); */
@@ -76,7 +75,6 @@
             // this is used to trigger sending the firebase tokens to wasabee server
             // if they have not already been sent (e.g. first login)
             case "wasabeeLogin":
-              await customToken();
               await setupMessaging();
               analytics.logEvent("login", event.data);
               break;
@@ -92,7 +90,6 @@
             case "wasabeeLogout":
               await messaging.deleteToken();
               await setTokenSentToServer(false);
-              delete localStorage["customToken"];
               analytics.logEvent("logout", event.data);
               break;
             default:
@@ -123,25 +120,6 @@
           app_name: "Wasabee-IITC (fb-sw)",
         });
       });
-
-      async function customToken() {
-        try {
-          localStorage["customToken"] = await getCustomTokenFromServer();
-          console.debug("using custom firebase token");
-        } catch (e) {
-          delete localStorage["customToken"];
-          console.error(e);
-        }
-
-        if (localStorage["customToken"]) {
-          auth
-            .signInWithCustomToken(localStorage["customToken"])
-            .catch(function (error) {
-              console.error(error.message);
-              delete localStorage["customToken"];
-            });
-        }
-      }
 
       async function setupMessaging() {
         try {

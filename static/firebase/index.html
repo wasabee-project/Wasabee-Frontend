@@ -151,9 +151,9 @@
             body: token,
           };
 
-          if (localStorage["wasabee-bearer"] !== null) {
+          if (localStorage["wasabee-bearer"] != null) {
             construct.headers = { Authorization: "Bearer " + localStorage["wasabee-bearer"] }
-	  }
+          }
 
           const response = await fetch(url, construct);
 

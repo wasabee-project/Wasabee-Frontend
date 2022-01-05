@@ -18,6 +18,7 @@
         getMessaging,
         getToken,
         onMessage,
+	isSupported,
       } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging.js";
 
       // Initialize the Firebase app in the service worker by passing in the messagingSenderId.
@@ -52,6 +53,7 @@
             case "wasabeeLogin":
               await setupMessaging();
               analytics.logEvent("login", event.data);
+	      localStorage["wasabee-bearer"] = event.data.bearer
               break;
             case "analytics":
               event.data.screen_name = event.data.action;
@@ -97,6 +99,7 @@
       });
 
       async function setupMessaging() {
+      	if (!isSupported()) return;
         try {
           const currentToken = await getToken(messaging, {
             vapidkey:
@@ -134,8 +137,7 @@
       }
 
       async function sendTokenToWasabee(token) {
-        if (localStorage["wasabee-bearer"] == null)
-          return Promise.reject("no bearer");
+        // if (localStorage["wasabee-bearer"] == null) return Promise.reject("no bearer");
 
         const url = "/api/v1/me/firebase";
         try {
@@ -146,11 +148,13 @@
             credentials: "include",
             redirect: "manual",
             referrerPolicy: "origin",
-            headers: {
-              Authorization: "Bearer " + localStorage["wasabee-bearer"],
-            },
             body: token,
           };
+
+          if (localStorage["wasabee-bearer"] !== null) {
+            construct.headers = { Authorization: "Bearer " + localStorage["wasabee-bearer"] }
+	  }
+
           const response = await fetch(url, construct);
 
           switch (response.status) {
@@ -165,10 +169,8 @@
             // break;
             case 401:
               try {
-                const err = await response.json();
-                return Promise.reject(
-                  wX("NOT LOGGED IN", { error: err.error })
-                );
+                const err = await response.text();
+                return Promise.reject(err);
               } catch (e) {
                 console.error(e);
                 return Promise.reject(e);

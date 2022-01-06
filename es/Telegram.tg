@@ -1,41 +1,53 @@
 {{define "default"}}
-Por favor refiérase a {{ Webroot }}/me para más detalles.
+Please see {{ WebUI }}/#/settings for details
 {{end}}
 
 {{define "help"}}
-Por favor refiérase a {{ Webroot }}/me para más detalles.
+If everything is working correctly, you should see helpful buttons near the message input area.
+If not, try saying "/start"
 {{end}}
 
 {{define "InitOneFail"}}
-Por favor envíe su Clave de Ubicación Compartida (Share Location Key) para iniciar la verificación.
-
-Por favor refiérase a {{ Webroot }}/me para más detalles.
+*Please send your Telegram token to begin verification*
+See {{ WebUI }}/#/settings for details
 {{end}}
 
 {{define "InitOneSuccess"}}
-*Has enviado tu Clave de Ubicación Compartida (Location Share Key) correctamente*
-Ahora necdsjfDZ enviar tu. Lzifl de verificación de {{ Webroot }}/me
+*You have sent Telegram token correctly*
+Now, you need to send your verification code from {{ Webroot }}/me#settings
 
-*Es probable que necesites volver a cargar la página Par ver el código de verificación. Estará enlistado en el mismo lugar que antes.*
+*You might need to reload the page to see the verifcation code, it will be listed in the same place as before.*
 
-Por favor refiérase a {{ Webroot }}/me para más detalles.
+See {{ WebUI }}/#/settings for details
 {{end}}
 
 {{define "InitTwoFail"}}
 *Verification FAILED*
-Por favor envía tu código de verificación sin ningún contenido adicional
-
-Por favor refiérase a {{ Webroot }}/me para más detalles.
+Please send your verification code without any additional content
+See {{ WebUI }}/#/settings for details
 {{end}}
 
 {{define "InitTwoSuccess"}}
 *Verification Successful*
-
-Tu cuenta de Telegram ha sido verificada y podrás recibir actualizaciones y hacer cambios de ubicación.
+Your telegram account is now verified and can receive updates and submit location changes
 {{end}}
 
-{{define "TeamStateChange"}}
-{{if eq .State "On"}}Enabling {{ .Team }}{{end}}
-{{if eq .State "Off"}}Disbling {{ .Team }}{{end}}
-{{if eq .State "Primary"}}Setting {{ .Team }} to primary{{end}}
+{{define "Unlinked"}}
+Successfully Unlinked
+{{end}}
+
+{{define "Linked"}}
+Successfully linked
+{{end}}
+
+{{define "SingleTeam"}}
+Specify a single teamID
+{{end}}
+
+{{define "LinkStatus"}}
+-- this will take some work --
+{{end}}
+
+{{define "Claim"}}
+-- this will take some work --
 {{end}}

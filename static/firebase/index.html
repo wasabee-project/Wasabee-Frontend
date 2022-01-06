@@ -53,7 +53,7 @@
             case "wasabeeLogin":
               await setupMessaging();
               analytics.logEvent("login", event.data);
-	      localStorage["wasabee-bearer"] = event.data.bearer
+	          if (event.data.bearer != null) localStorage["wasabee-jwt"] = event.data.bearer
               break;
             case "analytics":
               event.data.screen_name = event.data.action;
@@ -137,7 +137,7 @@
       }
 
       async function sendTokenToWasabee(token) {
-        // if (localStorage["wasabee-bearer"] == null) return Promise.reject("no bearer");
+        // if (localStorage["wasabee-jwt"] == null) return Promise.reject("no bearer");
 
         const url = "/api/v1/me/firebase";
         try {
@@ -151,8 +151,8 @@
             body: token,
           };
 
-          if (localStorage["wasabee-bearer"] != null) {
-            construct.headers = { Authorization: "Bearer " + localStorage["wasabee-bearer"] }
+          if (localStorage["wasabee-jwt"] != null) {
+            construct.headers = { Authorization: "Bearer " + localStorage["wasabee-jwt"] }
           }
 
           const response = await fetch(url, construct);

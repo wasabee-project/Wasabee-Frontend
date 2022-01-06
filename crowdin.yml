@@ -1,0 +1,5 @@
+files:
+  - source: /master/*
+    ignore:
+      - /master/index.html
+    translation: /%two_letters_code%/%original_file_name%

@@ -23,7 +23,7 @@ Voir {{ WebUI }}/#/settings pour plus de détails
 
 {{define "InitTwoFail"}}
 *La vérification a ÉCHOUÉ*
-Please send your verification code without any additional content
+Veuillez envoyer votre code de vérification sans contenu supplémentaire
 Voir {{ WebUI }}/#/settings pour plus de détails
 {{end}}
 

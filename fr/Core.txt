@@ -2,7 +2,6 @@
 <a href="https://intel.ingress.com/intel?ll={{.Lat}},{{.Lon}}&z=15&pll={{.Lat}},{{.Lon}}">{{.Name}}</a>
 <a href="http://maps.google.com/?q={{.Lat}},{{.Lon}}">Google Maps</a> | <a href="http://maps.apple.com/?q={{.Lat}},{{.Lon}}">Apple Maps</a>
 {{.Type}}
-
 Envoyé par : {{.Sender}}
 {{end}}
 
@@ -11,7 +10,6 @@ De : <a href="https://intel.ingress.com/intel?ll={{.From.Lat}},{{.From.Lon}}&z=1
 <a href="http://maps.google.com/?q={{.From.Lat}},{{.From.Lon}}">Google Maps</a> | <a href="http://maps.apple.com/?q={{.From.Lat}},{{.From.Lon}}">Apple Maps</a>
 Vers : <a href="https://intel.ingress.com/intel?ll={{.To.Lat}},{{.To.Lon}}&z=15&pll={{.To.Lat}},{{.To.Lon}}">{{.To.Name}}</a>
 <a href="http://maps.google.com/?q={{.To.Lat}},{{.To.Lon}}">Google Maps</a> | <a href="http://maps.apple.com/?q={{.To.Lat}},{{.To.Lon}}">Apple Maps</a>
-
 Envoyé par : {{.Sender}}
 {{end}}
 

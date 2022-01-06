@@ -23,7 +23,7 @@ Voir {{ WebUI }}/#/settings pour plus de détails
 
 {{define "InitTwoFail"}}
 *La vérification a ÉCHOUÉ*
-Veuillez envoyer votre code de vérification sans contenu supplémentaire
+Veuillez envoyer votre jeton sans ajouter quoi que ce soit au message
 Voir {{ WebUI }}/#/settings pour plus de détails
 {{end}}
 
@@ -33,11 +33,11 @@ Votre compte Telegram est maintenant vérifié et peut envoyer / recevoir des mi
 {{end}}
 
 {{define "Unlinked"}}
-Liaison réussie
+Dissociation réussie
 {{end}}
 
 {{define "Linked"}}
-Dissociation réussie
+Liaison réussie
 {{end}}
 
 {{define "SingleTeam"}}

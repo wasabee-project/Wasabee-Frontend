@@ -9,7 +9,7 @@ If not, try saying "/start"
 
 {{define "InitOneFail"}}
 *Please send your Telegram token to begin verification*
-See {{ WebUI }}/#/settings for details
+See {{ WebUI }}#/settings for details
 {{end}}
 
 {{define "InitOneSuccess"}}

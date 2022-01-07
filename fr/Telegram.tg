@@ -9,7 +9,7 @@ Sinon, envoyez "/start"
 
 {{define "InitOneFail"}}
 *Veuillez envoyer votre jeton Telegram pour commencer la vérification*
-Voir {{ WebUI }}/#/settings pour plus de détails
+See {{ WebUI }}#/settings for details
 {{end}}
 
 {{define "InitOneSuccess"}}

@@ -1,5 +1,5 @@
 {{define "default"}}
-Please see {{ WebUI }}/#/settings for details
+Please see {{ WebUI }}#/settings for details
 {{end}}
 
 {{define "help"}}
@@ -18,13 +18,13 @@ Now, you need to send your verification code from {{ Webroot }}/me#settings
 
 *You might need to reload the page to see the verifcation code, it will be listed in the same place as before.*
 
-See {{ WebUI }}/#/settings for details
+See {{ WebUI }}#/settings for details
 {{end}}
 
 {{define "InitTwoFail"}}
 *Verification FAILED*
 Please send your verification code without any additional content
-See {{ WebUI }}/#/settings for details
+See {{ WebUI }}#/settings for details
 {{end}}
 
 {{define "InitTwoSuccess"}}
@@ -44,10 +44,20 @@ Successfully linked
 Specify a single teamID
 {{end}}
 
-{{define "LinkStatus"}}
--- this will take some work --
+{{define "ChatLinkStatus"}}
+Linked to team: <b>{{.TeamName}}</b> ({{.TeamID}})
+{{if .OPStat}}Linked to Operation <b>{{.OPStat.Name}}</b> ({{.OPStat.ID}}){{end}}
 {{end}}
 
 {{define "Claim"}}
--- this will take some work --
+Task Claimed: {{.Order}} - {{.Type}} - {{.Name}}
 {{end}}
+
+{{define "Acknowledged"}}
+Task Acknowledged: {{.Order}} - {{.Type}} - {{.Name}}
+{{end}}
+
+{{define "Rejected"}}
+Task Rejected: {{.Order}} - {{.Type}} - {{.Name}}
+{{end}}
+

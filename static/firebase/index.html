@@ -184,8 +184,8 @@
             // break;
             default:
               try {
-                const err = await response.json();
-                return Promise.reject(err.error);
+                const err = await response.text();
+                return Promise.reject(err);
               } catch (e) {
                 console.error(e);
                 return Promise.reject(e);

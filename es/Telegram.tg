@@ -1,8 +1,12 @@
 {{define "default"}}
+{{if .}}Commands:
+{{range .}}<b>/{{.Command}}</b>: {{.Description}}{{if .Private}}<em> Private Chat</em>{{end}}{{if .Group}}<em> Groups</em>{{end}}  {{end}}
+{{end}}
+
 Please see {{ WebUI }}#/settings for details
 {{end}}
 
-{{define "help"}}
+{{define "start"}}
 If everything is working correctly, you should see helpful buttons near the message input area.
 If not, try saying "/start"
 {{end}}
@@ -46,7 +50,7 @@ Specify a single teamID
 
 {{define "ChatLinkStatus"}}
 Linked to team: <b>{{.TeamName}}</b> ({{.TeamID}})
-{{if .OPStat}}Linked to Operation <b>{{.OPStat.Name}}</b> ({{.OPStat.ID}}){{end}}
+{{if .OPStat}}Linked to operation: <b>{{.OPStat.Name}}</b> ({{.OPStat.ID}}){{end}}
 {{end}}
 
 {{define "Claim"}}
@@ -62,9 +66,18 @@ Task Rejected: {{.Order}} - {{.Type}} - {{.Name}}
 {{end}}
 
 {{define "unknownAgent"}}
-Agent {{printf "%q" .}} is not known to this bot, please have them run the `/start` command
+Agent {{.}} is not known to this bot, please have them run the `/start` command
 {{end}}
 
 {{define "joinedTeam"}}
-{{.Name}} joined the linked team "{{.TeamName}}" ({{.TeamID}}) {{if .SentLink}} -- sent invite link{{end}}
+{{.Name}} joined the linked team: <b>{{.TeamName}}</b> ({{.TeamID}}) {{if .SentLink}} -- sent invite link{{else}} -- please add them to this chat{{end}}
+{{end}}
+
+{{define "invitedToTeam"}}
+You have been invited to the telegram chat for the Wasabee team "{{.TeamName}}"
+Use this link to join the chat: {{.Link}}
+{{end}}
+
+{{define "leftTeam"}}
+{{.Agent}} left the linked team ({{.TeamID}}). The bot will attempt to remove them from this chat.
 {{end}}

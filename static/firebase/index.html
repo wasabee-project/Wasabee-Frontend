@@ -13,12 +13,15 @@
 
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-      import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js";
+      import {
+        getAnalytics,
+        logEvent,
+      } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js";
       import {
         getMessaging,
         getToken,
         onMessage,
-	isSupported,
+        isSupported,
       } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging.js";
 
       // Initialize the Firebase app in the service worker by passing in the messagingSenderId.
@@ -52,22 +55,23 @@
             // if they have not already been sent (e.g. first login)
             case "wasabeeLogin":
               await setupMessaging();
-              analytics.logEvent("login", event.data);
-	          if (event.data.bearer != null) localStorage["wasabee-jwt"] = event.data.bearer
+              logEvent(analytics, "login", event.data);
+              if (event.data.bearer != null)
+                localStorage["wasabee-jwt"] = event.data.bearer;
               break;
             case "analytics":
               event.data.screen_name = event.data.action;
               event.data.title = event.data.action;
-              // analytics.logEvent("screen_view", event.data);
-              analytics.setCurrentScreen(event.data.action, event.data);
+              logEvent(analytics, "iitc_event", event.data);
+              // setCurrentScreen(analytics, event.data.action, event.data);
               break;
             case "exception":
-              analytics.logEvent("exception", event.data);
+              logEvent(analytics, "exception", event.data);
               break;
             case "wasabeeLogout":
               await messaging.deleteToken();
               await setTokenSentToServer(false);
-              analytics.logEvent("logout", event.data);
+              logEvent(analytics, "logout", event.data);
               break;
             default:
               console.error(
@@ -83,7 +87,7 @@
         window.parent.postMessage(event.data, "https://intel.ingress.com");
 
         event.data.source = "service-worker";
-        analytics.logEvent("message_received", event.data);
+        logEvent(analytics, "message_received", event.data);
       });
 
       // Messages coming in from Firebase to IITC -- this relays them
@@ -92,14 +96,14 @@
         // post the message to the IITC-hosted iframe.
         window.parent.postMessage(payload, "https://intel.ingress.com");
 
-        analytics.logEvent("message_received", {
+        logEvent(analytics, "message_received", {
           source: "firebase",
           app_name: "Wasabee-IITC (fb-sw)",
         });
       });
 
       async function setupMessaging() {
-      	if (!isSupported()) return;
+        if (!isSupported()) return;
         try {
           const currentToken = await getToken(messaging, {
             vapidkey:
@@ -152,7 +156,9 @@
           };
 
           if (localStorage["wasabee-jwt"] != null) {
-            construct.headers = { Authorization: "Bearer " + localStorage["wasabee-jwt"] }
+            construct.headers = {
+              Authorization: "Bearer " + localStorage["wasabee-jwt"],
+            };
           }
 
           const response = await fetch(url, construct);

@@ -61,3 +61,10 @@ Task Acknowledged: {{.Order}} - {{.Type}} - {{.Name}}
 Task Rejected: {{.Order}} - {{.Type}} - {{.Name}}
 {{end}}
 
+{{define "unknownAgent"}}
+Agent {{printf "%q" .}} is not known to this bot, please have them run the `/start` command
+{{end}}
+
+{{define "joinedTeam"}}
+{{.Name}} joined the linked team "{{.TeamName}}" ({{.TeamID}}) {{if .SentLink}} -- sent invite link{{end}}
+{{end}}

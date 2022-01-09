@@ -6,17 +6,17 @@
 {{end}}
 
 {{define "assignLink"}}
-From: <a href="https://intel.ingress.com/intel?ll={{.From.Lat}},{{.From.Lon}}&z=15&pll={{.From.Lat}},{{.From.Lon}}">{{.From.Name}}</a>
-<a href="http://maps.google.com/?q={{.From.Lat}},{{.From.Lon}}">Google Maps</a> | <a href="http://maps.apple.com/?q={{.From.Lat}},{{.From.Lon}}">Apple Maps</a>
-To: <a href="https://intel.ingress.com/intel?ll={{.To.Lat}},{{.To.Lon}}&z=15&pll={{.To.Lat}},{{.To.Lon}}">{{.To.Name}}</a>
-<a href="http://maps.google.com/?q={{.To.Lat}},{{.To.Lon}}">Google Maps</a> | <a href="http://maps.apple.com/?q={{.To.Lat}},{{.To.Lon}}">Apple Maps</a>
-Sender: {{.Sender}}
+Из портала: <a href="https://intel.ingress.com/intel?ll={{.From.Lat}},{{.From.Lon}}&z=15&pll={{.From.Lat}},{{.From.Lon}}">{{.From.Name}}</a>
+<a href="http://maps.google.com/?q={{.From.Lat}},{{.From.Lon}}">Google-карты</a> | <a href="http://maps.apple.com/?q={{.From.Lat}},{{.From.Lon}}">Apple-карты</a>
+На портал: <a href="https://intel.ingress.com/intel?ll={{.To.Lat}},{{.To.Lon}}&z=15&pll={{.To.Lat}},{{.To.Lon}}">{{.To.Name}}</a>
+<a href="http://maps.google.com/?q={{.To.Lat}},{{.To.Lon}}">Google-карты</a> | <a href="http://maps.apple.com/?q={{.To.Lat}},{{.To.Lon}}">Apple-карты</a>
+Отправил: {{.Sender}}
 {{end}}
 
 {{define "announcement"}}
 {{.Text}}
 
-<b>Sender: {{ IngressName .Sender }}</b>
-{{if .TeamID}}<a href="{{ WebUI }}#/team/{{.TeamID}}/list">Team</a>{{end}}
-{{if .OpID}}<a href="{{ WebUI }}#/operation/{{.OpID}}/list">Operation</a>{{end}}
+<b>Отправил: {{ IngressName .Sender }}</b>
+{{if .TeamID}}<a href="{{ WebUI }}#/team/{{.TeamID}}/list">Команда</a>{{end}}
+{{if .OpID}}<a href="{{ WebUI }}#/operation/{{.OpID}}/list">Операция</a>{{end}}
 {{end}}

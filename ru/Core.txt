@@ -1,8 +1,8 @@
 {{define "target"}}
 <a href="https://intel.ingress.com/intel?ll={{.Lat}},{{.Lon}}&z=15&pll={{.Lat}},{{.Lon}}">{{.Name}}</a>
-<a href="http://maps.google.com/?q={{.Lat}},{{.Lon}}">Google Maps</a> | <a href="http://maps.apple.com/?q={{.Lat}},{{.Lon}}">Apple Maps</a>
+<a href="http://maps.google.com/?q={{.Lat}},{{.Lon}}">Google-карты</a> | <a href="http://maps.apple.com/?q={{.Lat}},{{.Lon}}">Apple-карты</a>
 {{.Type}}
-Sender: {{.Sender}}
+Отправил: {{.Sender}}
 {{end}}
 
 {{define "assignLink"}}

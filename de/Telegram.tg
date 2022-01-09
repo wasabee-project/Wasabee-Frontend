@@ -1,40 +1,39 @@
 {{define "default"}}
 {{if .}}Commands:
 {{range .}}
-<b>/{{.Command}}</b>: {{.Description}}{{if .Private}}<em> Private Chat</em>{{end}}{{if .Group}}<em> Groups</em>{{end}}
-{{end}}
-{{end}}
-
+<b>/{{.Command}}</b>: {{.Description}}{{if .Private}}<em> Private Chat</em>{{end}}{{if .Group}}<em> Groups</em>{{end}} {{end}}
+{{else}}
 Please see {{ WebUI }}#/settings for details
+{{end}}
 {{end}}
 
 {{define "start"}}
 If everything is working correctly, you should see helpful buttons near the message input area.
-If not, try saying "/start"
+If not, try saying `/start`
 {{end}}
 
 {{define "InitOneFail"}}
-*Please send your Telegram token to begin verification*
-See {{ WebUI }}#/settings for details
+<b>Please send your Telegram token to begin verification</b>
+See {{ WebUI }}?server={{ Webroot }}/#/settings for details
 {{end}}
 
 {{define "InitOneSuccess"}}
-*You have sent Telegram token correctly*
-Now, you need to send your verification code from {{ Webroot }}/me#settings
+<b>You have sent Telegram token correctly </b>
+Now, you need to send your verification code from {{ WebUI }}?server={{ Webroot }}/me#settings
 
 *You might need to reload the page to see the verifcation code, it will be listed in the same place as before.*
 
-See {{ WebUI }}#/settings for details
+See {{ WebUI }}?server={{ Webroot }}/#/settings for details
 {{end}}
 
 {{define "InitTwoFail"}}
-*Verification FAILED*
+<b>Verification FAILED</b>
 Please send your verification code without any additional content
-See {{ WebUI }}#/settings for details
+See {{ WebUI }}?server={{ Webroot }}/#/settings for details
 {{end}}
 
 {{define "InitTwoSuccess"}}
-*Verification Successful*
+<b>Verification Successful</b>
 Your telegram account is now verified and can receive updates and submit location changes
 {{end}}
 
@@ -51,8 +50,8 @@ Specify a single teamID
 {{end}}
 
 {{define "ChatLinkStatus"}}
-Linked to team: <b>{{.TeamName}}</b> ({{.TeamID}})
-{{if .OPStat}}Linked to operation: <b>{{.OPStat.Name}}</b> ({{.OPStat.ID}}){{end}}
+Linked to team: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>)
+{{if .OPStat}}Linked to operation: <b>{{.OPStat.Name}}</b> (<a href="{{WebUI}}#/operation/{{.OPStat.ID}}/list">{{.OPStat.ID}}</a>){{end}}
 {{end}}
 
 {{define "Claim"}}
@@ -72,7 +71,7 @@ Agent {{.}} is not known to this bot, please have them run the `/start` command
 {{end}}
 
 {{define "joinedTeam"}}
-{{.Name}} joined the linked team: <b>{{.TeamName}}</b> ({{.TeamID}}) {{if .SentLink}} -- sent invite link{{else}} -- please add them to this chat{{end}}
+{{.Name}} joined the linked team: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>) {{if .SentLink}} -- sent invite link{{else}} -- please add them to this chat{{end}}
 {{end}}
 
 {{define "invitedToTeam"}}
@@ -81,7 +80,7 @@ Use this link to join the chat: {{.Link}}
 {{end}}
 
 {{define "leftTeam"}}
-{{.Agent}} left the linked team ({{.TeamID}}). The bot will attempt to remove them from this chat.
+{{.Agent}} left the linked team (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>). The bot will attempt to remove them from this chat.
 {{end}}
 
 {{define "onlyOwner"}}

@@ -16,6 +16,8 @@
       import {
         getAnalytics,
         logEvent,
+	setAnalyticsCollectionEnabled,
+	setCurrentScreen,
       } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js";
       import {
         getMessaging,
@@ -36,6 +38,7 @@
         measurementId: "G-LZR2PVKWM7",
       });
       const analytics = getAnalytics(app);
+      setAnalyticsCollectionEnabled(analytics, true);
 
       const messaging = getMessaging(app);
       setupMessaging(); // async, but no need to await here

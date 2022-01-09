@@ -1,39 +1,39 @@
 {{define "default"}}
-{{if .}}Commands:
+{{if .}}Команды:
 {{range .}}
-<b>/{{.Command}}</b>: {{.Description}}{{if .Private}}<em> Private Chat</em>{{end}}{{if .Group}}<em> Groups</em>{{end}} {{end}}
+<b>/{{.Command}}</b>: {{.Description}}{{if .Private}}<em> Личные сообщения</em>{{end}}{{if .Group}}<em> Группы</em>{{end}} {{end}}
 {{else}}
-Please see {{ WebUI }}#/settings for details
+Подробнее смотрите на {{ WebUI }}#/settings
 {{end}}
 {{end}}
 
 {{define "start"}}
-If everything is working correctly, you should see helpful buttons near the message input area.
-If not, try saying `/start`
+Если все работает правильно, вы должны видеть функциональные кнопки рядом с полем ввода сообщений.
+Если нет, попробуйте дать команду `/start`
 {{end}}
 
 {{define "InitOneFail"}}
-<b>Please send your Telegram token to begin verification</b>
-See {{ WebUI }}?server={{ Webroot }}/#/settings for details
+<b>Пожалуйста, укажите ваш Telegram-токен для начала верификации</b>
+Подробнее смотрите на {{ WebUI }}?server={{ Webroot }}/#/settings
 {{end}}
 
 {{define "InitOneSuccess"}}
-<b>You have sent Telegram token correctly </b>
-Now, you need to send your verification code from {{ WebUI }}?server={{ Webroot }}/me#settings
+<b>Вы прислали верный Telegram-токен </b>
+Теперь вам нужно указать код подтверждения, который можно узнать на {{ WebUI }}?server={{ Webroot }}/me#settings
 
-*You might need to reload the page to see the verifcation code, it will be listed in the same place as before.*
+*Возможно, вам потребуется перезагрузить страницу, чтобы увидеть код верификации. Он будет указан там же.*
 
-See {{ WebUI }}?server={{ Webroot }}/#/settings for details
+Подробнее смотрите на {{ WebUI }}?server={{ Webroot }}/#/settings
 {{end}}
 
 {{define "InitTwoFail"}}
-<b>Verification FAILED</b>
-Please send your verification code without any additional content
-See {{ WebUI }}?server={{ Webroot }}/#/settings for details
+<b>Верификация не удалась</b>
+Пожалуйста, введите проверочный код без дополнительных символов
+Подробнее смотрите на {{ WebUI }}?server={{ Webroot }}/#/settings
 {{end}}
 
 {{define "InitTwoSuccess"}}
-<b>Verification Successful</b>
+<b>Верификация прошла успешно!</b>
 Your telegram account is now verified and can receive updates and submit location changes
 {{end}}
 

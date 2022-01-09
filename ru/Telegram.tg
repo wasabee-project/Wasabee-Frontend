@@ -34,62 +34,62 @@
 
 {{define "InitTwoSuccess"}}
 <b>Верификация прошла успешно!</b>
-Your telegram account is now verified and can receive updates and submit location changes
+Ваш Telegram-аккаунт верифицирован. Теперь вы можете получать актуальные задачи ваших ОПРЦ, а также передавать данные геолокации
 {{end}}
 
 {{define "Unlinked"}}
-Successfully Unlinked
+Аккаунт отвязан
 {{end}}
 
 {{define "Linked"}}
-Successfully linked
+Аккаунт привязан
 {{end}}
 
 {{define "SingleTeam"}}
-Specify a single teamID
+Укажите teamID одной команды
 {{end}}
 
 {{define "ChatLinkStatus"}}
-Linked to team: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>)
-{{if .OPStat}}Linked to operation: <b>{{.OPStat.Name}}</b> (<a href="{{WebUI}}#/operation/{{.OPStat.ID}}/list">{{.OPStat.ID}}</a>){{end}}
+Привязано к команде: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>)
+{{if .OPStat}}Привязано к операции: <b>{{.OPStat.Name}}</b> (<a href="{{WebUI}}#/operation/{{.OPStat.ID}}/list">{{.OPStat.ID}}</a>){{end}}
 {{end}}
 
 {{define "Claim"}}
-Task Claimed: {{.Order}} - {{.Type}} - {{.Name}}
+Задача взята: {{.Order}} - {{.Type}} - {{.Name}}
 {{end}}
 
 {{define "Acknowledged"}}
-Task Acknowledged: {{.Order}} - {{.Type}} - {{.Name}}
+Задача принята: {{.Order}} - {{.Type}} - {{.Name}}
 {{end}}
 
 {{define "Rejected"}}
-Task Rejected: {{.Order}} - {{.Type}} - {{.Name}}
+Агент отказался от задачи: {{.Order}} - {{.Type}} - {{.Name}}
 {{end}}
 
 {{define "unknownAgent"}}
-Agent {{.}} is not known to this bot, please have them run the `/start` command
+Агент {{.}} не известен этому боту. Пожалуйста, пусть он запустит его командой `/start`
 {{end}}
 
 {{define "joinedTeam"}}
-{{.Name}} joined the linked team: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>) {{if .SentLink}} -- sent invite link{{else}} -- please add them to this chat{{end}}
+{{.Name}} присоединился к привязанной команде: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>) {{if .SentLink}} -- отправлена ссылка-приглашение{{else}} -- пожалуйста, добавьте их в этот чат{{end}}
 {{end}}
 
 {{define "invitedToTeam"}}
-You have been invited to the telegram chat for the Wasabee team "{{.TeamName}}"
-Use this link to join the chat: {{.Link}}
+Вы были приглашены в Telegram-чат Wasabee-команды "{{.TeamName}}"
+Используйте эту ссылку, чтобы зайти в чат: {{.Link}}
 {{end}}
 
 {{define "leftTeam"}}
-{{.Agent}} left the linked team (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>). The bot will attempt to remove them from this chat.
+{{.Agent}} покинул привязанную команду (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>). Бот попытается удалить агента из этого чата.
 {{end}}
 
 {{define "onlyOwner"}}
-only team owner can set telegram link
+только владелец команды может задавать Telegram-ссылку
 {{end}}
 
 {{define "assignments"}}
-<b>Operation: {{.OpName}}</b> (team: {{.TeamName}})
-<b>Order / Portal / Action / Agent / State</b>
+<b>Операция: {{.OpName}}</b> (команда: {{.TeamName}})
+<b>Порядок / Портал / Действие / Агент / Состояние</b>
 {{range .MarkersFormatted}}
 {{.}}
 {{end}}

@@ -1,6 +1,8 @@
 {{define "default"}}
 {{if .}}Commands:
-{{range .}}<b>/{{.Command}}</b>: {{.Description}}{{if .Private}}<em> Private Chat</em>{{end}}{{if .Group}}<em> Groups</em>{{end}}  {{end}}
+{{range .}}
+<b>/{{.Command}}</b>: {{.Description}}{{if .Private}}<em> Private Chat</em>{{end}}{{if .Group}}<em> Groups</em>{{end}}
+{{end}}
 {{end}}
 
 Please see {{ WebUI }}#/settings for details
@@ -80,4 +82,16 @@ Use this link to join the chat: {{.Link}}
 
 {{define "leftTeam"}}
 {{.Agent}} left the linked team ({{.TeamID}}). The bot will attempt to remove them from this chat.
+{{end}}
+
+{{define "onlyOwner"}}
+only team owner can set telegram link
+{{end}}
+
+{{define "assignments"}}
+<b>Operation: {{.OpName}}</b> (team: {{.TeamName}})
+<b>Order / Portal / Action / Agent / State</b>
+{{range .MarkersFormatted}}
+{{.}}
+{{end}}
 {{end}}

@@ -1,5 +1,5 @@
 {{define "default"}}
-{{if .}}Commands:
+{{if .}}Commandes :
 {{range .}}
 <b>/{{.Command}}</b>: {{.Description}}{{if .Private}}<em> Private Chat</em>{{end}}{{if .Group}}<em> Groups</em>{{end}} {{end}}
 {{else}}

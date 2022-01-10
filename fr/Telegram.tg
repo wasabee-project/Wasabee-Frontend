@@ -1,39 +1,39 @@
 {{define "default"}}
 {{if .}}Commandes :
 {{range .}}
-<b>/{{.Command}}</b>: {{.Description}}{{if .Private}}<em> Private Chat</em>{{end}}{{if .Group}}<em> Groups</em>{{end}} {{end}}
+<b>/{{.Command}}</b>: {{.Description}}{{if .Private}}<em> Message privé</em>{{end}}{{if .Group}}<em> Groupes</em>{{end}} {{end}}
 {{else}}
-Please see {{ WebUI }}#/settings for details
+Voir {{ WebUI }}#/settings pour plus de détails
 {{end}}
 {{end}}
 
 {{define "start"}}
-Si tout fonctionne correctement, vous devriez voir des boutons utiles près de la zone de saisie du message.
-If not, try saying `/start`
+Si tout fonctionne correctement, vous devriez voir des boutons intégrés près de la zone de saisie du message.
+Sinon, envoyez `/start`
 {{end}}
 
 {{define "InitOneFail"}}
-<b>Please send your Telegram token to begin verification</b>
-See {{ WebUI }}?server={{ Webroot }}/#/settings for details
+<b>Veuillez envoyer votre jeton Telegram pour commencer la vérification</b>
+Voir {{ WebUI }}?server={{ Webroot }}/#/settings pour plus de détails
 {{end}}
 
 {{define "InitOneSuccess"}}
-<b>You have sent Telegram token correctly </b>
-Now, you need to send your verification code from {{ WebUI }}?server={{ Webroot }}/me#settings
+<b>Vous avez envoyé le jeton Telegram correctement </b>
+Maintenant, vous devez envoyer votre code de vérification depuis {{ WebUI }}?server={{ Webroot }}/me#settings
 
 *Vous devrez peut-être recharger la page pour voir le code de vérification, il sera affiché au même endroit qu'avant.*
 
-See {{ WebUI }}?server={{ Webroot }}/#/settings for details
+Voir {{ WebUI }}?server={{ Webroot }}/#/settings pour plus de détails
 {{end}}
 
 {{define "InitTwoFail"}}
-<b>Verification FAILED</b>
+<b>La vérification a échoué</b>
 Veuillez envoyer votre jeton sans ajouter quoi que ce soit au message
-See {{ WebUI }}?server={{ Webroot }}/#/settings for details
+Voir {{ WebUI }}?server={{ Webroot }}/#/settings pour plus de détails
 {{end}}
 
 {{define "InitTwoSuccess"}}
-<b>Verification Successful</b>
+<b>Vérification réussie</b>
 Votre compte Telegram est maintenant vérifié et peut envoyer / recevoir des mises à jour (localisation par exemple)
 {{end}}
 
@@ -50,46 +50,46 @@ Spécifiez un seul teamID
 {{end}}
 
 {{define "ChatLinkStatus"}}
-Linked to team: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>)
-{{if .OPStat}}Linked to operation: <b>{{.OPStat.Name}}</b> (<a href="{{WebUI}}#/operation/{{.OPStat.ID}}/list">{{.OPStat.ID}}</a>){{end}}
+Lié à l'équipe : <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>)
+{{if .OPStat}}Lié à l'opération : <b>{{.OPStat.Name}}</b> (<a href="{{WebUI}}#/operation/{{.OPStat.ID}}/list">{{.OPStat.ID}}</a>){{end}}
 {{end}}
 
 {{define "Claim"}}
-Task Claimed: {{.Order}} - {{.Type}} - {{.Name}}
+Tâche réclamée : {{.Order}} - {{.Type}} - {{.Name}}
 {{end}}
 
 {{define "Acknowledged"}}
-Task Acknowledged: {{.Order}} - {{.Type}} - {{.Name}}
+Tâche Reconnue : {{.Order}} - {{.Type}} - {{.Name}}
 {{end}}
 
 {{define "Rejected"}}
-Task Rejected: {{.Order}} - {{.Type}} - {{.Name}}
+Tâche rejetée : {{.Order}} - {{.Type}} - {{.Name}}
 {{end}}
 
 {{define "unknownAgent"}}
-Agent {{.}} is not known to this bot, please have them run the `/start` command
+L'Agent {{.}} n'est pas connu de ce bot, veuillez lui demander d'envoyer la commande `/start`
 {{end}}
 
 {{define "joinedTeam"}}
-{{.Name}} joined the linked team: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>) {{if .SentLink}} -- sent invite link{{else}} -- please add them to this chat{{end}}
+{{.Name}} a rejoint l'équipe liée : <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>) {{if .SentLink}} -- lien d'invitation envoyé{{else}} -- veuillez l'ajouter à ce groupe{{end}}
 {{end}}
 
 {{define "invitedToTeam"}}
-You have been invited to the telegram chat for the Wasabee team "{{.TeamName}}"
-Use this link to join the chat: {{.Link}}
+Vous avez été invité au groupe Telegram de l'équipe Wasabee "{{.TeamName}}"
+Utilisez ce lien pour rejoindre le chat : {{.Link}}
 {{end}}
 
 {{define "leftTeam"}}
-{{.Agent}} left the linked team (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>). The bot will attempt to remove them from this chat.
+{{.Agent}} a quitté l'équipe liée (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>). Le bot va tenter de les retirer de ce groupe.
 {{end}}
 
 {{define "onlyOwner"}}
-only team owner can set telegram link
+Seul le propriétaire de l'équipe peut définir le lien Telegram
 {{end}}
 
 {{define "assignments"}}
-<b>Operation: {{.OpName}}</b> (team: {{.TeamName}})
-<b>Order / Portal / Action / Agent / State</b>
+<b>Opération : {{.OpName}}</b> (équipe : {{.TeamName}})
+<b>Ordre / Portail / Action / Agent / État</b>
 {{range .MarkersFormatted}}
 {{.}}
 {{end}}

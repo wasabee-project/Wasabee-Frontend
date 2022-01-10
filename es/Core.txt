@@ -17,6 +17,6 @@ Remitente: {{.Sender}}
 {{.Text}}
 
 <b>Remitente: {{ IngressName .Sender }}</b>
-{{if .TeamID}}<a href="{{ WebUI }}#/team/{{.TeamID}}/list">Team</a>{{end}}
-{{if .OpID}}<a href="{{ WebUI }}#/operation/{{.OpID}}/list">Operation</a>{{end}}
+{{if .TeamID}}<a href="{{ WebUI }}#/team/{{.TeamID}}/list">Equipo</a>{{end}}
+{{if .OpID}}<a href="{{ WebUI }}#/operation/{{.OpID}}/list">Operación</a>{{end}}
 {{end}}

@@ -1,95 +1,95 @@
 {{define "default"}}
 {{if .}}Comandos:
 {{range .}}
-<b>/{{.Command}}</b>: {{.Description}}{{if .Private}}<em> Private Chat</em>{{end}}{{if .Group}}<em> Groups</em>{{end}} {{end}}
+<b>/{{.Command}}</b>: {{.Description}}{{if .Private}}<em> Chat Privado</em>{{end}}{{if .Group}}<em> Grupos</em>{{end}} {{end}}
 {{else}}
-Please see {{ WebUI }}#/settings for details
+Por favor, consulte {{ WebUI }}#/settings para más detalles
 {{end}}
 {{end}}
 
 {{define "start"}}
-If everything is working correctly, you should see helpful buttons near the message input area.
-If not, try saying `/start`
+Si todo funciona correctamente, deberías ver unos útiles botones cerca del área de escritura de mensajes.
+Si no, intenta escrbiendo `/start`
 {{end}}
 
 {{define "InitOneFail"}}
-<b>Please send your Telegram token to begin verification</b>
-See {{ WebUI }}?server={{ Webroot }}/#/settings for details
+<b>Por favor, envía tu token de Telegram para comenzar la verificación</b>
+Ver {{ WebUI }}?server={{ Webroot }}/#/settings para más detalles
 {{end}}
 
 {{define "InitOneSuccess"}}
-<b>You have sent Telegram token correctly </b>
-Now, you need to send your verification code from {{ WebUI }}?server={{ Webroot }}/me#settings
+<b>Has enviado el token de Telegram correctamente </b>
+Ahora, tienes que enviar tu código de verificación desde {{ WebUI }}?server={{ Webroot }}/me#settings
 
-*You might need to reload the page to see the verifcation code, it will be listed in the same place as before.*
+*Puede que necesites recargar la página para ver el código de verificación, que aparecerá en el mismo lugar que antes.*
 
-See {{ WebUI }}?server={{ Webroot }}/#/settings for details
+Ver {{ WebUI }}?server={{ Webroot }}/#/settings para más detalles
 {{end}}
 
 {{define "InitTwoFail"}}
-<b>Verification FAILED</b>
-Please send your verification code without any additional content
-See {{ WebUI }}?server={{ Webroot }}/#/settings for details
+<b>Verificación FALLIDA</b>
+Por favor, envía tu código de verificación sin ningún contenido adicional
+Ver {{ WebUI }}?server={{ Webroot }}/#/settings para más detalles
 {{end}}
 
 {{define "InitTwoSuccess"}}
-<b>Verification Successful</b>
-Your telegram account is now verified and can receive updates and submit location changes
+<b>¡Verificación correcta!</b>
+Su cuenta de telegrama ha sido verificada y puede recibir actualizaciones y enviar actualizaciones de ubicación
 {{end}}
 
 {{define "Unlinked"}}
-Successfully Unlinked
+Desvinculado correctamente
 {{end}}
 
 {{define "Linked"}}
-Successfully linked
+Vinculado con éxito
 {{end}}
 
 {{define "SingleTeam"}}
-Specify a single teamID
+Especifique un único Id de Equipo
 {{end}}
 
 {{define "ChatLinkStatus"}}
-Linked to team: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>)
-{{if .OPStat}}Linked to operation: <b>{{.OPStat.Name}}</b> (<a href="{{WebUI}}#/operation/{{.OPStat.ID}}/list">{{.OPStat.ID}}</a>){{end}}
+Vinculado al equipo: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>)
+{{if .OPStat}}Vinculado a la operación: <b>{{.OPStat.Name}}</b> (<a href="{{WebUI}}#/operation/{{.OPStat.ID}}/list">{{.OPStat.ID}}</a>){{end}}
 {{end}}
 
 {{define "Claim"}}
-Task Claimed: {{.Order}} - {{.Type}} - {{.Name}}
+Tarea reclamada: {{.Order}} - {{.Type}} - {{.Name}}
 {{end}}
 
 {{define "Acknowledged"}}
-Task Acknowledged: {{.Order}} - {{.Type}} - {{.Name}}
+Tarea recibida: {{.Order}} - {{.Type}} - {{.Name}}
 {{end}}
 
 {{define "Rejected"}}
-Task Rejected: {{.Order}} - {{.Type}} - {{.Name}}
+Tarea rechazada: {{.Order}} - {{.Type}} - {{.Name}}
 {{end}}
 
 {{define "unknownAgent"}}
-Agent {{.}} is not known to this bot, please have them run the `/start` command
+Este bot no reconoce al agente {{.}}. Indique al agente que ejecute el comando `/start` en el bot
 {{end}}
 
 {{define "joinedTeam"}}
-{{.Name}} joined the linked team: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>) {{if .SentLink}} -- sent invite link{{else}} -- please add them to this chat{{end}}
+{{.Name}} se unió al equipo vinculado: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>) {{if .SentLink}} -- enlace de invitación enviado{{else}} -- por favor añádelo a este grupo{{end}}
 {{end}}
 
 {{define "invitedToTeam"}}
-You have been invited to the telegram chat for the Wasabee team "{{.TeamName}}"
-Use this link to join the chat: {{.Link}}
+Has sido invitado al grupo de telegram del equipo de Wasabee: "{{.TeamName}}"
+Usa este enlace para unirte al grupo: {{.Link}}
 {{end}}
 
 {{define "leftTeam"}}
-{{.Agent}} left the linked team (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>). The bot will attempt to remove them from this chat.
+{{.Agent}} ha salido del equipo vinculado (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>). El bot intentará quitarlo de este chat.
 {{end}}
 
 {{define "onlyOwner"}}
-only team owner can set telegram link
+Sólo el propietario del equipo puede vincular Wasabee con Telegram
 {{end}}
 
 {{define "assignments"}}
-<b>Operation: {{.OpName}}</b> (team: {{.TeamName}})
-<b>Order / Portal / Action / Agent / State</b>
+<b>Operación: {{.OpName}}</b> (equipo: {{.TeamName}})
+<b>Orden / Portal / Acción / Agente / Estado</b>
 {{range .MarkersFormatted}}
 {{.}}
 {{end}}

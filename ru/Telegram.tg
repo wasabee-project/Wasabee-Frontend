@@ -1,0 +1,96 @@
+{{define "default"}}
+{{if .}}Команды:
+{{range .}}
+<b>/{{.Command}}</b>: {{.Description}}{{if .Private}}<em> Личные сообщения</em>{{end}}{{if .Group}}<em> Группы</em>{{end}} {{end}}
+{{else}}
+Подробнее смотрите на {{ WebUI }}#/settings
+{{end}}
+{{end}}
+
+{{define "start"}}
+Если все работает правильно, вы должны видеть функциональные кнопки рядом с полем ввода сообщений.
+Если нет, попробуйте дать команду `/start`
+{{end}}
+
+{{define "InitOneFail"}}
+<b>Пожалуйста, укажите ваш Telegram-токен для начала верификации</b>
+Подробнее смотрите на {{ WebUI }}?server={{ Webroot }}/#/settings
+{{end}}
+
+{{define "InitOneSuccess"}}
+<b>Вы прислали верный Telegram-токен </b>
+Теперь вам нужно указать код подтверждения, который можно узнать на {{ WebUI }}?server={{ Webroot }}/me#settings
+
+*Возможно, вам потребуется перезагрузить страницу, чтобы увидеть код верификации. Он будет указан там же.*
+
+Подробнее смотрите на {{ WebUI }}?server={{ Webroot }}/#/settings
+{{end}}
+
+{{define "InitTwoFail"}}
+<b>Верификация не удалась</b>
+Пожалуйста, введите проверочный код без дополнительных символов
+Подробнее смотрите на {{ WebUI }}?server={{ Webroot }}/#/settings
+{{end}}
+
+{{define "InitTwoSuccess"}}
+<b>Верификация прошла успешно!</b>
+Ваш Telegram-аккаунт верифицирован. Теперь вы можете получать актуальные задачи ваших ОПРЦ, а также передавать данные геолокации
+{{end}}
+
+{{define "Unlinked"}}
+Аккаунт отвязан
+{{end}}
+
+{{define "Linked"}}
+Аккаунт привязан
+{{end}}
+
+{{define "SingleTeam"}}
+Укажите teamID одной команды
+{{end}}
+
+{{define "ChatLinkStatus"}}
+Привязано к команде: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>)
+{{if .OPStat}}Привязано к операции: <b>{{.OPStat.Name}}</b> (<a href="{{WebUI}}#/operation/{{.OPStat.ID}}/list">{{.OPStat.ID}}</a>){{end}}
+{{end}}
+
+{{define "Claim"}}
+Задача взята: {{.Order}} - {{.Type}} - {{.Name}}
+{{end}}
+
+{{define "Acknowledged"}}
+Задача принята: {{.Order}} - {{.Type}} - {{.Name}}
+{{end}}
+
+{{define "Rejected"}}
+Агент отказался от задачи: {{.Order}} - {{.Type}} - {{.Name}}
+{{end}}
+
+{{define "unknownAgent"}}
+Агент {{.}} не известен этому боту. Пожалуйста, пусть он запустит его командой `/start`
+{{end}}
+
+{{define "joinedTeam"}}
+{{.Name}} присоединился к привязанной команде: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>) {{if .SentLink}} -- отправлена ссылка-приглашение{{else}} -- пожалуйста, добавьте их в этот чат{{end}}
+{{end}}
+
+{{define "invitedToTeam"}}
+Вы были приглашены в Telegram-чат Wasabee-команды "{{.TeamName}}"
+Используйте эту ссылку, чтобы зайти в чат: {{.Link}}
+{{end}}
+
+{{define "leftTeam"}}
+{{.Agent}} покинул привязанную команду (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>). Бот попытается удалить агента из этого чата.
+{{end}}
+
+{{define "onlyOwner"}}
+только владелец команды может задавать Telegram-ссылку
+{{end}}
+
+{{define "assignments"}}
+<b>Операция: {{.OpName}}</b> (команда: {{.TeamName}})
+<b>Порядок / Портал / Действие / Агент / Состояние</b>
+{{range .MarkersFormatted}}
+{{.}}
+{{end}}
+{{end}}

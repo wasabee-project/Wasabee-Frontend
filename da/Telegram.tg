@@ -1,0 +1,96 @@
+{{define "default"}}
+{{if .}}Commands:
+{{range .}}
+<b>/{{.Command}}</b>: {{.Description}}{{if .Private}}<em> Private Chat</em>{{end}}{{if .Group}}<em> Groups</em>{{end}} {{end}}
+{{else}}
+Please see {{ WebUI }}#/settings for details
+{{end}}
+{{end}}
+
+{{define "start"}}
+If everything is working correctly, you should see helpful buttons near the message input area.
+If not, try saying `/start`
+{{end}}
+
+{{define "InitOneFail"}}
+<b>Please send your Telegram token to begin verification</b>
+See {{ WebUI }}?server={{ Webroot }}/#/settings for details
+{{end}}
+
+{{define "InitOneSuccess"}}
+<b>You have sent Telegram token correctly </b>
+Now, you need to send your verification code from {{ WebUI }}?server={{ Webroot }}/me#settings
+
+*You might need to reload the page to see the verifcation code, it will be listed in the same place as before.*
+
+See {{ WebUI }}?server={{ Webroot }}/#/settings for details
+{{end}}
+
+{{define "InitTwoFail"}}
+<b>Verification FAILED</b>
+Please send your verification code without any additional content
+See {{ WebUI }}?server={{ Webroot }}/#/settings for details
+{{end}}
+
+{{define "InitTwoSuccess"}}
+<b>Verification Successful</b>
+Your telegram account is now verified and can receive updates and submit location changes
+{{end}}
+
+{{define "Unlinked"}}
+Successfully Unlinked
+{{end}}
+
+{{define "Linked"}}
+Successfully linked
+{{end}}
+
+{{define "SingleTeam"}}
+Specify a single teamID
+{{end}}
+
+{{define "ChatLinkStatus"}}
+Linked to team: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>)
+{{if .OPStat}}Linked to operation: <b>{{.OPStat.Name}}</b> (<a href="{{WebUI}}#/operation/{{.OPStat.ID}}/list">{{.OPStat.ID}}</a>){{end}}
+{{end}}
+
+{{define "Claim"}}
+Task Claimed: {{.Order}} - {{.Type}} - {{.Name}}
+{{end}}
+
+{{define "Acknowledged"}}
+Task Acknowledged: {{.Order}} - {{.Type}} - {{.Name}}
+{{end}}
+
+{{define "Rejected"}}
+Task Rejected: {{.Order}} - {{.Type}} - {{.Name}}
+{{end}}
+
+{{define "unknownAgent"}}
+Agent {{.}} is not known to this bot, please have them run the `/start` command
+{{end}}
+
+{{define "joinedTeam"}}
+{{.Name}} joined the linked team: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>) {{if .SentLink}} -- sent invite link{{else}} -- please add them to this chat{{end}}
+{{end}}
+
+{{define "invitedToTeam"}}
+You have been invited to the telegram chat for the Wasabee team "{{.TeamName}}"
+Use this link to join the chat: {{.Link}}
+{{end}}
+
+{{define "leftTeam"}}
+{{.Agent}} left the linked team (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>). The bot will attempt to remove them from this chat.
+{{end}}
+
+{{define "onlyOwner"}}
+only team owner can set telegram link
+{{end}}
+
+{{define "assignments"}}
+<b>Operation: {{.OpName}}</b> (team: {{.TeamName}})
+<b>Order / Portal / Action / Agent / State</b>
+{{range .MarkersFormatted}}
+{{.}}
+{{end}}
+{{end}}

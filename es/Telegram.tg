@@ -1,41 +1,96 @@
 {{define "default"}}
-Por favor refiérase a {{ Webroot }}/me para más detalles.
+{{if .}}Comandos:
+{{range .}}
+<b>/{{.Command}}</b>: {{.Description}}{{if .Private}}<em> Chat Privado</em>{{end}}{{if .Group}}<em> Grupos</em>{{end}} {{end}}
+{{else}}
+Por favor, consulte {{ WebUI }}#/settings para más detalles
+{{end}}
 {{end}}
 
-{{define "help"}}
-Por favor refiérase a {{ Webroot }}/me para más detalles.
+{{define "start"}}
+Si todo funciona correctamente, deberías ver unos útiles botones cerca del área de escritura de mensajes.
+Si no, intenta escrbiendo `/start`
 {{end}}
 
 {{define "InitOneFail"}}
-Por favor envíe su Clave de Ubicación Compartida (Share Location Key) para iniciar la verificación.
-
-Por favor refiérase a {{ Webroot }}/me para más detalles.
+<b>Por favor, envía tu token de Telegram para comenzar la verificación</b>
+Ver {{ WebUI }}?server={{ Webroot }}/#/settings para más detalles
 {{end}}
 
 {{define "InitOneSuccess"}}
-*Has enviado tu Clave de Ubicación Compartida (Location Share Key) correctamente*
-Ahora necdsjfDZ enviar tu. Lzifl de verificación de {{ Webroot }}/me
+<b>Has enviado el token de Telegram correctamente </b>
+Ahora, tienes que enviar tu código de verificación desde {{ WebUI }}?server={{ Webroot }}/me#settings
 
-*Es probable que necesites volver a cargar la página Par ver el código de verificación. Estará enlistado en el mismo lugar que antes.*
+*Puede que necesites recargar la página para ver el código de verificación, que aparecerá en el mismo lugar que antes.*
 
-Por favor refiérase a {{ Webroot }}/me para más detalles.
+Ver {{ WebUI }}?server={{ Webroot }}/#/settings para más detalles
 {{end}}
 
 {{define "InitTwoFail"}}
-*Verification FAILED*
-Por favor envía tu código de verificación sin ningún contenido adicional
-
-Por favor refiérase a {{ Webroot }}/me para más detalles.
+<b>Verificación FALLIDA</b>
+Por favor, envía tu código de verificación sin ningún contenido adicional
+Ver {{ WebUI }}?server={{ Webroot }}/#/settings para más detalles
 {{end}}
 
 {{define "InitTwoSuccess"}}
-*Verification Successful*
-
-Tu cuenta de Telegram ha sido verificada y podrás recibir actualizaciones y hacer cambios de ubicación.
+<b>¡Verificación correcta!</b>
+Su cuenta de telegrama ha sido verificada y puede recibir actualizaciones y enviar actualizaciones de ubicación
 {{end}}
 
-{{define "TeamStateChange"}}
-{{if eq .State "On"}}Enabling {{ .Team }}{{end}}
-{{if eq .State "Off"}}Disbling {{ .Team }}{{end}}
-{{if eq .State "Primary"}}Setting {{ .Team }} to primary{{end}}
+{{define "Unlinked"}}
+Desvinculado correctamente
+{{end}}
+
+{{define "Linked"}}
+Vinculado con éxito
+{{end}}
+
+{{define "SingleTeam"}}
+Especifique un único Id de Equipo
+{{end}}
+
+{{define "ChatLinkStatus"}}
+Vinculado al equipo: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>)
+{{if .OPStat}}Vinculado a la operación: <b>{{.OPStat.Name}}</b> (<a href="{{WebUI}}#/operation/{{.OPStat.ID}}/list">{{.OPStat.ID}}</a>){{end}}
+{{end}}
+
+{{define "Claim"}}
+Tarea reclamada: {{.Order}} - {{.Type}} - {{.Name}}
+{{end}}
+
+{{define "Acknowledged"}}
+Tarea recibida: {{.Order}} - {{.Type}} - {{.Name}}
+{{end}}
+
+{{define "Rejected"}}
+Tarea rechazada: {{.Order}} - {{.Type}} - {{.Name}}
+{{end}}
+
+{{define "unknownAgent"}}
+Este bot no reconoce al agente {{.}}. Indique al agente que ejecute el comando `/start` en el bot
+{{end}}
+
+{{define "joinedTeam"}}
+{{.Name}} se unió al equipo vinculado: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>) {{if .SentLink}} -- enlace de invitación enviado{{else}} -- por favor añádelo a este grupo{{end}}
+{{end}}
+
+{{define "invitedToTeam"}}
+Has sido invitado al grupo de telegram del equipo de Wasabee: "{{.TeamName}}"
+Usa este enlace para unirte al grupo: {{.Link}}
+{{end}}
+
+{{define "leftTeam"}}
+{{.Agent}} ha salido del equipo vinculado (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>). El bot intentará quitarlo de este chat.
+{{end}}
+
+{{define "onlyOwner"}}
+Sólo el propietario del equipo puede vincular Wasabee con Telegram
+{{end}}
+
+{{define "assignments"}}
+<b>Operación: {{.OpName}}</b> (equipo: {{.TeamName}})
+<b>Orden / Portal / Acción / Agente / Estado</b>
+{{range .MarkersFormatted}}
+{{.}}
+{{end}}
 {{end}}

@@ -1,0 +1,96 @@
+{{define "default"}}
+{{if .}}Comandi:
+{{range .}}
+<b>/{{.Command}}</b>: {{.Description}}{{if .Private}}<em> Chat Privata</em>{{end}}{{if .Group}}<em> Gruppi</em>{{end}} {{end}}
+{{else}}
+Controlla {{ WebUI }}#/settings per i dettagli
+{{end}}
+{{end}}
+
+{{define "start"}}
+Se tutto funziona correttamente, dovresti vedere pulsanti utili vicino all'area di input del messaggio.
+In caso contrario, prova a dire `/start`
+{{end}}
+
+{{define "InitOneFail"}}
+<b>Invia il tuo token Telegram per iniziare la verifica</b>
+Controlla {{ WebUI }}?server={{ Webroot }}/#/settings per dettagli
+{{end}}
+
+{{define "InitOneSuccess"}}
+<b>Hai inviato correttamente il token Telegram </b>
+Ora, devi inviare il tuo codice di verifica da {{ WebUI }}?server={{ Webroot }}/me#settings
+
+*Potrebbe essere necessario ricaricare la pagina per vedere il codice di verifica, sarà elencato nello stesso posto.*
+
+Controlla {{ WebUI }}?server={{ Webroot }}/#/settings per dettagli
+{{end}}
+
+{{define "InitTwoFail"}}
+<b>Verifica FALLITA</b>
+Invia il tuo codice di verifica senza alcun contenuto aggiuntivo
+Controlla {{ WebUI }}?server={{ Webroot }}/#/settings per dettagli
+{{end}}
+
+{{define "InitTwoSuccess"}}
+<b>Verifica riuscita</b>
+Il tuo account Telegram è ora verificato e può ricevere aggiornamenti e inviare la posizione
+{{end}}
+
+{{define "Unlinked"}}
+Scollegato con successo
+{{end}}
+
+{{define "Linked"}}
+Collegato con successo
+{{end}}
+
+{{define "SingleTeam"}}
+Specifica un singolo teamID
+{{end}}
+
+{{define "ChatLinkStatus"}}
+Collegato alla squadra: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>)
+{{if .OPStat}}Collegato all'operazione: <b>{{.OPStat.Name}}</b> (<a href="{{WebUI}}#/operation/{{.OPStat.ID}}/list">{{.OPStat.ID}}</a>){{end}}
+{{end}}
+
+{{define "Claim"}}
+Attività richiesta: {{.Order}} - {{.Type}} - {{.Name}}
+{{end}}
+
+{{define "Acknowledged"}}
+Attività ricevuta: {{.Order}} - {{.Type}} - {{.Name}}
+{{end}}
+
+{{define "Rejected"}}
+Attività rifiutata: {{.Order}} - {{.Type}} - {{.Name}}
+{{end}}
+
+{{define "unknownAgent"}}
+L'agente {{.}} non è noto a questo bot, fagli eseguire il comando `/start`
+{{end}}
+
+{{define "joinedTeam"}}
+{{.Name}} si è unito al team collegato: <b>{{.TeamName}}</b> (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>) {{if .SentLink}} -- ha inviato il link di invito{{else}} -- aggiungili a questa chat{{end}}
+{{end}}
+
+{{define "invitedToTeam"}}
+Sei stato invitato alla chat Telegram per il team Wasabee "{{.TeamName}}"
+Usa questo link per unirti alla chat: {{.Link}}
+{{end}}
+
+{{define "leftTeam"}}
+{{.Agent}} ha lasciato il team collegato (<a href="{{WebUI}}#/team/{{.TeamID}}/list">{{.TeamID}}</a>). Il bot cercherà di rimuoverlo da questa chat.
+{{end}}
+
+{{define "onlyOwner"}}
+solo il proprietario del team può impostare il link telegram
+{{end}}
+
+{{define "assignments"}}
+<b>Operazione: {{.OpName}}</b> (team: {{.TeamName}})
+<b>Ordine / Portale / Azione / Agente / Stato</b>
+{{range .MarkersFormatted}}
+{{.}}
+{{end}}
+{{end}}
